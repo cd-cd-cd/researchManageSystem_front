@@ -11,11 +11,15 @@
   z-index: 99;
   display: flex;
   align-items: center;
+  font-size: 20px;
+  font-weight: 700;
+  color: rgb(80, 80, 80);
 
   .icon{
     width: 50px;
     height: 50px;
     margin-left: 10px;
+    margin-right: 12px;
   }
 }
 
@@ -30,8 +34,8 @@
   justify-content: center;
 
   .login_box {
-    width: 400px;
-    height: 410px;
+    width: 420px;
+    height: 400px;
     background-color: #fff;
     box-shadow: 0 5px 15px 0 rgb(0 0 0 / 5%);
   }
@@ -46,4 +50,24 @@
   line-height: 80px;
   text-align: center;
   align-items: center;
+}
+
+.login_form{
+  width: 80%;
+  margin: 40px auto;
+}
+
+.buttons{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+
+  .button{
+    width: 90px;
+  }
+}
+
+.warning_text{
+  color: rgb(237, 57, 57);
+  margin: 0;
 }
