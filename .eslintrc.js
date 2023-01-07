@@ -17,7 +17,8 @@ module.exports = {
     "react"
   ],
   "rules": {
-    "@typescript-eslint/explicit-function-return-type": "off"
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/consistent-type-assertions": "off"
   },
   "parserOptions": {
     "ecmaVersion": "latest",
