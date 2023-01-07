@@ -1,4 +1,5 @@
-export interface ItabBarStudent {
+export interface ITabBarStudent {
   label: string,
-  value: string
+  value: number,
+  name: string
 }

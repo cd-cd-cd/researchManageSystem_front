@@ -3,7 +3,7 @@ import { Navigate } from 'react-router'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import './App.css'
 import { StoreProvider } from './hooks/store'
-import { ItabBarStudent } from './libs/model'
+import { ITabBarStudent } from './libs/model'
 import Login from './pages/Login'
 import ManagerHome from './pages/ManagerHome'
 import StudentHome from './pages/StudentHome'
@@ -16,11 +16,14 @@ import WeekReport from './pages/StudentMain/WeekReport'
 import TeacherHome from './pages/TeacherHome'
 
 function App () {
-  const [tabBarList, setTabBarList] = useState<ItabBarStudent[]>([])
+  const [tabBarList, setTabBarList] = useState<ITabBarStudent[]>([])
+  const [tabBarId, setTabBarId] = useState(-1)
   return (
     <StoreProvider value={{
       tabBarList,
-      setTabBarList
+      setTabBarList,
+      tabBarId,
+      setTabBarId
     }}>
       <BrowserRouter>
         <Routes>

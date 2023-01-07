@@ -1,11 +1,13 @@
 import { Menu, MenuProps, Modal, Tooltip } from 'antd'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import style from './index.module.scss'
 import existIcon from '../../assets/imgs/exist.svg'
 import headerIcon from '../../assets/imgs/science_icon.svg'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import TabBar from '../../components/TabBar'
 import useTabBar from '../../hooks/useTabBar'
+import { context } from '../../hooks/store'
+import { ITabBarStudent } from '../../libs/model'
 
 type MenuItem = Required<MenuProps>['items'][number]
 
@@ -29,6 +31,8 @@ export default function StudentHome () {
   const location = useLocation()
   const navigator = useNavigate()
   const { addTabBar } = useTabBar()
+  const { setTabBarId, tabBarId } = useContext(context)
+  const [studentFunc, setArray] = useState<ITabBarStudent[]>()
   // 退出modal提醒
   const [isModalOpen, setIsModalOpen] = useState(false)
 
@@ -46,54 +50,59 @@ export default function StudentHome () {
     }
   }
 
-  const studentFunc = [
-    { label: '个人信息', value: 'personInfo' },
-    { label: '设备管理', value: 'deviceManager' },
-    { label: '组会管理', value: 'groupManage' },
-    { label: '周报管理', value: 'weekReport' },
-    { label: '经费报销', value: 'reimbursement' },
-    { label: '请假管理', value: 'leaveRequest' }
-  ]
+  const role = location.pathname.split('/')[1]
 
-  const [current, setCurrent] = useState(studentFunc[0].value)
   const onClick: MenuProps['onClick'] = e => {
-    setCurrent(e.key)
-    const role = location.pathname.split('/')[1]
+    setTabBarId(Number(e.key))
+    const student = studentFunc as ITabBarStudent[]
     if (role === 'student') {
       switch (e.key) {
-        case 'personInfo':
-          navigator('/student/personInfo')
-          addTabBar(studentFunc[0])
+        case '0':
+          addTabBar(student[0])
+          setTabBarId(student[0].value)
           return
-        case 'deviceManager':
+        case '1':
           navigator('/student/deviceManager')
-          addTabBar(studentFunc[1])
+          addTabBar(student[1])
+          setTabBarId(student[1].value)
           return
-        case 'groupManage':
+        case '2':
           navigator('/student/groupManage')
-          addTabBar(studentFunc[2])
+          addTabBar(student[2])
+          setTabBarId(student[2].value)
           return
-        case 'weekReport':
+        case '3':
           navigator('/student/weekReport')
-          addTabBar(studentFunc[3])
+          addTabBar(student[3])
+          setTabBarId(student[3].value)
           return
-        case 'reimbursement':
+        case '4':
           navigator('/student/reimbursement')
-          addTabBar(studentFunc[4])
+          addTabBar(student[4])
+          setTabBarId(student[4].value)
           return
-        case 'leaveRequest':
+        case '5':
           navigator('/student/leaveRequest')
-          addTabBar(studentFunc[5])
+          addTabBar(student[5])
+          setTabBarId(student[5].value)
           return null
       }
     }
   }
 
   useEffect(() => {
-    addTabBar(studentFunc[0])
+    setArray([
+      { label: '个人信息', value: 0, name: 'personInfo' },
+      { label: '设备管理', value: 1, name: 'deviceManager' },
+      { label: '组会管理', value: 2, name: 'groupManage' },
+      { label: '周报管理', value: 3, name: 'weekReport' },
+      { label: '经费报销', value: 4, name: 'reimbursement' },
+      { label: '请假管理', value: 5, name: 'leaveRequest' }
+    ])
+    addTabBar(studentFunc![0])
   }, [])
 
-  const items: MenuItem[] = studentFunc
+  const items: MenuItem[] = studentFunc!
     .map(item => getItem(item.label, item.value))
 
   const showModal = () => { setIsModalOpen(true) }
@@ -126,8 +135,7 @@ export default function StudentHome () {
           <Menu
             onClick={onClick}
             style={{ width: 230 }}
-            defaultOpenKeys={['sub1']}
-            selectedKeys={[current]}
+            selectedKeys={[tabBarId.toString()]}
             mode="vertical"
             theme="light"
             items={items}
