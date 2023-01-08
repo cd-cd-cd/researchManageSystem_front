@@ -17,7 +17,7 @@ export default function TabBar () {
             key={item.value}
             onMouseEnter={() => { setMouseEnter(item.value) }}
             onMouseLeave={() => { setMouseEnter(undefined) }}
-            onClick={() => { setTabBarId(item.value) }}
+            onClick={(e) => { e.stopPropagation(); setTabBarId(item.value) }}
             className={tabBarId === item.value ? style.button_click : style.button}
           >
             <span>{item.label}</span>

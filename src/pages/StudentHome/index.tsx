@@ -7,7 +7,7 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import TabBar from '../../components/TabBar'
 import useTabBar from '../../hooks/useTabBar'
 import { context } from '../../hooks/store'
-import { ITabBarStudent } from '../../libs/model'
+import { studentFunc } from '../../libs/data'
 
 type MenuItem = Required<MenuProps>['items'][number]
 
@@ -32,7 +32,6 @@ export default function StudentHome () {
   const navigator = useNavigate()
   const { addTabBar } = useTabBar()
   const { setTabBarId, tabBarId } = useContext(context)
-  const [studentFunc, setArray] = useState<ITabBarStudent[]>()
   // 退出modal提醒
   const [isModalOpen, setIsModalOpen] = useState(false)
 
@@ -52,57 +51,29 @@ export default function StudentHome () {
 
   const role = location.pathname.split('/')[1]
 
+  // 根据tabBarId增加
+
   const onClick: MenuProps['onClick'] = e => {
-    setTabBarId(Number(e.key))
-    const student = studentFunc as ITabBarStudent[]
+    // setTabBarId(Number(e.key))
+    const index = Number(e.key)
     if (role === 'student') {
-      switch (e.key) {
-        case '0':
-          addTabBar(student[0])
-          setTabBarId(student[0].value)
-          return
-        case '1':
-          navigator('/student/deviceManager')
-          addTabBar(student[1])
-          setTabBarId(student[1].value)
-          return
-        case '2':
-          navigator('/student/groupManage')
-          addTabBar(student[2])
-          setTabBarId(student[2].value)
-          return
-        case '3':
-          navigator('/student/weekReport')
-          addTabBar(student[3])
-          setTabBarId(student[3].value)
-          return
-        case '4':
-          navigator('/student/reimbursement')
-          addTabBar(student[4])
-          setTabBarId(student[4].value)
-          return
-        case '5':
-          navigator('/student/leaveRequest')
-          addTabBar(student[5])
-          setTabBarId(student[5].value)
-          return null
-      }
+      addTabBar(studentFunc[index])
+      setTabBarId(studentFunc[index].value)
     }
   }
 
   useEffect(() => {
-    setArray([
-      { label: '个人信息', value: 0, name: 'personInfo' },
-      { label: '设备管理', value: 1, name: 'deviceManager' },
-      { label: '组会管理', value: 2, name: 'groupManage' },
-      { label: '周报管理', value: 3, name: 'weekReport' },
-      { label: '经费报销', value: 4, name: 'reimbursement' },
-      { label: '请假管理', value: 5, name: 'leaveRequest' }
-    ])
-    addTabBar(studentFunc![0])
+    addTabBar(studentFunc[0])
   }, [])
 
-  const items: MenuItem[] = studentFunc!
+  useEffect(() => {
+    const path = studentFunc[tabBarId]
+    if (path !== undefined) {
+      navigator(`/student/${path.name}`)
+    }
+  }, [tabBarId])
+
+  const items: MenuItem[] = studentFunc
     .map(item => getItem(item.label, item.value))
 
   const showModal = () => { setIsModalOpen(true) }
