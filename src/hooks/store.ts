@@ -1,10 +1,10 @@
 import { createContext } from 'react'
-import { ITabBarStudent } from '../libs/model'
+import { ITabBarCommon } from '../libs/model'
 
 interface StoreContext {
 // tabBar
-  tabBarList: ITabBarStudent[]
-  setTabBarList: (tabBar: ITabBarStudent[]) => void
+  tabBarList: ITabBarCommon[]
+  setTabBarList: (tabBar: ITabBarCommon[]) => void
 
   // tabBarId
   tabBarId: number

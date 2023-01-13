@@ -7,7 +7,9 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import TabBar from '../../components/TabBar'
 import useTabBar from '../../hooks/useTabBar'
 import { context } from '../../hooks/store'
-import { studentFunc } from '../../libs/data'
+import { managerFunc, studentFunc, teacherFunc } from '../../libs/data'
+import { IRole, ITabBarCommon } from '../../libs/model'
+import useClear from '../../hooks/useClear'
 
 type MenuItem = Required<MenuProps>['items'][number]
 
@@ -27,53 +29,68 @@ function getItem (
   } as MenuItem
 }
 
-export default function StudentHome () {
+export default function Home () {
   const location = useLocation()
   const navigator = useNavigate()
+  const [func, setFunc] = useState<ITabBarCommon[]>([])
+  const [role, setRole] = useState<IRole>()
   const { addTabBar } = useTabBar()
+  const { clearTabBar } = useClear()
   const { setTabBarId, tabBarId } = useContext(context)
   // 退出modal提醒
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   // 根据路由显示header
   const headerText = () => {
-    switch (location.pathname) {
-      case 'student':
+    switch (role) {
+      case 0:
         return '-学生端'
-      case 'teacher':
+      case 1:
         return '-老师端'
-      case 'manager':
+      case 2:
         return '-管理员端'
       default:
         return null
     }
   }
 
-  const role = location.pathname.split('/')[1]
-
   // 根据tabBarId增加
-
   const onClick: MenuProps['onClick'] = e => {
-    // setTabBarId(Number(e.key))
     const index = Number(e.key)
-    if (role === 'student') {
-      addTabBar(studentFunc[index])
-      setTabBarId(studentFunc[index].value)
-    }
+    addTabBar(func[index])
+    setTabBarId(func[index].value)
   }
 
   useEffect(() => {
-    addTabBar(studentFunc[0])
+    // 得到角色
+    const roleTemp = location.pathname.split('/')[1]
+    if (roleTemp === 'student') {
+      setRole(0)
+      setFunc(studentFunc)
+      addTabBar(studentFunc[0])
+    } else if (roleTemp === 'teacher') {
+      setRole(1)
+      setFunc(teacherFunc)
+      addTabBar(teacherFunc[0])
+    } else if (roleTemp === 'manager') {
+      setRole(2)
+      setFunc(managerFunc)
+      addTabBar(managerFunc[0])
+    }
   }, [])
 
   useEffect(() => {
-    const path = studentFunc[tabBarId]
-    if (path !== undefined) {
+    const path = func[tabBarId]
+    if (role === 0) {
       navigator(`/student/${path.name}`)
+    } else if (role === 1) {
+      navigator(`/teacher/${path.name}`)
+    } else if (role === 2) {
+      navigator(`/manager/${path.name}`)
     }
   }, [tabBarId])
 
-  const items: MenuItem[] = studentFunc
+  const items: MenuItem[] = func
     .map(item => getItem(item.label, item.value))
 
   const showModal = () => { setIsModalOpen(true) }
@@ -82,6 +99,8 @@ export default function StudentHome () {
 
   const handleOk = () => {
     setIsModalOpen(false)
+    // 退出清除tabBarList
+    clearTabBar()
     navigator('/login')
   }
 

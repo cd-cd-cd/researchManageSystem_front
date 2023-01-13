@@ -1,11 +1,11 @@
 import { useCallback, useContext } from 'react'
-import { ITabBarStudent } from '../libs/model'
+import { ITabBarCommon } from '../libs/model'
 import { context } from './store'
 
 export default function useTabBar () {
   const { tabBarList, setTabBarList, setTabBarId, tabBarId } = useContext(context)
   // 增加tabBar
-  const addTabBar = useCallback((tabBar: ITabBarStudent) => {
+  const addTabBar = useCallback((tabBar: ITabBarCommon) => {
     const index = tabBarList.findIndex(item => item.value === tabBar.value)
     if (index === -1) {
       setTabBarList([...tabBarList, tabBar])
@@ -17,7 +17,6 @@ export default function useTabBar () {
 
   // 删除tabBar
   const deleteTabBar = (tabBar: number) => {
-    console.log('tabBarId', tabBarId)
     // 删除目标在tabBarList中的位置
     const indexClick = tabBarList.findIndex(item => item.value === tabBar)
     // 已选定目标在tabBarList中的位置

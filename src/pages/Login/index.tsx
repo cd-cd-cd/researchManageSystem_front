@@ -4,11 +4,22 @@ import headerIcon from '../../assets/imgs/science_icon.svg'
 import { Form, Radio } from 'antd'
 import Input from 'antd/lib/input'
 import Button from 'antd/lib/button'
+import { ILoginValues } from '../../libs/model'
+import { useNavigate } from 'react-router-dom'
 
 export default function Login () {
   const [form] = Form.useForm()
-  const onFinish = (values: any) => {
+  const navigator = useNavigate()
+  const onFinish = (values: ILoginValues) => {
     console.log('Success:', values)
+    const { role } = values
+    if (role === 0) {
+      navigator('/student')
+    } else if (role === 1) {
+      navigator('/teacher')
+    } else if (role === 2) {
+      navigator('/manager')
+    }
   }
 
   const onFinishFailed = (errorInfo: any) => {
