@@ -64,29 +64,41 @@ export default function Home () {
   useEffect(() => {
     // 得到角色
     const roleTemp = location.pathname.split('/')[1]
-    if (roleTemp === 'student') {
-      setRole(0)
-      setFunc(studentFunc)
-      addTabBar(studentFunc[0])
-    } else if (roleTemp === 'teacher') {
-      setRole(1)
-      setFunc(teacherFunc)
-      addTabBar(teacherFunc[0])
-    } else if (roleTemp === 'manager') {
-      setRole(2)
-      setFunc(managerFunc)
-      addTabBar(managerFunc[0])
+    switch (roleTemp) {
+      case 'student':
+        setRole(0)
+        setFunc(studentFunc)
+        addTabBar(studentFunc[0])
+        break
+      case 'teacher':
+        setRole(1)
+        setFunc(teacherFunc)
+        addTabBar(teacherFunc[0])
+        break
+      case 'manager':
+        setRole(2)
+        setFunc(managerFunc)
+        addTabBar(managerFunc[0])
+        break
+      default:
+        console.log('error')
     }
   }, [])
 
   useEffect(() => {
     const path = func[tabBarId]
-    if (role === 0) {
-      navigator(`/student/${path.name}`)
-    } else if (role === 1) {
-      navigator(`/teacher/${path.name}`)
-    } else if (role === 2) {
-      navigator(`/manager/${path.name}`)
+    switch (role) {
+      case 0:
+        navigator(`/student/${path.name}`)
+        break
+      case 1:
+        navigator(`/teacher/${path.name}`)
+        break
+      case 2:
+        navigator(`/manager/${path.name}`)
+        break
+      default:
+        console.log('error')
     }
   }, [tabBarId])
 

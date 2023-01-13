@@ -56,10 +56,6 @@ function App () {
             <Route path='userControl' element={<UserControl />}></Route>
             <Route path='userInfo' element={<UserInfo />}></Route>
           </Route>
-          {/* <Route path='/student/' element={<Navigate to='/student/personInfo' />}></Route>
-          <Route path='/student/*' element={<Navigate to='/student/personInfo' />}></Route> */}
-          {/* <Route path='/teacher/' element={<Navigate to='/teacher/personInfo' />}></Route>
-          <Route path='/teacher/*' element={<Navigate to='/teacher/personInfo' />}></Route> */}
           <Route path='*' element={<Navigate to='/login' />}></Route>
         </Routes>
       </BrowserRouter>
