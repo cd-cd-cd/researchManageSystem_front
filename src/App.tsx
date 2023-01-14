@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
+import './App.css'
 import { Navigate } from 'react-router'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import './App.css'
 import { StoreProvider } from './hooks/store'
 import { ITabBarCommon } from './libs/model'
 import Login from './pages/Login'
@@ -20,6 +20,7 @@ import TLeaveRequest from './pages/TeacherMain/TLeaveRequest'
 import MInfo from './pages/ManagerMain/MInfo'
 import UserControl from './pages/ManagerMain/UserControl'
 import UserInfo from './pages/ManagerMain/UserInfo'
+import TeammateInfo from './pages/TeacherMain/TeammateInfo'
 
 function App () {
   const [tabBarList, setTabBarList] = useState<ITabBarCommon[]>([])
@@ -43,6 +44,7 @@ function App () {
             <Route path='leaveRequest' element={<LeaveRequest />}></Route>
           </Route>
           <Route path='teacher' element={<Home />}>
+            <Route path='teammateInfo' element={<TeammateInfo/>}></Route>
             <Route path='personInfo' element={<PersonInfo />}></Route>
             <Route path='teamManager' element={<TeamManager />}></Route>
             <Route path='TDeviceManager' element={<TDeviceManager />}></Route>
