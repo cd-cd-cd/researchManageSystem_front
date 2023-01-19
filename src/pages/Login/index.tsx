@@ -1,24 +1,28 @@
 import React from 'react'
 import style from './index.module.scss'
 import headerIcon from '../../assets/imgs/science_icon.svg'
-import { Form, Radio } from 'antd'
+import { Form, message, Radio } from 'antd'
 import Input from 'antd/lib/input'
 import Button from 'antd/lib/button'
 import { ILoginValues } from '../../libs/model'
 import { useNavigate } from 'react-router-dom'
+import { login } from '../../api/auth'
 
 export default function Login () {
   const [form] = Form.useForm()
   const navigator = useNavigate()
-  const onFinish = (values: ILoginValues) => {
-    console.log('Success:', values)
-    const { role } = values
-    if (role === 0) {
-      navigator('/student')
-    } else if (role === 1) {
-      navigator('/teacher')
-    } else if (role === 2) {
-      navigator('/manager')
+  const onFinish = async (values: ILoginValues) => {
+    const res = await login(values.role, values.username, values.password)
+    if (res) {
+      message.success('登录成功')
+      const { role } = values
+      if (role === 0) {
+        navigator('/student')
+      } else if (role === 1) {
+        navigator('/teacher')
+      } else if (role === 2) {
+        navigator('/manager')
+      }
     }
   }
 
