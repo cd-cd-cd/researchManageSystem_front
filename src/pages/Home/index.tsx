@@ -109,10 +109,13 @@ export default function Home () {
 
   const handleCancel = () => { setIsModalOpen(false) }
 
+  // 退出
   const handleOk = () => {
     setIsModalOpen(false)
     // 退出清除tabBarList
     clearTabBar()
+    // 清除token
+    localStorage.clear()
     navigator('/login')
   }
 

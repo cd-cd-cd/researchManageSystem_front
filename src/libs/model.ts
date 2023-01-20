@@ -10,3 +10,14 @@ export interface ILoginValues {
   username: string
   password: string
 }
+
+export interface IInfo {
+  avatar: string,
+  createTime: string,
+  email: string,
+  id: string,
+  name: string,
+  phoneNumber: string,
+  resume: string,
+  username: string
+}

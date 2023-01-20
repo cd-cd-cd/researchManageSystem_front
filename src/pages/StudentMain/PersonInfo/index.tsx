@@ -1,7 +1,10 @@
-import { Button, Form, Input, Modal } from 'antd'
+import { Button, Form, Input, message, Modal } from 'antd'
 import { useForm } from 'antd/es/form/Form'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import { personInfo } from '../../../api/auth'
+import { updateEmail, updatePhone, updateResume } from '../../../api/teacher'
 import useVarify from '../../../hooks/useVarify'
+import { IInfo, IRole } from '../../../libs/model'
 import style from './index.module.scss'
 
 interface IItem {
@@ -18,10 +21,9 @@ export default function PersonInfo () {
   const [item, setItem] = useState<IItem>()
   const [warn, setWarn] = useState<string>()
   const { checkPhone, checkEmail, checkResume } = useVarify()
-  const phoneNumber = '13419592292'
-  const email = '1262877491@qq.com'
-  const resume = '你好你好你好你好我是一坨大便你好你好你好你好你好你好我是一坨大便你好你好好我是一坨大便你好你好你好你好我是一坨大便你好你好你好你好我是一坨大便你好你好你好你好我是一坨大便'
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [info, setInfo] = useState<IInfo>()
+  const [role, setRole] = useState<IRole>()
   const [form] = useForm()
 
   const showModal = () => {
@@ -42,22 +44,53 @@ export default function PersonInfo () {
     setWarn('')
   }
 
-  const checkBasicInfo = () => {
+  const checkBasicInfo = async () => {
+    const id = localStorage.getItem('id')
     if (item?.label === 'phoneNumber') {
       if (checkPhone(item.value)) {
-        console.log(item.value, 'success')
+        if (role === 1) {
+          if (id) {
+            const res = await updatePhone(id, item.value)
+            if (res?.status === 200) {
+              getInfo()
+              resetItem()
+              message.success(res.data)
+            }
+          }
+        }
+        setWarn('')
       } else {
         setWarn('联系电话格式有误')
       }
     } else if (item?.label === 'email') {
       if (checkEmail(item.value)) {
-        console.log(item.value, 'success')
+        if (role === 1) {
+          if (id) {
+            const res = await updateEmail(id, item.value)
+            if (res?.status === 200) {
+              getInfo()
+              resetItem()
+              message.success(res.data)
+            }
+          }
+        }
+        setWarn('')
       } else {
         setWarn('邮箱格式有误')
       }
     } else if (item?.label === 'resume') {
       if (checkResume(item.value)) {
-        console.log(item.value, 'success')
+        if (role === 1) {
+          if (id) {
+            const res = await updateResume(id, item.value)
+            if (res?.status === 200) {
+              getInfo()
+              resetItem()
+              message.success(res.data)
+            }
+          }
+        }
+        setWarn('')
       } else {
         setWarn('个人简介不得超过200字')
       }
@@ -72,6 +105,27 @@ export default function PersonInfo () {
     console.log('Failed:', errorInfo)
   }
 
+  const getInfo = async () => {
+    const roleTemp = location.pathname.split('/')[1]
+    if (roleTemp === 'student') {
+      setRole(0)
+    } else if (roleTemp === 'teacher') {
+      setRole(1)
+    } else if (roleTemp === 'manager') {
+      setRole(2)
+    }
+    const id = localStorage.getItem('id')
+    if (id && role) {
+      const res = await personInfo(id, role as IRole)
+      if (res?.status === 200) {
+        setInfo(res.data)
+      }
+    }
+  }
+  useEffect(() => {
+    getInfo()
+  }, [])
+
   return (
     <div className={style.back}>
       <div className={style.info_box}>
@@ -80,14 +134,14 @@ export default function PersonInfo () {
           <div className={style.avatar}>
           </div>
           <div className={style.info}>
-            <span>姓名:</span><span>陈典</span>
-            <span>学号：</span><span>0121903490226</span>
+            <span>姓名:</span><span>{info?.name}</span>
+            <span>学号：</span><span>{info?.username}</span>
             <span>联系电话：</span>
             <div
               className={style.changeInfo}
             >{
                 item?.label !== 'phoneNumber'
-                  ? phoneNumber
+                  ? (info?.phoneNumber ? info.phoneNumber : <div className={style.nullText}>还未设置手机号</div>)
                   : <div>
                     <Input
                       className={style.input}
@@ -105,7 +159,7 @@ export default function PersonInfo () {
                   </div>
                   : <a
                     className={style.modify}
-                    onClick={() => { setItem({ label: 'phoneNumber', value: phoneNumber }) }}
+                    onClick={() => { setItem({ label: 'phoneNumber', value: info?.phoneNumber as string }) }}
                   >修改</a>
               }
             </div>
@@ -114,7 +168,7 @@ export default function PersonInfo () {
               className={style.changeInfo}
             >{
                 item?.label !== 'email'
-                  ? email
+                  ? (info?.email ? info.email : <div className={style.nullText}>还未设置邮箱</div>)
                   : <div>
                     <Input
                       className={style.input}
@@ -132,7 +186,7 @@ export default function PersonInfo () {
                   </div>
                   : <a
                     className={style.modify}
-                    onClick={() => { setItem({ label: 'email', value: email }) }}
+                    onClick={() => { setItem({ label: 'email', value: info?.email as string }) }}
                   >修改</a>
               }
             </div>
@@ -141,7 +195,7 @@ export default function PersonInfo () {
               className={style.resume_text}
             >{
                 item?.label !== 'resume'
-                  ? resume
+                  ? (info?.resume ? info?.resume : <div className={style.nullText}>还未设置简介</div>)
                   : <div className={style.resume_text}>
                     <Input.TextArea
                       autoSize={{ minRows: 2, maxRows: 6 }}
@@ -157,7 +211,7 @@ export default function PersonInfo () {
                     <Button type='default' size='small' onClick={() => resetItem()}>取消</Button>
                     <Button type='primary' size='small' className={style.confirm} onClick={() => checkBasicInfo()}>确认</Button>
                   </div>
-                  : <a className={style.modify_resume} onClick={() => setItem({ label: 'resume', value: resume })}>修改</a>
+                  : <a className={style.modify_resume} onClick={() => setItem({ label: 'resume', value: info?.resume as string })}>修改</a>
               }
             </div>
           </div>

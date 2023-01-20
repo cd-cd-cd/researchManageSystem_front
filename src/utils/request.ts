@@ -12,13 +12,13 @@ interface Header extends HeadersDefaults {
 // (axios.defaults.headers as Header)['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8'
 (axios.defaults.headers as Header)['Content-Type'] = 'application/json'
 
-// 返回数据格式
-interface Response<T> {
-  code: number
-  data: T
-  errorMsg: T
-  success: boolean
-}
+// // 返回数据格式
+// interface <T> {
+//   code: number
+//   data: T
+//   errorMsg: T
+//   success: boolean
+// }
 
 const service = axios.create({
   baseURL: BASE_URL,
@@ -65,10 +65,10 @@ function handleErrorCode (status: number, stat: string, msg: string) {
 // 请求函数
 async function request<T> (option: AxiosRequestConfig) {
   try {
-    const res = await service.request<Response<T>>({
+    const res = await service.request<T>({
       ...option
     })
-    return res.data
+    return res
   } catch (error) {
     return undefined
   }
