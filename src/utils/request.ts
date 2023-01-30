@@ -16,7 +16,7 @@ interface Header extends HeadersDefaults {
 interface Response<T> {
   status: number
   data: T
-  msg: T
+  msg: string
   success: boolean
 }
 

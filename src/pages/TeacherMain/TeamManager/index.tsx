@@ -5,6 +5,7 @@ import addIcon from '../../../assets/imgs/add.svg'
 import { useForm } from 'antd/es/form/Form'
 import { createStu, getStuList } from '../../../api/teacher'
 import { IStu } from '../../../libs/model'
+import { useNavigate } from 'react-router-dom'
 
 // interface IData {
 //   name: string
@@ -54,6 +55,7 @@ export default function TeamManager () {
     setCurrent(page)
   }
 
+  const navigator = useNavigate()
   useEffect(() => {
     getList()
   }, [current])
@@ -68,7 +70,7 @@ export default function TeamManager () {
           </div>
           {
             lists.map((item) =>
-              <div key={item.id} className={style.personItem} onClick={() => window.open(`/teacher/teammateInfo/${item.id}`)}>
+              <div key={item.id} className={style.personItem} onClick={() => navigator(`/teacher/teammateInfo/${item.id}`)}>
                 <div className={style.avatar}></div>
                 <span className={style.name}>{item.name}</span>
                 <span className={style.id}>{item.username}</span>

@@ -1,4 +1,4 @@
-import { IStuList } from '../libs/model'
+import { IStu, IStuList } from '../libs/model'
 import request from '../utils/request'
 
 export const updatePhone = async (id: string, phoneNumber: string) => {
@@ -65,6 +65,17 @@ export const getStuList = async (pageNum: number, pageSize: number) => {
     params: {
       pageNum,
       pageSize
+    }
+  })
+}
+
+// 得到学生信息
+export const getStu = async (id: string) => {
+  return await request<IStu>({
+    url: '/teacher/getStuDetail',
+    method: 'GET',
+    params: {
+      id
     }
   })
 }
