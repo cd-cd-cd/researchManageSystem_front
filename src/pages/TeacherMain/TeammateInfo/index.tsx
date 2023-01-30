@@ -3,8 +3,9 @@ import style from './index.module.scss'
 import leftIcon from '../../../assets/imgs/arrow-double-left.svg'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Button, message, Modal } from 'antd'
-import { getStu } from '../../../api/teacher'
+import { deleteStu, getStu } from '../../../api/teacher'
 import { IStu } from '../../../libs/model'
+import dayjs from 'dayjs'
 
 export default function TeammateInfo () {
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -12,7 +13,15 @@ export default function TeammateInfo () {
   const [user, setUser] = useState<IStu>()
   const navigator = useNavigate()
 
+  // 删除学生
+  const deleteStudent = async () => {
+    if (user?.id) {
+      const res = await deleteStu(user?.id)
+      message.success(res?.msg)
+    }
+  }
   const handleOk = () => {
+    deleteStudent()
     setIsModalOpen(false)
   }
 
@@ -22,7 +31,6 @@ export default function TeammateInfo () {
     if (id) {
       const res = await getStu(id)
       if (res?.status === 10011) {
-        console.log(res)
         setUser(res.data)
       } else if (res?.status === 10012) {
         message.info(res.msg)
@@ -42,6 +50,7 @@ export default function TeammateInfo () {
         </div>
         <div className={style.person_bpx}>
           <div className={style.avatar}>
+            <img src={user?.avatar ? user.avatar : ''} className={style.avatar_style}></img>
           </div>
           <div className={style.info}>
             <span>姓名:</span><span>{user?.name}</span>
@@ -65,7 +74,8 @@ export default function TeammateInfo () {
                 : <div className={style.null_text}>暂时无个人信息</div>
             }
           </div>
-          </div>
+        </div>
+        <div className={style.time_text}>创建时间：{dayjs(user?.createdTime).format('YYYY-MM-DD HH:mm:ss')}</div>
         </div>
       <Modal title="确定删除成员"
         open={isModalOpen}

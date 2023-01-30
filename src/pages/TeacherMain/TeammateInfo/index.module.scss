@@ -19,7 +19,11 @@
     .avatar {
       width: 150px;
       height: 199px;
-      background-color: bisque;
+      overflow: hidden;
+
+      .avatar_style{
+        width: 150px;
+      }
     }
 
     .info {
@@ -51,5 +55,9 @@
 }
 
 .null_text{
+  color: gray;
+}
+
+.time_text{
   color: gray;
 }

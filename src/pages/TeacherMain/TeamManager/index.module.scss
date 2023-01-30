@@ -36,7 +36,11 @@
     height: 120px;
     margin: 0 auto;
     margin-top: 10px;
-    background-color: aquamarine;
+    overflow: hidden;
+
+    .avatar_img {
+      width: 100%;
+    }
   }
 
   .name {
@@ -67,13 +71,13 @@
   }
 }
 
-.remind_text{
+.remind_text {
   margin-top: 10px;
   color: gray;
   padding-left: 10px;
 }
 
-.btn_box{
+.btn_box {
   padding: 0 100px;
   display: flex;
   flex-direction: row;

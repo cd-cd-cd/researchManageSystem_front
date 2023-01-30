@@ -20,6 +20,7 @@ export default function TeamManager () {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [current, setCurrent] = useState(1)
   const [total, setTotal] = useState(10)
+  const [pageSize, setPageSize] = useState(9)
   const [lists, setLists] = useState<IStu[]>([])
   const [form] = useForm()
 
@@ -27,6 +28,7 @@ export default function TeamManager () {
     const res = await createStu(username, name)
     if (res?.status === 10004) {
       message.success(res.msg)
+      getList()
       setIsModalOpen(false)
       form.resetFields()
     } else if (res?.status === 10005) {
@@ -44,7 +46,7 @@ export default function TeamManager () {
   }
 
   const getList = async () => {
-    const res = await getStuList(current, 10)
+    const res = await getStuList(current, pageSize)
     if (res?.status === 10100) {
       setTotal(res.data.total)
       setLists(res.data.list)
@@ -52,6 +54,11 @@ export default function TeamManager () {
   }
 
   const onChange: PaginationProps['onChange'] = page => {
+    if (page === 1) {
+      setPageSize(9)
+    } else {
+      setPageSize(10)
+    }
     setCurrent(page)
   }
 
@@ -71,7 +78,9 @@ export default function TeamManager () {
           {
             lists.map((item) =>
               <div key={item.id} className={style.personItem} onClick={() => navigator(`/teacher/teammateInfo/${item.id}`)}>
-                <div className={style.avatar}></div>
+                <div className={style.avatar}>
+                  <img src={item.avatar ? item.avatar : ''} className={style.avatar_img}></img>
+                </div>
                 <span className={style.name}>{item.name}</span>
                 <span className={style.id}>{item.username}</span>
               </div>
@@ -85,6 +94,7 @@ export default function TeamManager () {
       <Modal
         title="添加成员"
         open={isModalOpen}
+        onCancel={() => { setIsModalOpen(false); form.resetFields() }}
         footer={null}
       >
         <Form

@@ -79,3 +79,14 @@ export const getStu = async (id: string) => {
     }
   })
 }
+
+// 老师删除学生
+export const deleteStu = async (id: string) => {
+  return await request<string>({
+    url: '/teacher/deleteStu',
+    method: 'DELETE',
+    data: {
+      id
+    }
+  })
+}
