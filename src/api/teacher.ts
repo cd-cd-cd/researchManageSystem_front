@@ -1,3 +1,4 @@
+import { IStuList } from '../libs/model'
 import request from '../utils/request'
 
 export const updatePhone = async (id: string, phoneNumber: string) => {
@@ -29,6 +30,41 @@ export const updateResume = async (id: string, resume: string) => {
     data: {
       id,
       resume
+    }
+  })
+}
+
+export const updateAvatar = async (id: string, avatar: string) => {
+  return await request<string>({
+    url: '/teacher/updateAvatar',
+    method: 'POST',
+    data: {
+      id,
+      avatar
+    }
+  })
+}
+
+// 老师创建学生
+export const createStu = async (username: string, name: string) => {
+  return await request<string>({
+    url: '/teacher/createStu',
+    method: 'POST',
+    data: {
+      username,
+      name
+    }
+  })
+}
+
+// 得到学生列表
+export const getStuList = async (pageNum: number, pageSize: number) => {
+  return await request<IStuList>({
+    url: '/teacher/stuList',
+    method: 'GET',
+    params: {
+      pageNum,
+      pageSize
     }
   })
 }

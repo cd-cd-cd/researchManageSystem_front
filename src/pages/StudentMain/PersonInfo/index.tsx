@@ -1,11 +1,14 @@
-import { Button, Form, Input, message, Modal } from 'antd'
-import { useForm } from 'antd/es/form/Form'
 import React, { useEffect, useState } from 'react'
-import { personInfo } from '../../../api/auth'
-import { updateEmail, updatePhone, updateResume } from '../../../api/teacher'
-import useVarify from '../../../hooks/useVarify'
-import { IInfo, IRole } from '../../../libs/model'
 import style from './index.module.scss'
+import { Button, Form, Input, message, Modal, Upload, UploadProps } from 'antd'
+import { RcFile, UploadChangeParam, UploadFile } from 'antd/lib/upload'
+import { LoadingOutlined, PlusOutlined } from '@ant-design/icons'
+import { useForm } from 'antd/es/form/Form'
+import { personInfo } from '../../../api/auth'
+import { updateAvatar, updateEmail, updatePhone, updateResume } from '../../../api/teacher'
+import useVarify from '../../../hooks/useVarify'
+import { IInfo } from '../../../libs/model'
+import basicAvatar from '../../../assets/imgs/avatar.svg'
 
 interface IItem {
   label: 'phoneNumber' | 'email' | 'resume' | ''
@@ -23,8 +26,11 @@ export default function PersonInfo () {
   const { checkPhone, checkEmail, checkResume } = useVarify()
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [info, setInfo] = useState<IInfo>()
-  const [role, setRole] = useState<IRole>()
+  const [imageUrl, setImageUrl] = useState<string>()
+  const [loading, setLoading] = useState(false)
   const [form] = useForm()
+  // 控制修改头像
+  const [avatarVisible, setAvatarVisible] = useState(false)
 
   const showModal = () => {
     setIsModalOpen(true)
@@ -46,6 +52,7 @@ export default function PersonInfo () {
 
   const checkBasicInfo = async () => {
     const id = localStorage.getItem('id')
+    const role = +localStorage.getItem('role')!
     if (item?.label === 'phoneNumber') {
       if (checkPhone(item.value)) {
         if (role === 1) {
@@ -105,19 +112,56 @@ export default function PersonInfo () {
     console.log('Failed:', errorInfo)
   }
 
-  const getInfo = async () => {
-    const roleTemp = location.pathname.split('/')[1]
-    if (roleTemp === 'student') {
-      setRole(0)
-    } else if (roleTemp === 'teacher') {
-      setRole(1)
-    } else if (roleTemp === 'manager') {
-      setRole(2)
+  // 修改头像
+  const clickChangeAvatar = async () => {
+    if (!imageUrl) {
+      message.info('请上传图片')
+    } else {
+      const res = await updateAvatar(info?.id as string, imageUrl)
+      console.log(res)
+      if (res) {
+        message.success('头像设置成功')
+        setImageUrl('')
+        getInfo()
+        setAvatarVisible(false)
+      } else {
+        message.info('头像设置失败')
+      }
     }
+  }
+
+  // 检查图片格式和大小
+  const beforeUpload = (file: RcFile) => {
+    const isPNG = file.type === 'image/png' || file.type === 'image/jpeg' || file.type === 'image/jpg' || file.type === 'image/webp'
+    if (!isPNG) {
+      message.error(`${file.name} 图片只能位png、jpeg、jpg或webp格式`)
+    }
+    const isLt2M = file.size / 1024 / 1024 < 2
+    if (!isLt2M) {
+      message.error('图片要小于2MB!')
+    }
+    return isPNG && isLt2M
+  }
+
+  const handleChange: UploadProps['onChange'] = (info: UploadChangeParam<UploadFile>) => {
+    if (info.file.status === 'uploading') {
+      setLoading(true)
+    }
+  }
+
+  const uploadButton = (
+    <div>
+      {loading ? <LoadingOutlined /> : <PlusOutlined />}
+      <div style={{ marginTop: 8 }}>Upload</div>
+    </div>
+  )
+
+  const getInfo = async () => {
     const id = localStorage.getItem('id')
+    const role = localStorage.getItem('role')
     if (id && role) {
-      const res = await personInfo(id, role as IRole)
-      if (res?.status === 200) {
+      const res = await personInfo()
+      if (res?.status === 10010) {
         setInfo(res.data)
       }
     }
@@ -131,7 +175,8 @@ export default function PersonInfo () {
       <div className={style.info_box}>
         <span className={style.title}>个人信息</span>
         <div className={style.person_bpx}>
-          <div className={style.avatar}>
+          <div className={style.avatar} onClick={() => setAvatarVisible(true)}>
+            <img src={info?.avatar ? info.avatar : basicAvatar} className={style.avatarIcon}></img>
           </div>
           <div className={style.info}>
             <span>姓名:</span><span>{info?.name}</span>
@@ -245,7 +290,7 @@ export default function PersonInfo () {
               { pattern: /^(?![0-9]+$)(?![a-zA-Z]+$)[a-zA-Z0-9!@#$%^&*_]{8,16}$/, message: '8-16位，字母、数字或符号组合' }
             ]}
           >
-            <Input type='password'/>
+            <Input type='password' />
           </Form.Item>
           <Form.Item
             label="新密码"
@@ -255,7 +300,7 @@ export default function PersonInfo () {
               { pattern: /^(?![0-9]+$)(?![a-zA-Z]+$)[a-zA-Z0-9!@#$%^&*_]{8,16}$/, message: '8-16位，字母、数字或符号组合' }
             ]}
           >
-            <Input type="password" placeholder='8-16位，字母、数字或符号组合'/>
+            <Input type="password" placeholder='8-16位，字母、数字或符号组合' />
           </Form.Item>
           <Form.Item
             label="确认密码"
@@ -265,9 +310,47 @@ export default function PersonInfo () {
               { pattern: /^(?![0-9]+$)(?![a-zA-Z]+$)[a-zA-Z0-9!@#$%^&*_]{8,16}$/, message: '8-16位，字母、数字或符号组合' }
             ]}
           >
-            <Input type='password'/>
+            <Input type='password' />
           </Form.Item>
         </Form>
+      </Modal>
+      <Modal
+        title="上传新头像"
+        open={avatarVisible}
+        onOk={clickChangeAvatar}
+        cancelText='取消'
+        okText='确定'
+        onCancel={() => { setAvatarVisible(false); setImageUrl('') }}
+        destroyOnClose
+      ><div className={style.bigBox}>
+          <div className={style.init_box}>
+            <img src={info?.avatar ? info.avatar : basicAvatar} className={style.init_img}></img>
+          </div>
+          <div className={style.upload_box}>
+            <Upload
+              name="avatar"
+              listType="picture-card"
+              className="avatar-uploader"
+              showUploadList={false}
+              onChange={handleChange}
+              customRequest={(option) => {
+                const before = beforeUpload(option.file as RcFile)
+                if (before) {
+                  const reader = new FileReader()
+                  reader.readAsDataURL(option.file as RcFile)
+                  reader.onloadend = function (e) {
+                    setImageUrl(e.target!.result as string)
+                    setLoading(false)
+                  }
+                } else {
+                  setLoading(false)
+                }
+              }}
+            >
+              <div>{imageUrl ? <img src={imageUrl} style={{ width: '100%' }} /> : uploadButton}</div>
+            </Upload>
+          </div>
+        </div>
       </Modal>
     </div>
   )

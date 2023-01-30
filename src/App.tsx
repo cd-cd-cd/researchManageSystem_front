@@ -44,7 +44,7 @@ function App () {
             <Route path='leaveRequest' element={<LeaveRequest />}></Route>
           </Route>
           <Route path='teacher' element={<Home />}>
-            <Route path='teammateInfo' element={<TeammateInfo/>}></Route>
+            <Route path='teammateInfo/:id' element={<TeammateInfo/>}></Route>
             <Route path='personInfo' element={<PersonInfo />}></Route>
             <Route path='teamManager' element={<TeamManager />}></Route>
             <Route path='TDeviceManager' element={<TDeviceManager />}></Route>

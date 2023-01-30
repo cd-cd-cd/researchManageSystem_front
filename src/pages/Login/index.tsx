@@ -13,16 +13,19 @@ export default function Login () {
   const navigator = useNavigate()
   const onFinish = async (values: ILoginValues) => {
     const res = await login(values.role, values.username, values.password)
-    if (res?.data) {
+    if (res?.status === 10001) {
       localStorage.setItem('token', res.data.token)
       localStorage.setItem('id', res.data.id)
       message.success('登录成功')
       const { role } = values
       if (role === 0) {
+        localStorage.setItem('role', '0')
         navigator('/student')
       } else if (role === 1) {
+        localStorage.setItem('role', '1')
         navigator('/teacher')
       } else if (role === 2) {
+        localStorage.setItem('role', '2')
         navigator('/manager')
       }
     }

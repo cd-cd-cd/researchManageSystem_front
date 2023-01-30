@@ -70,4 +70,12 @@
 .remind_text{
   margin-top: 10px;
   color: gray;
+  padding-left: 10px;
+}
+
+.btn_box{
+  padding: 0 100px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
 }

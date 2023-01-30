@@ -16,12 +16,6 @@
     flex-direction: row;
     margin-top: 10px;
 
-    .avatar {
-      width: 150px;
-      height: 199px;
-      background-color: bisque;
-    }
-
     .info {
       flex: 1;
       padding-left: 45px;
@@ -117,4 +111,44 @@
 
 .nullText {
   color: gray;
+}
+
+.avatar {
+  width: 150px;
+  max-height: 199px;
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.3s;
+
+  .avatarIcon {
+    width: 100%;
+  }
+}
+
+.avatar:hover {
+  box-shadow: 0 0 10px 0 rgb(199, 224, 246);
+}
+
+.bigBox{
+  display: flex;
+  flex-direction: row;
+  padding: 0 40px;
+  justify-content: space-around;
+
+  .init_box{
+    width: 120px;
+    max-height: 170px;
+
+    .init_img{
+      width: 100%;
+    }
+  }
+
+  .upload_box{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+  }
 }

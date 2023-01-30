@@ -5,6 +5,8 @@ interface ILoginRes {
   token: string
   id: string
 }
+
+// 登录
 export const login = async (role: IRole, username: string, password: string) => {
   return await request<ILoginRes>({
     url: '/user/login',
@@ -17,13 +19,10 @@ export const login = async (role: IRole, username: string, password: string) => 
   })
 }
 
-export const personInfo = async (id: string, role: IRole) => {
+// 获取个人信息
+export const personInfo = async () => {
   return await request<IInfo>({
     url: '/user',
-    method: 'GET',
-    params: {
-      id,
-      role
-    }
+    method: 'GET'
   })
 }
