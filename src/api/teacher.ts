@@ -1,45 +1,41 @@
 import { IStu, IStuList } from '../libs/model'
 import request from '../utils/request'
 
-export const updatePhone = async (id: string, phoneNumber: string) => {
+export const updatePhone = async (phoneNumber: string) => {
   return await request<string>({
     url: '/teacher/updatePhone',
     method: 'POST',
     data: {
-      id,
       phoneNumber
     }
   })
 }
 
-export const updateEmail = async (id: string, email: string) => {
+export const updateEmail = async (email: string) => {
   return await request<string>({
     url: '/teacher/updateEmail',
     method: 'POST',
     data: {
-      id,
       email
     }
   })
 }
 
-export const updateResume = async (id: string, resume: string) => {
+export const updateResume = async (resume: string) => {
   return await request<string>({
     url: '/teacher/updateResume',
     method: 'POST',
     data: {
-      id,
       resume
     }
   })
 }
 
-export const updateAvatar = async (id: string, avatar: string) => {
+export const updateAvatar = async (avatar: string) => {
   return await request<string>({
     url: '/teacher/updateAvatar',
     method: 'POST',
     data: {
-      id,
       avatar
     }
   })
@@ -87,6 +83,18 @@ export const deleteStu = async (id: string) => {
     method: 'DELETE',
     data: {
       id
+    }
+  })
+}
+
+// 老师修改密码
+export const changePassword = async (oldPassword: string, newPassword: string) => {
+  return await request<string>({
+    url: '/teacher/passwordChange',
+    method: 'PUT',
+    data: {
+      oldPassword,
+      newPassword
     }
   })
 }

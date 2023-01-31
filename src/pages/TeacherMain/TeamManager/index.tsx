@@ -7,15 +7,6 @@ import { createStu, getStuList } from '../../../api/teacher'
 import { IStu } from '../../../libs/model'
 import { useNavigate } from 'react-router-dom'
 
-// interface IData {
-//   name: string
-//   id: number
-//   userId: string
-//   email: string
-//   tel: number
-//   resume: string
-// }
-
 export default function TeamManager () {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [current, setCurrent] = useState(1)
@@ -94,7 +85,7 @@ export default function TeamManager () {
       <Modal
         title="添加成员"
         open={isModalOpen}
-        onCancel={() => { setIsModalOpen(false); form.resetFields() }}
+        onCancel={() => handleCancel()}
         footer={null}
       >
         <Form

@@ -5,7 +5,7 @@ import { RcFile, UploadChangeParam, UploadFile } from 'antd/lib/upload'
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons'
 import { useForm } from 'antd/es/form/Form'
 import { personInfo } from '../../../api/auth'
-import { updateAvatar, updateEmail, updatePhone, updateResume } from '../../../api/teacher'
+import { changePassword, updateAvatar, updateEmail, updatePhone, updateResume } from '../../../api/teacher'
 import useVarify from '../../../hooks/useVarify'
 import { IInfo } from '../../../libs/model'
 import basicAvatar from '../../../assets/imgs/avatar.svg'
@@ -36,33 +36,23 @@ export default function PersonInfo () {
     setIsModalOpen(true)
   }
 
-  const handleOk = () => {
-    setIsModalOpen(false)
-  }
-
-  const handleCancel = () => {
-    form.resetFields()
-    setIsModalOpen(false)
-  }
-
   const resetItem = () => {
     setItem({ label: '', value: '' })
     setWarn('')
   }
 
   const checkBasicInfo = async () => {
-    const id = localStorage.getItem('id')
     const role = +localStorage.getItem('role')!
     if (item?.label === 'phoneNumber') {
       if (checkPhone(item.value)) {
         if (role === 1) {
-          if (id) {
-            const res = await updatePhone(id, item.value)
-            if (res?.status === 200) {
-              getInfo()
-              resetItem()
-              message.success(res.data)
-            }
+          const res = await updatePhone(item.value)
+          if (res?.status === 10102) {
+            getInfo()
+            resetItem()
+            message.success(res.msg)
+          } else if (res?.status === 10103) {
+            message.info(res.msg)
           }
         }
         setWarn('')
@@ -72,13 +62,13 @@ export default function PersonInfo () {
     } else if (item?.label === 'email') {
       if (checkEmail(item.value)) {
         if (role === 1) {
-          if (id) {
-            const res = await updateEmail(id, item.value)
-            if (res?.status === 200) {
-              getInfo()
-              resetItem()
-              message.success(res.data)
-            }
+          const res = await updateEmail(item.value)
+          if (res?.status === 10104) {
+            getInfo()
+            resetItem()
+            message.success(res.msg)
+          } else if (res?.status === 10105) {
+            message.info(res.msg)
           }
         }
         setWarn('')
@@ -88,13 +78,13 @@ export default function PersonInfo () {
     } else if (item?.label === 'resume') {
       if (checkResume(item.value)) {
         if (role === 1) {
-          if (id) {
-            const res = await updateResume(id, item.value)
-            if (res?.status === 200) {
-              getInfo()
-              resetItem()
-              message.success(res.data)
-            }
+          const res = await updateResume(item.value)
+          if (res?.status === 10106) {
+            getInfo()
+            resetItem()
+            message.success(res.msg)
+          } else if (res?.status === 10107) {
+            message.info(res.msg)
           }
         }
         setWarn('')
@@ -104,8 +94,17 @@ export default function PersonInfo () {
     }
   }
 
-  const onFinish = (values: any) => {
-    console.log('Success:', values)
+  const onFinish = async (values: any) => {
+    const { oldPassword, password, confirmPassword } = values
+    if (password !== confirmPassword) {
+      message.info('两次密码不一致')
+    } else {
+      const res = await changePassword(oldPassword, password)
+      if (res?.status === 10108) {
+        message.success(res.msg)
+        handleCancel()
+      }
+    }
   }
 
   const onFinishFailed = (errorInfo: any) => {
@@ -117,7 +116,7 @@ export default function PersonInfo () {
     if (!imageUrl) {
       message.info('请上传图片')
     } else {
-      const res = await updateAvatar(info?.id as string, imageUrl)
+      const res = await updateAvatar(imageUrl)
       console.log(res)
       if (res) {
         message.success('头像设置成功')
@@ -166,6 +165,12 @@ export default function PersonInfo () {
       }
     }
   }
+
+  const handleCancel = () => {
+    setIsModalOpen(false)
+    form.resetFields()
+  }
+
   useEffect(() => {
     getInfo()
   }, [])
@@ -270,11 +275,10 @@ export default function PersonInfo () {
         </div>
       </div>
       <Modal title="修改密码"
-        okText='确定'
-        cancelText='取消'
         open={isModalOpen}
-        onOk={handleOk}
-        onCancel={handleCancel}>
+        onCancel={() => { form.resetFields(); setIsModalOpen(false) }}
+        footer={null}
+      >
         <Form
           {...layout}
           form={form}
@@ -287,7 +291,7 @@ export default function PersonInfo () {
             name="oldPassword"
             rules={[
               { required: true, message: '请输入原密码' },
-              { pattern: /^(?![0-9]+$)(?![a-zA-Z]+$)[a-zA-Z0-9!@#$%^&*_]{8,16}$/, message: '8-16位，字母、数字或符号组合' }
+              { pattern: /^[a-zA-Z0-9]{6,16}$/, message: '6-16位，字母或数字组合' }
             ]}
           >
             <Input type='password' />
@@ -297,20 +301,30 @@ export default function PersonInfo () {
             name="password"
             rules={[
               { required: true, message: '请输入新密码' },
-              { pattern: /^(?![0-9]+$)(?![a-zA-Z]+$)[a-zA-Z0-9!@#$%^&*_]{8,16}$/, message: '8-16位，字母、数字或符号组合' }
+              { pattern: /^[a-zA-Z0-9]{6,16}$/, message: '6-16位，字母或数字组合' }
             ]}
           >
-            <Input type="password" placeholder='8-16位，字母、数字或符号组合' />
+            <Input type="password" placeholder='6-16位，字母或数字组合' />
           </Form.Item>
           <Form.Item
             label="确认密码"
             name="confirmPassword"
             rules={[
               { required: true, message: '请再次输入密码' },
-              { pattern: /^(?![0-9]+$)(?![a-zA-Z]+$)[a-zA-Z0-9!@#$%^&*_]{8,16}$/, message: '8-16位，字母、数字或符号组合' }
+              { pattern: /^[a-zA-Z0-9]{6,16}$/, message: '6-16位，字母或数字组合' }
             ]}
           >
             <Input type='password' />
+          </Form.Item>
+          <Form.Item>
+            <div className={style.btn_box}>
+              <Button type="primary" htmlType="submit" >
+                确认修改
+              </Button>
+              <Button htmlType="button" onClick={() => handleCancel()}>
+                取消
+              </Button>
+            </div>
           </Form.Item>
         </Form>
       </Modal>
