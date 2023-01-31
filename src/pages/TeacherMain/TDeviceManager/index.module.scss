@@ -1,0 +1,70 @@
+.func_box {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  padding: 5px 10px;
+}
+
+.searchInput {
+  width: 200px;
+}
+
+.apply_box {
+  width: 75px;
+  height: 32px;
+  border: 2px solid #1890ff;
+  border-radius: 3px;
+  box-shadow: 0 2px 0 rgb(0 0 0 / 5%);
+  margin-left: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  cursor: pointer;
+  color: rgb(103, 103, 103);
+
+  .apply_num {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: linear-gradient(270deg,#f88157,#fe5000);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    font-size: 12px;
+    top: -7px;
+    right: -8px;
+  }
+}
+
+.apply_box:hover {
+  border: 2px solid rgb(64,169,255);
+}
+
+.add_box {
+  margin-left: auto;
+}
+
+.name{
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.name:hover {
+  color: #1890ff;
+}
+
+.height{
+  :global {
+    .ant-table-tbody > tr > td {
+      padding: 14px 14px;
+    }
+    .ant-table-thead > tr > th {
+      padding: 9px;
+      text-align: center;
+    }
+  }
+}
