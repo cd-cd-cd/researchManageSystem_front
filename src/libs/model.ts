@@ -6,6 +6,9 @@ interface ITabBarCommon {
 
 type IRole = 0 | 1 | 2
 
+// -1 -- 损坏 0 -- 闲置 1 -- 在用
+type IEquipmentState = -1 | 0 | 1
+
 interface ILoginValues {
   role: IRole
   username: string
@@ -48,5 +51,6 @@ export type {
   IInfo,
   ILoginValues,
   IRole,
-  ITabBarCommon
+  ITabBarCommon,
+  IEquipmentState
 }

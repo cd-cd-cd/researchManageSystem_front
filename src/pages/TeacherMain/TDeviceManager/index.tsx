@@ -1,6 +1,7 @@
-import { Button, Input, Popconfirm, Table, Tag } from 'antd'
+import { Button, DatePicker, Form, Input, Modal, Popconfirm, Table, Tag } from 'antd'
+import { useForm } from 'antd/lib/form/Form'
 import Column from 'antd/lib/table/Column'
-import React from 'react'
+import React, { useState } from 'react'
 import style from './index.module.scss'
 
 type IState = 0 | -1 | 1
@@ -77,8 +78,17 @@ const data: DataType[] = [
   }
 ]
 export default function TDeviceManager () {
+  // 添加设备Modal
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false)
+  // 添加设备form
+  const [form] = useForm()
   const onSearch = (value: string) => {
     console.log(value)
+  }
+
+  const closeModal = () => {
+    form.resetFields()
+    setIsAddModalOpen(false)
   }
 
   const toggleState = (state: IState) => {
@@ -142,11 +152,11 @@ export default function TDeviceManager () {
           审批申请
           <div className={style.apply_num}>12</div>
         </div>
-        <Button type='primary' className={style.add_box}>添加设备</Button>
+        <Button type='primary' className={style.add_box} onClick={() => setIsAddModalOpen(true)}>添加设备</Button>
       </div>
       <Table
-      dataSource={data}
-      className={style.height}
+        dataSource={data}
+        className={style.height}
       // loading={true}
       >
         <Column title="编号" dataIndex="serialNumber" key="serialNumber" />
@@ -176,6 +186,92 @@ export default function TDeviceManager () {
           )}
         />
       </Table>
+      <Modal title="添加设备"
+        style={{ width: '600px' }}
+        open={isAddModalOpen}
+        footer={null}
+        onCancel={() => closeModal()}>
+        <Form
+          labelCol={{ span: 5 }}
+          wrapperCol={{ span: 18 }}
+          form={form}>
+          <Form.Item
+            name='serialNumber'
+            label='编号'
+            rules={[{ required: true, message: '设备编号不为空' }]}
+          >
+            <Input placeholder='设备编号'></Input>
+          </Form.Item>
+          <Form.Item
+            name='name'
+            label='名称'
+            rules={[{ required: true, message: '设备名称不为空' }]}
+          >
+            <Input placeholder='设备名称'></Input>
+          </Form.Item>
+          <Form.Item
+            name='version'
+            label='型号'
+            rules={[{ required: true, message: '设备型号不为空' }]}
+          >
+            <Input placeholder='设备型号'></Input>
+          </Form.Item>
+          <Form.Item
+            name='originalValue'
+            label='原值'
+            rules={[{ required: true, message: '设备原值不为空' }]}
+          >
+            <Input placeholder='设备原值'></Input>
+          </Form.Item>
+          <Form.Item
+            name='performanceIndex'
+            label='设备性能指标'
+            rules={[{ required: true, message: '设备性能指标不为空' }]}
+          >
+            <Input placeholder='设备性能指标'></Input>
+          </Form.Item>
+          <Form.Item
+            name='address'
+            label='存放地'
+            rules={[{ max: 50, message: '地址长度不超过50' }]}
+          >
+            <Input placeholder='设备存放地'></Input>
+          </Form.Item>
+          <Form.Item
+            name='warehouseEntryTime'
+            label='入库时间'
+            rules={[{ required: true, message: '设备入库时间不为空' }]}
+          >
+            <DatePicker />
+          </Form.Item>
+          <Form.Item
+            name='HostRemarks'
+            label='主机备注'
+            rules={[{ max: 255, message: '主机备注长度不超过255' }]}
+          >
+            <Input.TextArea placeholder='如果设备为主机可进行备注'></Input.TextArea>
+          </Form.Item>
+          <Form.Item
+            name='remark'
+            label='备注'
+            rules={[{ max: 255, message: '备注长度不超过255' }]}
+          >
+            <Input.TextArea placeholder='设备备注'></Input.TextArea>
+          </Form.Item>
+          <Form.Item>
+            <div className={style.btn_box}>
+              <Button type="primary" htmlType="submit">
+              确认添加
+            </Button>
+            <Button htmlType="button" onClick={() => closeModal()}>
+              取消
+            </Button>
+            </div>
+          </Form.Item>
+        </Form>
+      </Modal>
+      <Modal title='修改设备'>
+      </Modal>
     </div>
   )
 }
