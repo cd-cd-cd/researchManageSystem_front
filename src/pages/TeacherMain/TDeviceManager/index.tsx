@@ -3,7 +3,7 @@ import { useForm } from 'antd/lib/form/Form'
 import Column from 'antd/lib/table/Column'
 import moment from 'moment'
 import React, { useEffect, useState } from 'react'
-import { addDevice, getList } from '../../../api/teacherApi/device'
+import { addDevice, getList, updateDeviceInfo } from '../../../api/teacherApi/device'
 import { IDevice, IEquipmentState } from '../../../libs/model'
 import style from './index.module.scss'
 
@@ -15,8 +15,9 @@ export default function TDeviceManager () {
   // 分页
   const [current, setCurrent] = useState(1)
   const [total, setTotal] = useState(10)
-
   const [loading, setLoading] = useState(true)
+  // 保存修改id
+  const [changeId, setChangeId] = useState<string>('')
 
   // 储存设备信息列表
   const [lists, setLists] = useState<IDevice[]>()
@@ -26,12 +27,13 @@ export default function TDeviceManager () {
   const onSearch = (value: string) => {
     console.log(value)
   }
-
+  // 关闭添加Modal
   const closeModal = () => {
     form.resetFields()
     setIsAddModalOpen(false)
   }
 
+  // 关闭修改Modal
   const closeModify = () => {
     form.resetFields()
     setIsModify(false)
@@ -39,8 +41,8 @@ export default function TDeviceManager () {
 
   const openModify = (record: IDevice) => {
     const newRecord = { ...record, warehouseEntryTime: moment(record.warehouseEntryTime) }
-    console.log(newRecord)
     modifyForm.setFieldsValue(newRecord)
+    setChangeId(record.id)
     setIsModify(true)
   }
 
@@ -117,8 +119,24 @@ export default function TDeviceManager () {
   }
 
   // 提交修改
-  const modifySubmit = (values: IDevice) => {
-    console.log(values)
+  const modifySubmit = async (values: IDevice) => {
+    const res = await updateDeviceInfo(
+      changeId,
+      values.serialNumber,
+      values.name,
+      values.version,
+      values.originalValue,
+      values.performanceIndex,
+      values.address,
+      values.warehouseEntryTime,
+      values.HostRemarks,
+      values.remark
+    )
+    if (res?.status === 10113) {
+      closeModify()
+      getDeviceList()
+      message.success(res.msg)
+    }
   }
 
   // 表格分页属性
@@ -131,6 +149,7 @@ export default function TDeviceManager () {
     }
   }
 
+  // 刷新
   const getDeviceList = async () => {
     setLoading(true)
     const res = await getList(current, 4)
@@ -392,7 +411,7 @@ export default function TDeviceManager () {
           <Form.Item>
             <div className={style.btn_box}>
               <Button type="primary" htmlType="submit">
-                确认添加
+                确认修改
               </Button>
               <Button htmlType="button" onClick={() => closeModify()}>
                 取消

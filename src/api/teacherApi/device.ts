@@ -1,6 +1,5 @@
 import { IEquipmentList } from '../../libs/model'
 import request from '../../utils/request'
-
 // 添加设备
 export const addDevice = async (
   serialNumber: string,
@@ -38,6 +37,37 @@ export const getList = async (pageNum: number, pageSize: number) => {
     params: {
       pageNum,
       pageSize
+    }
+  })
+}
+
+// 修改设备信息
+export const updateDeviceInfo = async (
+  id: string,
+  serialNumber: string,
+  name: string,
+  version: string,
+  originalValue: string,
+  performanceIndex: string,
+  address: string,
+  warehouseEntryTime: string,
+  HostRemarks: string,
+  remark: string
+) => {
+  return await request<string>({
+    url: '/teacher/device/update',
+    method: 'PUT',
+    data: {
+      id,
+      serialNumber,
+      name,
+      version,
+      originalValue,
+      performanceIndex,
+      address,
+      warehouseEntryTime,
+      HostRemarks,
+      remark
     }
   })
 }
