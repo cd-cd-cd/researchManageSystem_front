@@ -1,4 +1,4 @@
-import { IEquipmentList, IEquipmentState } from '../../libs/model'
+import { IEquipmentList, IEquipmentState, IResStu } from '../../libs/model'
 import request from '../../utils/request'
 // 添加设备
 export const addDevice = async (
@@ -81,5 +81,13 @@ export const changeState = async (state: IEquipmentState, id: string) => {
       state,
       id
     }
+  })
+}
+
+// 得到学生列表
+export const getLists = async () => {
+  return await request<IResStu[]>({
+    url: '/teacher/decive/getStudentList',
+    method: 'GET'
   })
 }

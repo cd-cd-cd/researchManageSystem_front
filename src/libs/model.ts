@@ -69,6 +69,17 @@ interface IEquipmentList {
   lists: IDevice[]
 }
 
+interface IResStu {
+  id: string,
+  name: string,
+  username: string
+}
+
+interface IOptionStu {
+  value: string,
+  label: string
+}
+
 export type {
   IStuList,
   IStu,
@@ -78,5 +89,7 @@ export type {
   ITabBarCommon,
   IEquipmentState,
   IDevice,
-  IEquipmentList
+  IEquipmentList,
+  IResStu,
+  IOptionStu
 }

@@ -1,13 +1,23 @@
-import { Button, DatePicker, Form, Input, message, Modal, Popconfirm, Table, Tag } from 'antd'
+import { Button, DatePicker, Descriptions, Drawer, Form, Input, message, Modal, Popconfirm, Select, Space, Table, Tag } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import Column from 'antd/lib/table/Column'
+import dayjs from 'dayjs'
 import moment from 'moment'
 import React, { useEffect, useState } from 'react'
-import { addDevice, changeState, getList, updateDeviceInfo } from '../../../api/teacherApi/device'
-import { IDevice, IEquipmentState } from '../../../libs/model'
+import { addDevice, changeState, getList, getLists, updateDeviceInfo } from '../../../api/teacherApi/device'
+import { chooseStu, recoveryDevice } from '../../../api/teacherApi/teacher'
+import { IDevice, IEquipmentState, IOptionStu } from '../../../libs/model'
 import style from './index.module.scss'
 
 export default function TDeviceManager () {
+  // 控制抽屉
+  const [open, setOpen] = useState(false)
+  // 保存学生列表
+  const [stuList, setStuList] = useState<IOptionStu[]>()
+  // 指派时保存信息
+  const [record, setRecord] = useState<IDevice>()
+  // 保存指派人
+  const [person, setPerson] = useState<string>()
   // 添加设备Modal
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   // 修改设备Modal
@@ -55,8 +65,12 @@ export default function TDeviceManager () {
   }
 
   // 收回设备
-  const recoveryEquipment = () => {
-    console.log('收回')
+  const recoveryEquipment = async (record: IDevice) => {
+    const res = await recoveryDevice(record.serialNumber)
+    if (res?.status === 10117) {
+      getDeviceList()
+      message.success(res.msg)
+    }
   }
 
   // 设备状态
@@ -84,14 +98,28 @@ export default function TDeviceManager () {
     }
   }
 
+  // 打开抽屉
+  const clickOpenDraw = async (record: IDevice) => {
+    const res = await getLists()
+    if (res?.data) {
+      const tempOption: IOptionStu[] = res?.data.reduce((pre: IOptionStu[], cur) => {
+        const temp = { value: cur.id, label: `${cur.name}-${cur.username}` }
+        return [...pre, temp]
+      }, [])
+      setStuList(tempOption)
+      setOpen(true)
+      setRecord(record)
+    }
+  }
+
   // 领用人部分
-  const returnRecipient = (user: string, state: IEquipmentState) => {
-    if (!user && state === 0) {
-      return <a>指派设备</a>
+  const returnRecipient = (user: string, record: IDevice) => {
+    if (!user && record.state === 0) {
+      return <a onClick={() => clickOpenDraw(record)}>指派设备</a>
     } else {
       return <Popconfirm
         title="点击确定将收回此设备"
-        onConfirm={() => recoveryEquipment()}
+        onConfirm={() => recoveryEquipment(record)}
         okText="确定"
         cancelText="取消"
       >
@@ -164,8 +192,19 @@ export default function TDeviceManager () {
         item.key = item.id
         return item
       })
+      console.log(lists)
       setLists(newList)
       setLoading(false)
+    }
+  }
+
+  // 选择指派人
+  const choosePerson = async () => {
+    if (person && record?.serialNumber) {
+      const res = await chooseStu(person, record?.serialNumber)
+      message.success(res?.msg)
+      getDeviceList()
+      setOpen(false)
     }
   }
 
@@ -207,7 +246,7 @@ export default function TDeviceManager () {
         <Column title="领用人"
           dataIndex="recipient"
           key="recipient"
-          render={(value: string, record: IDevice) => returnRecipient(value, record.state)}
+          render={(value: string, record: IDevice) => returnRecipient(value, record)}
         />
         <Column title="主机备注" dataIndex="HostRemarks" key="HostRemarks" />
         <Column title="备注" dataIndex="remark" key="remark" />
@@ -381,7 +420,7 @@ export default function TDeviceManager () {
             ]}
           >
             <Input.TextArea placeholder='设备性能指标'></Input.TextArea>
-            </Form.Item>
+          </Form.Item>
           <Form.Item
             name='address'
             label='存放地'
@@ -424,6 +463,46 @@ export default function TDeviceManager () {
           </Form.Item>
         </Form>
       </Modal>
+      <Drawer
+        title="选择指派人"
+        placement='right'
+        width={550}
+        onClose={() => setOpen(false)}
+        open={open}
+        extra={
+          <Space>
+            <Button onClick={() => setOpen(false)}>取消</Button>
+            <Button type="primary" onClick={() => choosePerson()}>
+              确定
+            </Button>
+          </Space>
+        }
+      >
+        <Descriptions title="设备信息">
+          <Descriptions.Item label="编号">{record?.serialNumber}</Descriptions.Item>
+          <Descriptions.Item label="名称">{record?.name}</Descriptions.Item>
+          <Descriptions.Item label="型号">{record?.version}</Descriptions.Item>
+          <Descriptions.Item label="原值">{record?.originalValue}</Descriptions.Item>
+          <Descriptions.Item label="存放地">{record?.address}</Descriptions.Item>
+          <Descriptions.Item label="入库日期">{dayjs(record?.warehouseEntryTime).format('YYYY-MM-DD')}</Descriptions.Item>
+          <Descriptions.Item label="设备性能指标">{record?.performanceIndex ? record.performanceIndex : '暂无'}</Descriptions.Item>
+        </Descriptions>
+        <Descriptions title="选择指派人">
+        <Descriptions.Item>
+          <Select
+            style={{ width: '200px' }}
+            showSearch
+            placeholder="选择指派人"
+            optionFilterProp="children"
+            onChange={(value: string) => setPerson(value)}
+            filterOption={(input, option) =>
+              (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+            }
+            options={stuList}
+          />
+        </Descriptions.Item>
+        </Descriptions>
+      </Drawer>
     </div>
   )
 }
