@@ -3,7 +3,7 @@ import style from './index.module.scss'
 import leftIcon from '../../../assets/imgs/arrow-double-left.svg'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Button, message, Modal } from 'antd'
-import { deleteStu, getStu } from '../../../api/teacher'
+import { deleteStu, getStu } from '../../../api/teacherApi/teacher'
 import { IStu } from '../../../libs/model'
 import dayjs from 'dayjs'
 

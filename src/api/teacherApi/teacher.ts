@@ -1,5 +1,5 @@
-import { IStu, IStuList } from '../libs/model'
-import request from '../utils/request'
+import { IStu, IStuList } from '../../libs/model'
+import request from '../../utils/request'
 
 export const updatePhone = async (phoneNumber: string) => {
   return await request<string>({

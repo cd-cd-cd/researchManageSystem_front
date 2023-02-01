@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import style from './index.module.scss'
 import addIcon from '../../../assets/imgs/add.svg'
 import { useForm } from 'antd/es/form/Form'
-import { createStu, getStuList } from '../../../api/teacher'
+import { createStu, getStuList } from '../../../api/teacherApi/teacher'
 import { IStu } from '../../../libs/model'
 import { useNavigate } from 'react-router-dom'
 

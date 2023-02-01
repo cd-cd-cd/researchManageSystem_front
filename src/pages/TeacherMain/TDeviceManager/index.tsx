@@ -1,87 +1,28 @@
-import { Button, DatePicker, Form, Input, Modal, Popconfirm, Table, Tag } from 'antd'
+import { Button, DatePicker, Form, Input, message, Modal, Popconfirm, Table, Tag } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import Column from 'antd/lib/table/Column'
-import React, { useState } from 'react'
+import moment from 'moment'
+import React, { useEffect, useState } from 'react'
+import { addDevice, getList } from '../../../api/teacherApi/device'
+import { IDevice, IEquipmentState } from '../../../libs/model'
 import style from './index.module.scss'
 
-type IState = 0 | -1 | 1
-interface DataType {
-  key: React.Key
-  serialNumber: string
-  name: string
-  version: string
-  originalValue: string
-  performanceIndex: string
-  address: string
-  state: IState
-  warehouseEntryTime: string
-  recipient: string
-  HostRemarks: string
-  remark: string
-}
-const data: DataType[] = [
-  {
-    key: '1',
-    serialNumber: '1807053N',
-    name: 'GPU并行运算服务器',
-    version: 'IW4200-4G',
-    originalValue: '73829',
-    performanceIndex: 'Lenovo P318，Intel Core i7-6700，3900 MHz，Samsung 250GB SSD+2TB，16GB内存， NVIDIA GTX 1080',
-    address: '九教北604A',
-    state: 0,
-    warehouseEntryTime: '2018-07-16',
-    recipient: '',
-    HostRemarks: '包含2个显示器，均无设备编号，VGA接口，均为Lenovo 22英寸',
-    remark: '北京华航创新科技有限责任公司/韦老师购置，挂宋亚男名下'
-  },
-  {
-    key: '2',
-    serialNumber: '1807053N',
-    name: 'GPU并行运算服务器',
-    version: 'IW4200-4G',
-    originalValue: '73829',
-    performanceIndex: 'Lenovo P318，Intel Core i7-6700，3900 MHz，Samsung 250GB SSD+2TB，16GB内存， NVIDIA GTX 1080',
-    address: '九教北604A',
-    state: -1,
-    warehouseEntryTime: '2018-07-16',
-    recipient: '',
-    HostRemarks: '包含2个显示器，均无设备编号，VGA接口，均为Lenovo 22英寸',
-    remark: '北京华航创新科技有限责任公司/韦老师购置，挂宋亚男名下'
-  },
-  {
-    key: '3',
-    serialNumber: '1807053N',
-    name: 'GPU并行运算服务器',
-    version: 'IW4200-4G',
-    originalValue: '73829',
-    performanceIndex: 'Lenovo P318，Intel Core i7-6700，3900 MHz，Samsung 250GB SSD+2TB，16GB内存， NVIDIA GTX 1080',
-    address: '九教北604A',
-    state: 1,
-    warehouseEntryTime: '2018-07-16',
-    recipient: '贾添植',
-    HostRemarks: '包含2个显示器，均无设备编号，VGA接口，均为Lenovo 22英寸',
-    remark: '北京华航创新科技有限责任公司/韦老师购置，挂宋亚男名下'
-  },
-  {
-    key: '4',
-    serialNumber: '1807053N',
-    name: 'GPU并行运算服务器',
-    version: 'IW4200-4G',
-    originalValue: '73829',
-    performanceIndex: 'Lenovo P318，Intel Core i7-6700，3900 MHz，Samsung 250GB SSD+2TB，16GB内存， NVIDIA GTX 1080',
-    address: '九教北604A',
-    state: 1,
-    warehouseEntryTime: '2018-07-16',
-    recipient: '贾添植',
-    HostRemarks: '包含2个显示器，均无设备编号，VGA接口，均为Lenovo 22英寸',
-    remark: '北京华航创新科技有限责任公司/韦老师购置，挂宋亚男名下'
-  }
-]
 export default function TDeviceManager () {
   // 添加设备Modal
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
+  // 修改设备Modal
+  const [isModify, setIsModify] = useState(false)
+  // 分页
+  const [current, setCurrent] = useState(1)
+  const [total, setTotal] = useState(10)
+
+  const [loading, setLoading] = useState(true)
+
+  // 储存设备信息列表
+  const [lists, setLists] = useState<IDevice[]>()
   // 添加设备form
   const [form] = useForm()
+  const [modifyForm] = useForm()
   const onSearch = (value: string) => {
     console.log(value)
   }
@@ -91,7 +32,19 @@ export default function TDeviceManager () {
     setIsAddModalOpen(false)
   }
 
-  const toggleState = (state: IState) => {
+  const closeModify = () => {
+    form.resetFields()
+    setIsModify(false)
+  }
+
+  const openModify = (record: IDevice) => {
+    const newRecord = { ...record, warehouseEntryTime: moment(record.warehouseEntryTime) }
+    console.log(newRecord)
+    modifyForm.setFieldsValue(newRecord)
+    setIsModify(true)
+  }
+
+  const toggleState = (state: IEquipmentState) => {
     console.log(state)
   }
 
@@ -101,7 +54,7 @@ export default function TDeviceManager () {
   }
 
   // 设备状态
-  const returnState = (state: IState) => {
+  const returnState = (state: IEquipmentState) => {
     switch (state) {
       case 0:
         return <Popconfirm
@@ -126,7 +79,7 @@ export default function TDeviceManager () {
   }
 
   // 领用人部分
-  const returnRecipient = (user: string, state: IState) => {
+  const returnRecipient = (user: string, state: IEquipmentState) => {
     if (!user && state === 0) {
       return <a>指派设备</a>
     } else {
@@ -140,6 +93,62 @@ export default function TDeviceManager () {
       </Popconfirm>
     }
   }
+
+  // 添加设备
+  const addEquipment = async (Value: IDevice) => {
+    const res = await addDevice(
+      Value.serialNumber,
+      Value.name,
+      Value.version,
+      Value.originalValue,
+      Value.performanceIndex,
+      Value.address,
+      Value.warehouseEntryTime,
+      Value.HostRemarks,
+      Value.remark
+    )
+    if (res?.status === 10110) {
+      closeModal()
+      getDeviceList()
+      message.success(res.msg)
+    } else if (res?.status === 10111) {
+      message.info(res.msg)
+    }
+  }
+
+  // 提交修改
+  const modifySubmit = (values: IDevice) => {
+    console.log(values)
+  }
+
+  // 表格分页属性
+  const paginationProps = {
+    pageSize: 4,
+    current,
+    total,
+    onChange: (pageNum: number) => {
+      setCurrent(pageNum)
+    }
+  }
+
+  const getDeviceList = async () => {
+    setLoading(true)
+    const res = await getList(current, 4)
+    if (res?.status === 10112) {
+      const { total, lists } = res.data
+      setTotal(total)
+      const newList = lists.map(item => {
+        item.key = item.id
+        return item
+      })
+      setLists(newList)
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    getDeviceList()
+  }, [current])
   return (
     <div>
       <div className={style.func_box}>
@@ -155,9 +164,10 @@ export default function TDeviceManager () {
         <Button type='primary' className={style.add_box} onClick={() => setIsAddModalOpen(true)}>添加设备</Button>
       </div>
       <Table
-        dataSource={data}
+        dataSource={lists}
         className={style.height}
-      // loading={true}
+        pagination={paginationProps}
+        loading={loading}
       >
         <Column title="编号" dataIndex="serialNumber" key="serialNumber" />
         <Column title="名称" dataIndex="name" key="name" />
@@ -168,72 +178,90 @@ export default function TDeviceManager () {
         <Column title="现状"
           dataIndex="state"
           key="state"
-          render={(value: IState, _) => returnState(value)}
+          render={(value: IEquipmentState, _) => returnState(value)}
         />
         <Column title="入库日期" dataIndex="warehouseEntryTime" key="warehouseEntryTime" />
         <Column title="领用人"
           dataIndex="recipient"
           key="recipient"
-          render={(value: string, record: DataType) => returnRecipient(value, record.state)}
+          render={(value: string, record: IDevice) => returnRecipient(value, record.state)}
         />
         <Column title="主机备注" dataIndex="HostRemarks" key="HostRemarks" />
         <Column title="备注" dataIndex="remark" key="remark" />
         <Column
           title="操作"
           key="action"
-          render={(_: any, record: DataType) => (
-            <a>修改</a>
+          render={(_: any, record: IDevice) => (
+            <a onClick={() => openModify(record)}>修改</a>
           )}
         />
       </Table>
       <Modal title="添加设备"
+        forceRender
         style={{ width: '600px' }}
         open={isAddModalOpen}
         footer={null}
         onCancel={() => closeModal()}>
         <Form
+          onFinish={addEquipment}
           labelCol={{ span: 5 }}
           wrapperCol={{ span: 18 }}
           form={form}>
           <Form.Item
             name='serialNumber'
             label='编号'
-            rules={[{ required: true, message: '设备编号不为空' }]}
+            rules={[
+              { required: true, message: '设备编号不为空' },
+              { max: 50, message: '编号长度不超过50' }
+            ]}
           >
             <Input placeholder='设备编号'></Input>
           </Form.Item>
           <Form.Item
             name='name'
             label='名称'
-            rules={[{ required: true, message: '设备名称不为空' }]}
+            rules={[
+              { required: true, message: '设备名称不为空' },
+              { max: 50, message: '设备名称长度不超过50' }
+            ]}
           >
             <Input placeholder='设备名称'></Input>
           </Form.Item>
           <Form.Item
             name='version'
             label='型号'
-            rules={[{ required: true, message: '设备型号不为空' }]}
+            rules={[
+              { required: true, message: '设备型号不为空' },
+              { max: 50, message: '型号长度不超过50' }
+            ]}
           >
             <Input placeholder='设备型号'></Input>
           </Form.Item>
           <Form.Item
             name='originalValue'
             label='原值'
-            rules={[{ required: true, message: '设备原值不为空' }]}
+            rules={[
+              { required: true, message: '设备原值不为空' },
+              { max: 50, message: '原值长度不超过50' }
+            ]}
           >
             <Input placeholder='设备原值'></Input>
           </Form.Item>
           <Form.Item
             name='performanceIndex'
             label='设备性能指标'
-            rules={[{ required: true, message: '设备性能指标不为空' }]}
+            rules={[
+              { max: 255, message: '设备性能指标描述不超过255' }
+            ]}
           >
-            <Input placeholder='设备性能指标'></Input>
+            <Input.TextArea placeholder='设备性能指标'></Input.TextArea>
           </Form.Item>
           <Form.Item
             name='address'
             label='存放地'
-            rules={[{ max: 50, message: '地址长度不超过50' }]}
+            rules={[
+              { max: 50, message: '地址长度不超过50' }
+            ]}
           >
             <Input placeholder='设备存放地'></Input>
           </Form.Item>
@@ -249,7 +277,7 @@ export default function TDeviceManager () {
             label='主机备注'
             rules={[{ max: 255, message: '主机备注长度不超过255' }]}
           >
-            <Input.TextArea placeholder='如果设备为主机可进行备注'></Input.TextArea>
+            <Input.TextArea placeholder='如设备为主机，那么备注显示器，包含几个显示器，设备编号、显示器接口、显示器尺寸'></Input.TextArea>
           </Form.Item>
           <Form.Item
             name='remark'
@@ -261,16 +289,117 @@ export default function TDeviceManager () {
           <Form.Item>
             <div className={style.btn_box}>
               <Button type="primary" htmlType="submit">
-              确认添加
-            </Button>
-            <Button htmlType="button" onClick={() => closeModal()}>
-              取消
-            </Button>
+                确认添加
+              </Button>
+              <Button htmlType="button" onClick={() => closeModal()}>
+                取消
+              </Button>
             </div>
           </Form.Item>
         </Form>
       </Modal>
-      <Modal title='修改设备'>
+      <Modal
+        title="修改设备"
+        forceRender
+        style={{ width: '650px' }}
+        open={isModify}
+        footer={null}
+        onCancel={() => closeModify()}>
+        <Form
+          onFinish={modifySubmit}
+          labelCol={{ span: 5 }}
+          wrapperCol={{ span: 18 }}
+          form={modifyForm}>
+          <Form.Item
+            name='serialNumber'
+            label='编号'
+            rules={[
+              { required: true, message: '设备编号不为空' },
+              { max: 50, message: '编号长度不超过50' }
+            ]}
+          >
+            <Input placeholder='设备编号'></Input>
+          </Form.Item>
+          <Form.Item
+            name='name'
+            label='名称'
+            rules={[
+              { required: true, message: '设备名称不为空' },
+              { max: 50, message: '设备名称长度不超过50' }
+            ]}
+          >
+            <Input placeholder='设备名称'></Input>
+          </Form.Item>
+          <Form.Item
+            name='version'
+            label='型号'
+            rules={[
+              { required: true, message: '设备型号不为空' },
+              { max: 50, message: '型号长度不超过50' }
+            ]}
+          >
+            <Input placeholder='设备型号'></Input>
+          </Form.Item>
+          <Form.Item
+            name='originalValue'
+            label='原值'
+            rules={[
+              { required: true, message: '设备原值不为空' },
+              { max: 50, message: '原值长度不超过50' }
+            ]}
+          >
+            <Input placeholder='设备原值'></Input>
+          </Form.Item>
+          <Form.Item
+            name='performanceIndex'
+            label='设备性能指标'
+            rules={[
+              { max: 255, message: '设备性能指标描述不超过255' }
+            ]}
+          >
+            <Input.TextArea placeholder='设备性能指标'></Input.TextArea>
+            </Form.Item>
+          <Form.Item
+            name='address'
+            label='存放地'
+            rules={[
+              { max: 50, message: '地址长度不超过50' }
+            ]}
+          >
+            <Input placeholder='设备存放地'></Input>
+          </Form.Item>
+          <Form.Item
+            name='warehouseEntryTime'
+            label='入库时间'
+            rules={[{ required: true, message: '设备入库时间不为空' }]}
+          >
+            <DatePicker />
+          </Form.Item>
+          <Form.Item
+            name='HostRemarks'
+            label='主机备注'
+            rules={[{ max: 255, message: '主机备注长度不超过255' }]}
+          >
+            <Input.TextArea placeholder='如设备为主机，那么备注显示器，包含几个显示器，设备编号、显示器接口、显示器尺寸'></Input.TextArea>
+          </Form.Item>
+          <Form.Item
+            name='remark'
+            label='备注'
+            rules={[{ max: 255, message: '备注长度不超过255' }]}
+          >
+            <Input.TextArea placeholder='设备备注'></Input.TextArea>
+          </Form.Item>
+          <Form.Item>
+            <div className={style.btn_box}>
+              <Button type="primary" htmlType="submit">
+                确认添加
+              </Button>
+              <Button htmlType="button" onClick={() => closeModify()}>
+                取消
+              </Button>
+            </div>
+          </Form.Item>
+        </Form>
       </Modal>
     </div>
   )

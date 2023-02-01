@@ -45,6 +45,30 @@ interface IStuList {
   list: IStu[]
 }
 
+interface IDevice {
+  key: string
+  id: string
+  createdTime: string
+  serialNumber: string
+  name: string
+  version: string
+  originalValue: string
+  performanceIndex: string
+  address: string
+  state: IEquipmentState
+  warehouseEntryTime: string
+  recipient: string
+  HostRemarks: string
+  remark: string
+}
+
+interface IEquipmentList {
+  pageNum: number
+  pageSize: number
+  total: number
+  lists: IDevice[]
+}
+
 export type {
   IStuList,
   IStu,
@@ -52,5 +76,7 @@ export type {
   ILoginValues,
   IRole,
   ITabBarCommon,
-  IEquipmentState
+  IEquipmentState,
+  IDevice,
+  IEquipmentList
 }
