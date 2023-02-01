@@ -3,7 +3,7 @@ import { useForm } from 'antd/lib/form/Form'
 import Column from 'antd/lib/table/Column'
 import moment from 'moment'
 import React, { useEffect, useState } from 'react'
-import { addDevice, getList, updateDeviceInfo } from '../../../api/teacherApi/device'
+import { addDevice, changeState, getList, updateDeviceInfo } from '../../../api/teacherApi/device'
 import { IDevice, IEquipmentState } from '../../../libs/model'
 import style from './index.module.scss'
 
@@ -46,8 +46,12 @@ export default function TDeviceManager () {
     setIsModify(true)
   }
 
-  const toggleState = (state: IEquipmentState) => {
-    console.log(state)
+  const toggleState = async (state: IEquipmentState, id: string) => {
+    const res = await changeState(state, id)
+    if (res?.status === 10114) {
+      getDeviceList()
+      message.success(res.msg)
+    }
   }
 
   // 收回设备
@@ -56,12 +60,12 @@ export default function TDeviceManager () {
   }
 
   // 设备状态
-  const returnState = (state: IEquipmentState) => {
+  const returnState = (state: IEquipmentState, id: string) => {
     switch (state) {
       case 0:
         return <Popconfirm
           title="点击确定将此设备设置为损坏状态"
-          onConfirm={() => toggleState(0)}
+          onConfirm={() => toggleState(0, id)}
           okText="确定"
           cancelText="取消"
         >
@@ -70,7 +74,7 @@ export default function TDeviceManager () {
       case -1:
         return <Popconfirm
           title="点击确定将此设备设置为空闲状态"
-          onConfirm={() => toggleState(-1)}
+          onConfirm={() => toggleState(-1, id)}
           okText="确定"
           cancelText="取消"
         ><Tag color="red" style={{ cursor: 'pointer' }}>损坏</Tag>
@@ -197,7 +201,7 @@ export default function TDeviceManager () {
         <Column title="现状"
           dataIndex="state"
           key="state"
-          render={(value: IEquipmentState, _) => returnState(value)}
+          render={(value: IEquipmentState, record: IDevice) => returnState(value, record.id)}
         />
         <Column title="入库日期" dataIndex="warehouseEntryTime" key="warehouseEntryTime" />
         <Column title="领用人"

@@ -1,4 +1,4 @@
-import { IEquipmentList } from '../../libs/model'
+import { IEquipmentList, IEquipmentState } from '../../libs/model'
 import request from '../../utils/request'
 // 添加设备
 export const addDevice = async (
@@ -68,6 +68,18 @@ export const updateDeviceInfo = async (
       warehouseEntryTime,
       HostRemarks,
       remark
+    }
+  })
+}
+
+// 修改设备状态
+export const changeState = async (state: IEquipmentState, id: string) => {
+  return await request<string>({
+    url: '/teacher/device/updateState',
+    method: 'PUT',
+    data: {
+      state,
+      id
     }
   })
 }
