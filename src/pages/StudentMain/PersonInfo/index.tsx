@@ -9,6 +9,7 @@ import { changePassword, updateAvatar, updateEmail, updatePhone, updateResume } 
 import useVarify from '../../../hooks/useVarify'
 import { IInfo } from '../../../libs/model'
 import basicAvatar from '../../../assets/imgs/avatar.svg'
+import { updateInfo } from '../../../api/studentApi/stu'
 
 interface IItem {
   label: 'phoneNumber' | 'email' | 'resume' | ''
@@ -41,6 +42,21 @@ export default function PersonInfo () {
     setWarn('')
   }
 
+  // 学生修改信息
+  const updateStuInfo = async (phoneNumber?: string, email?: string, resume?: string) => {
+    const res = await updateInfo(phoneNumber, email, resume)
+    if (res?.status === 20000) {
+      refresh()
+      message.success(res.msg)
+    }
+  }
+
+  // 刷新
+  const refresh = () => {
+    getInfo()
+    resetItem()
+  }
+
   const checkBasicInfo = async () => {
     const role = +localStorage.getItem('role')!
     if (item?.label === 'phoneNumber') {
@@ -48,12 +64,13 @@ export default function PersonInfo () {
         if (role === 1) {
           const res = await updatePhone(item.value)
           if (res?.status === 10102) {
-            getInfo()
-            resetItem()
+            refresh()
             message.success(res.msg)
           } else if (res?.status === 10103) {
             message.info(res.msg)
           }
+        } else if (role === 0) {
+          updateStuInfo(item.value, info?.email, info?.resume)
         }
         setWarn('')
       } else {
@@ -64,12 +81,13 @@ export default function PersonInfo () {
         if (role === 1) {
           const res = await updateEmail(item.value)
           if (res?.status === 10104) {
-            getInfo()
-            resetItem()
+            refresh()
             message.success(res.msg)
           } else if (res?.status === 10105) {
             message.info(res.msg)
           }
+        } else if (role === 0) {
+          updateStuInfo(info?.phoneNumber, item.value, info?.resume)
         }
         setWarn('')
       } else {
@@ -80,12 +98,13 @@ export default function PersonInfo () {
         if (role === 1) {
           const res = await updateResume(item.value)
           if (res?.status === 10106) {
-            getInfo()
-            resetItem()
+            refresh()
             message.success(res.msg)
           } else if (res?.status === 10107) {
             message.info(res.msg)
           }
+        } else if (role === 0) {
+          updateStuInfo(info?.phoneNumber, info?.email, item.value)
         }
         setWarn('')
       } else {
