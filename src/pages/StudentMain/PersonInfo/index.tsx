@@ -9,7 +9,7 @@ import { changePassword, updateAvatar, updateEmail, updatePhone, updateResume } 
 import useVarify from '../../../hooks/useVarify'
 import { IInfo } from '../../../libs/model'
 import basicAvatar from '../../../assets/imgs/avatar.svg'
-import { updateInfo } from '../../../api/studentApi/stu'
+import { stuChangePassword, updateInfo } from '../../../api/studentApi/stu'
 
 interface IItem {
   label: 'phoneNumber' | 'email' | 'resume' | ''
@@ -118,16 +118,21 @@ export default function PersonInfo () {
     if (password !== confirmPassword) {
       message.info('两次密码不一致')
     } else {
-      const res = await changePassword(oldPassword, password)
-      if (res?.status === 10108) {
-        message.success(res.msg)
-        handleCancel()
+      const role = +localStorage.getItem('role')!
+      if (role === 1) {
+        const res = await changePassword(oldPassword, password)
+        if (res?.status === 10108) {
+          message.success(res.msg)
+          handleCancel()
+        }
+      } else if (role === 0) {
+        const res = await stuChangePassword(oldPassword, password)
+        if (res?.status === 20001) {
+          message.success(res.msg)
+          handleCancel()
+        }
       }
     }
-  }
-
-  const onFinishFailed = (errorInfo: any) => {
-    console.log('Failed:', errorInfo)
   }
 
   // 修改头像
@@ -303,7 +308,6 @@ export default function PersonInfo () {
           form={form}
           name='passwordChange'
           onFinish={onFinish}
-          onFinishFailed={onFinishFailed}
         >
           <Form.Item
             label="原密码"

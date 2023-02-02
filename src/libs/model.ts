@@ -75,7 +75,7 @@ interface IResStu {
   username: string
 }
 
-interface IOptionStu {
+interface IOption {
   value: string,
   label: string
 }
@@ -91,5 +91,5 @@ export type {
   IDevice,
   IEquipmentList,
   IResStu,
-  IOptionStu
+  IOption
 }

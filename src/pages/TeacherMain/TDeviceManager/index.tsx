@@ -6,14 +6,14 @@ import moment from 'moment'
 import React, { useEffect, useState } from 'react'
 import { addDevice, changeState, getList, getLists, updateDeviceInfo } from '../../../api/teacherApi/device'
 import { chooseStu, recoveryDevice } from '../../../api/teacherApi/teacher'
-import { IDevice, IEquipmentState, IOptionStu } from '../../../libs/model'
+import { IDevice, IEquipmentState, IOption } from '../../../libs/model'
 import style from './index.module.scss'
 
 export default function TDeviceManager () {
   // 控制抽屉
   const [open, setOpen] = useState(false)
   // 保存学生列表
-  const [stuList, setStuList] = useState<IOptionStu[]>()
+  const [stuList, setStuList] = useState<IOption[]>()
   // 指派时保存信息
   const [record, setRecord] = useState<IDevice>()
   // 保存指派人
@@ -102,7 +102,7 @@ export default function TDeviceManager () {
   const clickOpenDraw = async (record: IDevice) => {
     const res = await getLists()
     if (res?.data) {
-      const tempOption: IOptionStu[] = res?.data.reduce((pre: IOptionStu[], cur) => {
+      const tempOption: IOption[] = res?.data.reduce((pre: IOption[], cur) => {
         const temp = { value: cur.id, label: `${cur.name}-${cur.username}` }
         return [...pre, temp]
       }, [])
@@ -192,7 +192,6 @@ export default function TDeviceManager () {
         item.key = item.id
         return item
       })
-      console.log(lists)
       setLists(newList)
       setLoading(false)
     }
