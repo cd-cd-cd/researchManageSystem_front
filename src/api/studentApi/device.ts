@@ -1,3 +1,4 @@
+import { typeIApplyState } from '../../libs/model'
 import request from '../../utils/request'
 
 interface IResGetDevice {
@@ -16,19 +17,41 @@ export const getDevice = async () => {
 
 // 申请设备
 export const apply = async (
-  serialNumber: string,
+  equipmentId: string,
   reason: string,
-  startTime: string,
-  endTime: string
+  startTime: Date,
+  endTime: Date
 ) => {
   return await request<string>({
     url: '/student/device/apply',
     method: 'POST',
     data: {
-      serialNumber,
+      equipmentId,
       reason,
       startTime,
       endTime
     }
+  })
+}
+
+interface IResApplyInfo {
+  id: string
+  applyState: typeIApplyState
+  startTime: Date
+  endTime: Date
+  apply_reason: string
+  refuseReason: string
+  createdTime: Date
+  serialNumber: string
+  name: string
+  performanceIndex: string
+  address: string
+}
+
+// 得到申请信息
+export const applyInfo = async () => {
+  return await request<IResApplyInfo>({
+    url: '/student/device/applyInfo',
+    method: 'GET'
   })
 }

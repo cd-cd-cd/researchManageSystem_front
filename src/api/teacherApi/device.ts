@@ -91,3 +91,33 @@ export const getLists = async () => {
     method: 'GET'
   })
 }
+
+// 设备指派
+export const chooseStu = async (
+  recipient: string,
+  equipmentId: string,
+  startTime: Date,
+  endTime: Date
+) => {
+  return await request<string>({
+    url: '/teacher/device/chooseStu',
+    method: 'PUT',
+    data: {
+      recipient,
+      equipmentId,
+      startTime,
+      endTime
+    }
+  })
+}
+
+// 回收设备
+export const recoveryDevice = async (serialNumber: string) => {
+  return await request<string>({
+    url: '/teacher/device/recovery',
+    method: 'PUT',
+    data: {
+      serialNumber
+    }
+  })
+}

@@ -80,6 +80,8 @@ interface IOption {
   label: string
 }
 
+// 设备申请状态  0 -- 申请中  1 -- 申请同意 -1 -- 申请被拒绝
+type typeIApplyState = -1 | 0 | 1
 export type {
   IStuList,
   IStu,
@@ -91,5 +93,6 @@ export type {
   IDevice,
   IEquipmentList,
   IResStu,
-  IOption
+  IOption,
+  typeIApplyState
 }

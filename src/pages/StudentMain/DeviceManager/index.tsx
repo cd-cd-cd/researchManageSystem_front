@@ -1,7 +1,6 @@
 // import { Badge, Descriptions } from 'antd'
-import { Button, DatePicker, Form, Input, message, Modal, Select } from 'antd'
+import { Button, DatePicker, Form, Input, message, Modal, Select, Tag } from 'antd'
 import { useForm } from 'antd/es/form/Form'
-import dayjs from 'dayjs'
 import React, { useState } from 'react'
 import { apply, getDevice } from '../../../api/studentApi/device'
 import { IOption } from '../../../libs/model'
@@ -16,14 +15,17 @@ export default function DeviceManager () {
     setIsModalOpen(false)
   }
 
+  // 申请设备
   const applyDevice = async (values: any) => {
     const { serialNumber, reason, time } = values
-    const startTime = dayjs(time[0]).format('YYYY-MM-DD')
-    const endTime = dayjs(time[1]).format('YYYY-MM-DD')
+    const startTime = time[0].toDate()
+    const endTime = time[1].toDate()
     const res = await apply(serialNumber, reason, startTime, endTime)
     if (res?.status === 20003) {
       closeModal()
       message.success(res.msg)
+    } else if (res?.status === 20004) {
+      message.info(res.msg)
     }
   }
 
@@ -38,11 +40,17 @@ export default function DeviceManager () {
     }
     setIsModalOpen(true)
   }
+
   return (
     <div className={style.back}>
       <Button type='primary' className={style.apply_btn} onClick={() => getIdleDevice()}>设备申请</Button>
       <div className={style.main}>
         <div className={style.show_box}>
+          <div className={style.main_head}>
+            {/* <Tag color='#87d068'>申请中</Tag>
+            <Tag color='#f50'>取消申请</Tag> */}
+            <Tag color='#f50'>已拒绝</Tag>
+          </div>
           <div>
             <span className={style.label}>编号:</span>
             <span>1807053N</span>
@@ -52,14 +60,6 @@ export default function DeviceManager () {
             <span>GPU并行运算服务器</span>
           </div>
           <div>
-            <span className={style.label}>型号:</span>
-            <span>IW4200-4G</span>
-          </div>
-          <div>
-            <span className={style.label}>原值:</span>
-            <span>73829</span>
-          </div>
-          <div>
             <span className={style.label}>存放地:</span>
             <span>九教北604A</span>
           </div>
@@ -67,31 +67,21 @@ export default function DeviceManager () {
             <span className={style.label}>设备性能指标:</span>
             <span> Lenovo P318，Intel Core i7-6700，3900 MHz，Samsung 250GB SSD+2TB，16GB内存， NVIDIA GTX 1080</span>
           </div>
-        </div>
-        <div className={style.show_box}>
-          <div>
-            <span className={style.label}>编号:</span>
-            <span>1807053N</span>
+          <div className={style.colOneToFour}>
+            <span className={style.label}>申请期限:</span>
+            <span>2023-03-13 --- 2023-03-14</span>
           </div>
-          <div>
-            <span className={style.label}>名称:</span>
-            <span>GPU并行运算服务器</span>
+          <div className={style.colOneToFour}>
+            <span className={style.label}>申请理由:</span>
+            <span>hhhhhhhhh</span>
           </div>
-          <div>
-            <span className={style.label}>型号:</span>
-            <span>IW4200-4G</span>
+          <div className={style.colOneToFour}>
+            <span className={style.label}>申请时间:</span>
+            <span>2023-02-03T12:56:36.138Z</span>
           </div>
-          <div>
-            <span className={style.label}>原值:</span>
-            <span>73829</span>
-          </div>
-          <div>
-            <span className={style.label}>存放地:</span>
-            <span>九教北604A</span>
-          </div>
-          <div className={style.index_box}>
-            <span className={style.label}>设备性能指标:</span>
-            <span> Lenovo P318，Intel Core i7-6700，3900 MHz，Samsung 250GB SSD+2TB，16GB内存， NVIDIA GTX 1080</span>
+          <div className={style.colOneToFour}>
+            <span className={style.label}>拒绝理由:</span>
+            <span>不借不借</span>
           </div>
         </div>
       </div>

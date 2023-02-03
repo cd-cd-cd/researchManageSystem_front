@@ -22,8 +22,13 @@
 
   .index_box{
     grid-column: 1/4;
-    grid-row: 3/4;
+    // grid-row: 3/4;
   }
+  
+  .colOneToFour {
+    grid-column: 1/4;
+  }
+
 }
 
 .show_box:hover {
@@ -45,4 +50,11 @@
   flex-direction: row;
   justify-content: space-between;
   margin-left: 30%;
+}
+
+.main_head{
+  grid-column: 1/4;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }

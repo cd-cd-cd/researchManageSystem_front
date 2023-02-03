@@ -4,8 +4,7 @@ import Column from 'antd/lib/table/Column'
 import dayjs from 'dayjs'
 import moment from 'moment'
 import React, { useEffect, useState } from 'react'
-import { addDevice, changeState, getList, getLists, updateDeviceInfo } from '../../../api/teacherApi/device'
-import { chooseStu, recoveryDevice } from '../../../api/teacherApi/teacher'
+import { addDevice, changeState, chooseStu, getList, getLists, recoveryDevice, updateDeviceInfo } from '../../../api/teacherApi/device'
 import { IDevice, IEquipmentState, IOption } from '../../../libs/model'
 import style from './index.module.scss'
 
@@ -18,6 +17,8 @@ export default function TDeviceManager () {
   const [record, setRecord] = useState<IDevice>()
   // 保存指派人
   const [person, setPerson] = useState<string>()
+  // 保存指派时间
+  const [time, setTime] = useState<Date[]>()
   // 添加设备Modal
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   // 修改设备Modal
@@ -168,6 +169,8 @@ export default function TDeviceManager () {
       closeModify()
       getDeviceList()
       message.success(res.msg)
+    } else if (res?.status === 10118) {
+      message.info(res.msg)
     }
   }
 
@@ -190,6 +193,7 @@ export default function TDeviceManager () {
       setTotal(total)
       const newList = lists.map(item => {
         item.key = item.id
+        item.warehouseEntryTime = dayjs(item.warehouseEntryTime).format('YYYY-MM-DD')
         return item
       })
       setLists(newList)
@@ -199,13 +203,25 @@ export default function TDeviceManager () {
 
   // 选择指派人
   const choosePerson = async () => {
-    if (person && record?.serialNumber) {
-      const res = await chooseStu(person, record?.serialNumber)
+    if (!record?.id) {
+      message.info('请选择指派设备')
+    } else if (!person) {
+      message.info('选择指派人')
+    } else if (time?.length !== 2) {
+      message.info('请选择时间')
+    } else {
+      const res = await chooseStu(person, record.id, time[0], time[1])
       message.success(res?.msg)
       getDeviceList()
       setOpen(false)
+      setTime([])
     }
   }
+
+  // // 保存时间
+  // const setStartAndEndTime = (values: Array<moment.Moment>, formatString: [string, string]) => {
+  //   console.log(e)
+  // }
 
   useEffect(() => {
     getDeviceList()
@@ -487,19 +503,30 @@ export default function TDeviceManager () {
           <Descriptions.Item label="设备性能指标">{record?.performanceIndex ? record.performanceIndex : '暂无'}</Descriptions.Item>
         </Descriptions>
         <Descriptions title="选择指派人">
-        <Descriptions.Item>
-          <Select
-            style={{ width: '200px' }}
-            showSearch
-            placeholder="选择指派人"
-            optionFilterProp="children"
-            onChange={(value: string) => setPerson(value)}
-            filterOption={(input, option) =>
-              (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-            }
-            options={stuList}
-          />
-        </Descriptions.Item>
+          <Descriptions.Item>
+            <Select
+              style={{ width: '200px' }}
+              showSearch
+              placeholder="选择指派人"
+              optionFilterProp="children"
+              onChange={(value: string) => setPerson(value)}
+              filterOption={(input, option) =>
+                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+              }
+              options={stuList}
+            />
+          </Descriptions.Item>
+        </Descriptions>
+        <Descriptions title="使用时间">
+          <Descriptions.Item>
+            <DatePicker.RangePicker onChange={e => {
+              if (e) {
+                if (e[0] && e[1]) {
+                  setTime([e[0].toDate(), e[1].toDate()])
+                }
+              }
+            }}></DatePicker.RangePicker>
+          </Descriptions.Item>
         </Descriptions>
       </Drawer>
     </div>

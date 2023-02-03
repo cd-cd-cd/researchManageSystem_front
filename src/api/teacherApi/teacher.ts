@@ -98,26 +98,3 @@ export const changePassword = async (oldPassword: string, newPassword: string) =
     }
   })
 }
-
-// 设备指派
-export const chooseStu = async (recipient: string, serialNumber: string) => {
-  return await request<string>({
-    url: '/teacher/device/chooseStu',
-    method: 'PUT',
-    data: {
-      recipient,
-      serialNumber
-    }
-  })
-}
-
-// 回收设备
-export const recoveryDevice = async (serialNumber: string) => {
-  return await request<string>({
-    url: '/teacher/device/recovery',
-    method: 'PUT',
-    data: {
-      serialNumber
-    }
-  })
-}
