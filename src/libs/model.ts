@@ -111,6 +111,19 @@ interface IApplyInfoSingle {
 
 // 设备申请状态  0 -- 申请中  1 -- 申请同意 -1 -- 申请被拒绝
 type typeIApplyState = -1 | 0 | 1
+
+interface ILoadInfo {
+  HostRemarks: string
+  address: string
+  applyId: string
+  endTime: Date
+  equipmentId: string
+  name: string
+  performanceIndex: string
+  serialNumber: string
+  startTime: Date
+  version: string
+}
 export type {
   IStuList,
   IStu,
@@ -125,5 +138,7 @@ export type {
   IOption,
   typeIApplyState,
   IApplyInfo,
-  IApplyInfoSingle
+  IApplyInfoSingle,
+  ILoadInfo
 }
+

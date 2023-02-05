@@ -3,8 +3,8 @@ import { Button, DatePicker, Drawer, Form, Input, message, Modal, Pagination, Se
 import { useForm } from 'antd/es/form/Form'
 import dayjs from 'dayjs'
 import React, { useEffect, useState } from 'react'
-import { apply, applyInfo, cancelApply, getDevice } from '../../../api/studentApi/device'
-import { IApplyInfo, IOption, typeIApplyState } from '../../../libs/model'
+import { apply, applyInfo, cancelApply, getDevice, loadInfo } from '../../../api/studentApi/device'
+import { IApplyInfo, ILoadInfo, IOption, typeIApplyState } from '../../../libs/model'
 import NoInfoIcon from '../../../assets/imgs/noInfo.png'
 import DeleteIcon from '../../../assets/imgs/delete.png'
 import style from './index.module.scss'
@@ -20,6 +20,8 @@ export default function DeviceManager () {
   const [applyId, setApplyId] = useState<string>()
   // 可选设备列表
   const [option, setOption] = useState<IOption[]>()
+  // 在借信息
+  const [loads, setLoads] = useState<ILoadInfo[]>()
   // 申请信息列表
   const [infoList, setInfoList] = useState<IApplyInfo[]>()
   const [current, setCurrent] = useState(1)
@@ -64,6 +66,7 @@ export default function DeviceManager () {
       setTotal(res.data.total)
       setInfoList(res.data.applys)
     }
+    getLoadInfo()
   }
 
   // 取消申请
@@ -105,6 +108,14 @@ export default function DeviceManager () {
           <Tag color='#f50'>已拒绝</Tag>
           <img src={DeleteIcon} className={style.delete} onClick={() => deleteRefuse(id)}></img>
         </>
+    }
+  }
+
+  // 获得在借信息
+  const getLoadInfo = async () => {
+    const res = await loadInfo()
+    if (res?.success) {
+      setLoads(res?.data)
     }
   }
 
@@ -259,7 +270,13 @@ export default function DeviceManager () {
       onClose={() => setOpen(false)} open={open}
       width='600px'
       >
-        <DeviceMsg></DeviceMsg>
+        {
+          loads?.map(
+            item => <div key={item.equipmentId}>
+              <DeviceMsg item={item}></DeviceMsg>
+          </div>
+          )
+        }
       </Drawer>
     </div>
   )

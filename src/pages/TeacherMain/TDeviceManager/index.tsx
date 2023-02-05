@@ -21,7 +21,7 @@ export default function TDeviceManager () {
   // 保存指派人
   const [person, setPerson] = useState<string>()
   // 保存指派时间
-  const [time, setTime] = useState<Date[]>()
+  const [time, setTime] = useState<Date[]>([])
   // 添加设备Modal
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   // 修改设备Modal
@@ -220,6 +220,10 @@ export default function TDeviceManager () {
     getApplyInfo()
   }
 
+  const closeDrawer = () => {
+    setOpen(false)
+    setPerson(undefined)
+  }
   // 选择指派人
   const choosePerson = async () => {
     if (!record?.id) {
@@ -232,8 +236,7 @@ export default function TDeviceManager () {
       const res = await chooseStu(person, record.id, time[0], time[1])
       message.success(res?.msg)
       getDeviceList()
-      setOpen(false)
-      setTime([])
+      closeDrawer()
     }
   }
 
@@ -252,7 +255,7 @@ export default function TDeviceManager () {
         <div className={style.apply_box} onClick={() => setApplyOpen(true)}>
           审批申请
           {
-            applyNum !== 0
+            applyNum
               ? <div className={style.apply_num}>{applyNum}</div>
               : ''
           }
@@ -514,7 +517,7 @@ export default function TDeviceManager () {
         title="选择指派人"
         placement='right'
         width={550}
-        onClose={() => setOpen(false)}
+        onClose={() => closeDrawer()}
         open={open}
         extra={
           <Space>
@@ -541,6 +544,7 @@ export default function TDeviceManager () {
               showSearch
               placeholder="选择指派人"
               optionFilterProp="children"
+              value={person}
               onChange={(value: string) => setPerson(value)}
               filterOption={(input, option) =>
                 (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
@@ -551,13 +555,14 @@ export default function TDeviceManager () {
         </Descriptions>
         <Descriptions title="使用时间">
           <Descriptions.Item>
-            <DatePicker.RangePicker onChange={e => {
-              if (e) {
-                if (e[0] && e[1]) {
-                  setTime([e[0].toDate(), e[1].toDate()])
+            <DatePicker.RangePicker
+              onChange={e => {
+                if (e) {
+                  if (e[0] && e[1]) {
+                    setTime([e[0].toDate(), e[1].toDate()])
+                  }
                 }
-              }
-            }}></DatePicker.RangePicker>
+              }}></DatePicker.RangePicker>
           </Descriptions.Item>
         </Descriptions>
       </Drawer>

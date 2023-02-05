@@ -1,4 +1,4 @@
-import { IApplyInfo } from '../../libs/model'
+import { IApplyInfo, ILoadInfo } from '../../libs/model'
 import request from '../../utils/request'
 
 interface IResGetDevice {
@@ -61,5 +61,13 @@ export const cancelApply = async (applyId: string) => {
     data: {
       applyId
     }
+  })
+}
+
+// 得到在借信息
+export const loadInfo = async () => {
+  return await request<ILoadInfo[]>({
+    url: '/student/device/loan',
+    method: 'GET'
   })
 }
