@@ -1,0 +1,48 @@
+.applyInfo_box {
+  width: 100%;
+  border-bottom: 1px solid rgb(58 58 58 / 7%);
+}
+.head{
+  display: flex;
+}
+
+.applyMain{
+  padding: 10px;
+  .left {
+    margin-right: 40px;
+  }
+
+  .reason_box{
+    margin-top: 5px;
+  }
+}
+.applyTime{
+  font-size: 12px;
+  color: gray;
+}
+
+.refuse{
+  margin-left: auto;
+  cursor: pointer;
+}
+
+.ok{
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+.refuse_box{
+  display: flex;
+}
+
+.box{
+  flex: 1;
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+}
+
+.warn{
+  font-size: 12px;
+  color: #f50;
+}

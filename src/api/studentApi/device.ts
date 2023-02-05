@@ -1,4 +1,4 @@
-import { typeIApplyState } from '../../libs/model'
+import { IApplyInfo } from '../../libs/model'
 import request from '../../utils/request'
 
 interface IResGetDevice {
@@ -35,23 +35,31 @@ export const apply = async (
 }
 
 interface IResApplyInfo {
-  id: string
-  applyState: typeIApplyState
-  startTime: Date
-  endTime: Date
-  apply_reason: string
-  refuseReason: string
-  createdTime: Date
-  serialNumber: string
-  name: string
-  performanceIndex: string
-  address: string
+  pageNum: number
+  pageSize: number
+  total: number
+  applys: IApplyInfo[]
 }
 
 // 得到申请信息
-export const applyInfo = async () => {
+export const applyInfo = async (pageNum: number, pageSize: number) => {
   return await request<IResApplyInfo>({
     url: '/student/device/applyInfo',
-    method: 'GET'
+    method: 'GET',
+    params: {
+      pageNum,
+      pageSize
+    }
+  })
+}
+
+// 取消申请
+export const cancelApply = async (applyId: string) => {
+  return await request<string>({
+    url: '/student/device/cancelApply',
+    method: 'DELETE',
+    data: {
+      applyId
+    }
   })
 }

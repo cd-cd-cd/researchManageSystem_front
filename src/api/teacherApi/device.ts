@@ -1,4 +1,4 @@
-import { IEquipmentList, IEquipmentState, IResStu } from '../../libs/model'
+import { IApplyInfoSingle, IEquipmentList, IEquipmentState, IResStu } from '../../libs/model'
 import request from '../../utils/request'
 // 添加设备
 export const addDevice = async (
@@ -112,12 +112,56 @@ export const chooseStu = async (
 }
 
 // 回收设备
-export const recoveryDevice = async (serialNumber: string) => {
+export const recoveryDevice = async (equipmentId: string) => {
   return await request<string>({
     url: '/teacher/device/recovery',
     method: 'PUT',
     data: {
-      serialNumber
+      equipmentId
+    }
+  })
+}
+
+interface IResApplyInfo {
+  num: number
+  applyInfo: IApplyInfoSingle[]
+}
+
+// 得到申请信息
+export const ApplyInfo = async () => {
+  return await request<IResApplyInfo>({
+    url: '/teacher/device/applyInfo',
+    method: 'GET'
+  })
+}
+
+// 拒绝申请
+export const refuseApply = async (id: string, reason: string) => {
+  return await request<string>({
+    url: '/teacher/device/refuseApply',
+    method: 'PUT',
+    data: {
+      id,
+      reason
+    }
+  })
+}
+
+// 同意申请
+export const consentApply = async (
+  equipmentId: string,
+  startTime: Date,
+  endTime: Date,
+  studentId: string
+) => {
+  return await request<string>({
+    url: '/teacher/device/consent',
+    method: 'POST',
+    data: {
+      equipmentId,
+      startTime,
+      endTime,
+      studentId
     }
   })
 }

@@ -80,6 +80,35 @@ interface IOption {
   label: string
 }
 
+interface IApplyInfo {
+  id: string
+  applyState: typeIApplyState
+  startTime: Date
+  endTime: Date
+  apply_reason: string
+  refuseReason: string
+  createdTime: Date
+  serialNumber: string
+  name: string
+  performanceIndex: string
+  address: string
+}
+
+interface IApplyInfoSingle {
+  applyState: typeIApplyState
+  apply_reason: string
+  createdTime: Date
+  endTime: Date
+  startTime: Date
+  equipment_name: string
+  serialNumber: string
+  id: string
+  equipmentId: string
+  studentId: string
+  username: string
+  studentName: string
+}
+
 // 设备申请状态  0 -- 申请中  1 -- 申请同意 -1 -- 申请被拒绝
 type typeIApplyState = -1 | 0 | 1
 export type {
@@ -94,5 +123,7 @@ export type {
   IEquipmentList,
   IResStu,
   IOption,
-  typeIApplyState
+  typeIApplyState,
+  IApplyInfo,
+  IApplyInfoSingle
 }

@@ -28,7 +28,7 @@
     width: 18px;
     height: 18px;
     border-radius: 50%;
-    background: linear-gradient(270deg,#f88157,#fe5000);
+    background: linear-gradient(270deg, #f88157, #fe5000);
     color: #fff;
     display: flex;
     align-items: center;
@@ -41,14 +41,14 @@
 }
 
 .apply_box:hover {
-  border: 2px solid rgb(64,169,255);
+  border: 2px solid rgb(64, 169, 255);
 }
 
 .add_box {
   margin-left: auto;
 }
 
-.name{
+.name {
   cursor: pointer;
   transition: all 0.2s;
 }
@@ -57,19 +57,20 @@
   color: #1890ff;
 }
 
-.height{
+.height {
   :global {
-    .ant-table-tbody > tr > td {
+    .ant-table-tbody>tr>td {
       padding: 14px 14px;
     }
-    .ant-table-thead > tr > th {
+
+    .ant-table-thead>tr>th {
       padding: 9px;
       text-align: center;
     }
   }
 }
 
-.btn_box{
+.btn_box {
   margin-left: 35%;
   width: 50%;
   display: flex;

@@ -80,7 +80,12 @@ export default function TeamManager () {
         </>
       </div>
       <div className={style.pagination}>
-        <Pagination defaultCurrent={current} total={total} onChange={onChange} className={style.pagination} />
+        <Pagination
+          defaultCurrent={current}
+          total={total}
+          onChange={onChange}
+          className={style.pagination}
+        />
       </div>
       <Modal
         title="添加成员"

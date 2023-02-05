@@ -4,13 +4,16 @@ import Column from 'antd/lib/table/Column'
 import dayjs from 'dayjs'
 import moment from 'moment'
 import React, { useEffect, useState } from 'react'
-import { addDevice, changeState, chooseStu, getList, getLists, recoveryDevice, updateDeviceInfo } from '../../../api/teacherApi/device'
-import { IDevice, IEquipmentState, IOption } from '../../../libs/model'
+import { addDevice, ApplyInfo, changeState, chooseStu, getList, getLists, recoveryDevice, updateDeviceInfo } from '../../../api/teacherApi/device'
+import { IApplyInfoSingle, IDevice, IEquipmentState, IOption } from '../../../libs/model'
+import ApplyMsg from './ApplyMsg'
 import style from './index.module.scss'
 
 export default function TDeviceManager () {
   // 控制抽屉
   const [open, setOpen] = useState(false)
+  // 控制申请消息抽屉
+  const [applyOpen, setApplyOpen] = useState(false)
   // 保存学生列表
   const [stuList, setStuList] = useState<IOption[]>()
   // 指派时保存信息
@@ -23,6 +26,11 @@ export default function TDeviceManager () {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   // 修改设备Modal
   const [isModify, setIsModify] = useState(false)
+
+  // 保存申请信息
+  const [applyList, setApplyList] = useState<IApplyInfoSingle[]>([])
+  // 保存申请数量
+  const [applyNum, setApplyNum] = useState<number>()
   // 分页
   const [current, setCurrent] = useState(1)
   const [total, setTotal] = useState(10)
@@ -67,7 +75,7 @@ export default function TDeviceManager () {
 
   // 收回设备
   const recoveryEquipment = async (record: IDevice) => {
-    const res = await recoveryDevice(record.serialNumber)
+    const res = await recoveryDevice(record.id)
     if (res?.status === 10117) {
       getDeviceList()
       message.success(res.msg)
@@ -184,6 +192,16 @@ export default function TDeviceManager () {
     }
   }
 
+  // 得到申请消息
+  const getApplyInfo = async () => {
+    const res = await ApplyInfo()
+    if (res?.status === 10120) {
+      setApplyList(res.data.applyInfo)
+      setApplyNum(res.data.num)
+    }
+    console.log(res?.data)
+  }
+
   // 刷新
   const getDeviceList = async () => {
     setLoading(true)
@@ -199,6 +217,7 @@ export default function TDeviceManager () {
       setLists(newList)
       setLoading(false)
     }
+    getApplyInfo()
   }
 
   // 选择指派人
@@ -218,11 +237,7 @@ export default function TDeviceManager () {
     }
   }
 
-  // // 保存时间
-  // const setStartAndEndTime = (values: Array<moment.Moment>, formatString: [string, string]) => {
-  //   console.log(e)
-  // }
-
+  console.log(applyList)
   useEffect(() => {
     getDeviceList()
   }, [current])
@@ -234,9 +249,13 @@ export default function TDeviceManager () {
           allowClear onSearch={onSearch}
           className={style.searchInput}
         />
-        <div className={style.apply_box}>
+        <div className={style.apply_box} onClick={() => setApplyOpen(true)}>
           审批申请
-          <div className={style.apply_num}>12</div>
+          {
+            applyNum !== 0
+              ? <div className={style.apply_num}>{applyNum}</div>
+              : ''
+          }
         </div>
         <Button type='primary' className={style.add_box} onClick={() => setIsAddModalOpen(true)}>添加设备</Button>
       </div>
@@ -478,6 +497,19 @@ export default function TDeviceManager () {
           </Form.Item>
         </Form>
       </Modal>
+      <Drawer
+        title='申请信息'
+        placement='right'
+        width={700}
+        open={applyOpen}
+        onClose={() => setApplyOpen(false)}
+      >
+        {
+          applyList.map(item => <div key={item.id}>
+            <ApplyMsg item={item} getDeviceList={getDeviceList}></ApplyMsg>
+          </div>)
+        }
+      </Drawer>
       <Drawer
         title="选择指派人"
         placement='right'

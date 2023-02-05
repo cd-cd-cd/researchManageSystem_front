@@ -1,16 +1,19 @@
 .back{
   padding: 5px;
-}
+  height: calc(100vh - 100px);
+  display: flex;
+  flex-direction: column;
+}  
 
 .main{
   width: 95%;
   margin: 0 auto;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
+  grid-row-gap: 10px;
 }
 
 .show_box{
-  cursor: pointer;
   padding: 15px;
   width: 500px;
   display: grid;
@@ -42,6 +45,7 @@
 
 .apply_btn{
   margin-bottom: 10px;
+  width: 90px;
 }
 
 .btn_box{
@@ -57,4 +61,46 @@
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+}
+
+.pagination_bottom{
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+}
+
+.null_box{
+  width: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.info_text{
+  color: gray;
+}
+
+.NoInfoIcon{
+  width: 100px;
+  margin-top: -100px;
+}
+
+.store_btn{
+  margin-right: 15px;
+}
+
+.btn_box{
+  width: 100%;
+  margin: 0;
+  padding-left: 5px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.delete{
+  width: 10px;
+  height: 10px;
+  cursor: pointer;
 }
