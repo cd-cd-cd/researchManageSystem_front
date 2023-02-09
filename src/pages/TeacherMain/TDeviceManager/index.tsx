@@ -43,9 +43,6 @@ export default function TDeviceManager () {
   // 添加设备form
   const [form] = useForm()
   const [modifyForm] = useForm()
-  const onSearch = (value: string) => {
-    console.log(value)
-  }
   // 关闭添加Modal
   const closeModal = () => {
     form.resetFields()
@@ -247,11 +244,6 @@ export default function TDeviceManager () {
   return (
     <div>
       <div className={style.func_box}>
-        <Input.Search
-          placeholder="请输入设备型号"
-          allowClear onSearch={onSearch}
-          className={style.searchInput}
-        />
         <div className={style.apply_box} onClick={() => setApplyOpen(true)}>
           审批申请
           {

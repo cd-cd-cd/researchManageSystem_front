@@ -124,6 +124,25 @@ interface ILoadInfo {
   startTime: Date
   version: string
 }
+
+
+interface IPart {
+  type: 'progress' | 'plan' | 'teamService'
+  id: string
+  title: string
+  point: IPoint[]
+}
+
+interface IPoint {
+  id: string
+  title: string
+  text: IText[]
+}
+
+interface IText {
+  id: string
+  content: string
+}
 export type {
   IStuList,
   IStu,
@@ -139,6 +158,7 @@ export type {
   typeIApplyState,
   IApplyInfo,
   IApplyInfoSingle,
-  ILoadInfo
+  ILoadInfo,
+  IPart
 }
 

@@ -1,7 +1,10 @@
 import React from 'react'
+import GroupPart from '../../../components/GroupPart'
 
 export default function GroupManage () {
   return (
-    <div>GroupManage </div>
+    <div>
+      <GroupPart></GroupPart>
+    </div>
   )
 }

@@ -1,0 +1,76 @@
+.box {
+  width: 100%;
+  display: flex;
+}
+
+.main {
+  padding: 10px 40px;
+  margin-top: 10px;
+  margin-left: 80px;
+  width: 750px;
+  box-shadow: 0 0 10px 0 rgb(58 58 58 / 7%);
+  margin-bottom: 30px;
+}
+
+.title {
+  color: rgba(8, 14, 23, 0.9);
+  font-size: 28px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.date {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.headOne {
+  margin: 10px 0 10px 0;
+  color: rgba(8, 14, 23, 0.9);
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.btn_box{
+  display: flex;
+  flex-direction: column;
+  height: 100px;
+  justify-content: space-around;
+  position: sticky;
+  margin-top: 100px;
+  margin-left: 25px;
+  top: 100px
+}
+
+.right_box {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  margin-right: 10px;
+  margin-top: 5px;
+}
+
+.plate_box {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.plate_box_focus{
+  box-shadow: 0 0 10px 0 rgb(58 58 58 / 7%);
+  padding: 10px;
+  cursor: pointer;
+}
+
+.addIcon{
+  width: 16px;
+  height: 16px;
+  display: block;
+  margin: 10px auto;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.addIcon:hover {
+  transform: scale(1.2);
+}
