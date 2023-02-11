@@ -4,6 +4,7 @@
 }
 
 .main {
+  position: relative;
   padding: 10px 40px;
   margin-top: 10px;
   margin-left: 80px;
@@ -73,4 +74,10 @@
 
 .addIcon:hover {
   transform: scale(1.2);
+}
+
+.reset_btn{
+  position: absolute;
+  top: 20px;
+  left: 20px;
 }

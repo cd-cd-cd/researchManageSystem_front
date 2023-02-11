@@ -1,9 +1,10 @@
 import React, { useState } from 'react'
 import './App.css'
+import { v4 as uuidv4 } from 'uuid'
 import { Navigate } from 'react-router'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { StoreProvider } from './hooks/store'
-import { ITabBarCommon } from './libs/model'
+import { IPart, ITabBarCommon } from './libs/model'
 import Login from './pages/Login'
 import DeviceManager from './pages/StudentMain/DeviceManager'
 import GroupManage from './pages/StudentMain/GroupManage'
@@ -25,12 +26,70 @@ import TeammateInfo from './pages/TeacherMain/TeammateInfo'
 function App () {
   const [tabBarList, setTabBarList] = useState<ITabBarCommon[]>([])
   const [tabBarId, setTabBarId] = useState(-1)
+  const [report, setReport] = useState<IPart[]>([
+    {
+      type: 'progress',
+      id: uuidv4(),
+      title: '',
+      point: [
+        {
+          id: uuidv4(),
+          title: '进展简介',
+          text: [
+            {
+              id: uuidv4(),
+              content: ''
+            }
+          ]
+        },
+        {
+          id: uuidv4(),
+          title: '量化结果',
+          text: [
+            {
+              id: uuidv4(),
+              content: ''
+            }
+          ]
+        }
+      ]
+    },
+    {
+      type: 'plan',
+      id: uuidv4(),
+      title: '',
+      point: [
+        {
+          id: uuidv4(),
+          title: '任务设想',
+          text: [
+            {
+              id: uuidv4(),
+              content: ''
+            }
+          ]
+        },
+        {
+          id: uuidv4(),
+          title: '预期量化结果',
+          text: [
+            {
+              id: uuidv4(),
+              content: ''
+            }
+          ]
+        }
+      ]
+    }
+  ])
   return (
     <StoreProvider value={{
       tabBarList,
       setTabBarList,
       tabBarId,
-      setTabBarId
+      setTabBarId,
+      report,
+      setReport
     }}>
       <BrowserRouter>
         <Routes>

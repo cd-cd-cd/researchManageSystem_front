@@ -1,5 +1,5 @@
 import { createContext } from 'react'
-import { ITabBarCommon } from '../libs/model'
+import { IPart, ITabBarCommon } from '../libs/model'
 
 interface StoreContext {
 // tabBar
@@ -9,13 +9,18 @@ interface StoreContext {
   // tabBarId
   tabBarId: number
   setTabBarId: (id: number) => void
+
+  report: IPart[]
+  setReport: (report: IPart[]) => void
 }
 
 const context = createContext<StoreContext>({
   tabBarList: [],
   setTabBarList: () => {},
   tabBarId: -1,
-  setTabBarId: () => {}
+  setTabBarId: () => {},
+  report: [],
+  setReport: () => {}
 })
 
 const StoreProvider = context.Provider

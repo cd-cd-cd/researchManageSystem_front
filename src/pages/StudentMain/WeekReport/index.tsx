@@ -1,19 +1,52 @@
 import { Button, DatePicker } from 'antd'
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import 'moment/locale/zh-cn'
 import style from './index.module.scss'
 import useReport from '../../../hooks/useReport'
 import addIcon from '../../../assets/imgs/add.png'
 import Plate from './Plate'
+import { context } from '../../../hooks/store'
+import Mask from './Mask'
 export default function WeekReport () {
   const [focusId, setFocusId] = useState<string>()
-  const { addPoint, report } = useReport()
+  const [isMask, setIsMask] = useState<boolean>(false)
+  const [time, setTime] = useState<string[]>([])
+  const { report } = useContext(context)
+  const { addPoint, checkReport, reset } = useReport()
+  const onChange = (
+    _: any,
+    dateString: [string, string]
+  ) => {
+    setTime(dateString)
+  }
+
+  // 预览
+  const showMask = () => {
+    setFocusId(undefined)
+    const res = checkReport(time)
+    if (res === true) {
+      setIsMask(true)
+    } else {
+      if (res) {
+        setFocusId(res)
+      }
+    }
+  }
+
+  // 上传
+  const uploadReport = () => {
+    const res = checkReport(time)
+    if (res === true) {
+      console.log(report)
+    }
+  }
   return (
     <div className={style.box}>
       <div className={style.main}>
+        <Button className={style.reset_btn} onClick={() => reset()}>重置</Button>
         <div className={style.title}>周报</div>
-        <div className={style.date}>
-          <DatePicker.RangePicker picker="week" />
+        <div className={style.date} id='time'>
+          <DatePicker.RangePicker onChange={onChange}/>
         </div>
         <div className={style.partOne}>
           <div className={style.headOne}>一、本周进展</div>
@@ -21,11 +54,12 @@ export default function WeekReport () {
             {
               report.filter(item => item.type === 'progress').map((item, index) =>
                 <div
+                  id={item.id}
                   key={item.id}
                   className={focusId === item.id ? style.plate_box_focus : style.plate_box}
                   onClick={() => setFocusId(item.id)}
                 >
-                  <Plate type='progress' index={index} reportPart={item}></Plate>
+                  <Plate type='progress' index={index} reportPart={item} focusId={focusId}></Plate>
                 </div>
               )
             }
@@ -38,11 +72,12 @@ export default function WeekReport () {
             {
               report.filter(item => item.type === 'plan').map((item, index) =>
                 <div
+                  id={item.id}
                   key={item.id}
                   className={focusId === item.id ? style.plate_box_focus : style.plate_box}
                   onClick={() => setFocusId(item.id)}
                 >
-                  <Plate type='plan' index={index} reportPart={item}></Plate>
+                  <Plate type='plan' index={index} reportPart={item} focusId={focusId}></Plate>
                 </div>
               )
             }
@@ -57,11 +92,12 @@ export default function WeekReport () {
                 {
                   report.filter(item => item.type === 'teamService').map((item, index) =>
                     <div
+                      id={item.id}
                       key={item.id}
                       className={focusId === item.id ? style.plate_box_focus : style.plate_box}
                       onClick={() => setFocusId(item.id)}
                     >
-                      <Plate type='teamService' index={index} reportPart={item}></Plate>
+                      <Plate type='teamService' index={index} reportPart={item} focusId={focusId}></Plate>
                     </div>
                   )
                 }
@@ -72,12 +108,15 @@ export default function WeekReport () {
         }
       </div>
       <div className={style.btn_box}>
-        <Button type='primary'>预览</Button>
-        <Button>上传</Button>
+        <Button type='primary' onClick={() => showMask()}>预览</Button>
+        <Button onClick={() => uploadReport()}>上传</Button>
       </div>
       <div className={style.right_box}>
         <Button type='primary' className={style.btn}>历史周报</Button>
       </div>
+      {
+        isMask ? <Mask close={() => setIsMask(false)} time={time}></Mask> : ''
+      }
     </div>
   )
 }
