@@ -2,14 +2,12 @@ import axios from 'axios'
 import type { HeadersDefaults, AxiosRequestConfig } from 'axios'
 import { message } from 'antd'
 
-const BASE_URL = ''
+const BASE_URL = '/api'
 // 添加额外的头部配置
 interface Header extends HeadersDefaults {
   'Content-Type': string
   'Authorization': string
 }
-
-// (axios.defaults.headers as Header)['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8'
 (axios.defaults.headers as Header)['Content-Type'] = 'application/json'
 
 // 返回数据格式

@@ -1,10 +1,10 @@
-import { Button, DatePicker, Form, Input, Modal, Table, Upload } from 'antd'
+import { Button, Form, Input, InputNumber, Modal, Table, Upload } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
+import Column from 'antd/lib/table/Column'
 import React, { useState } from 'react'
 import { UploadOutlined } from '@ant-design/icons'
 import style from './index.module.scss'
-import Column from 'antd/lib/table/Column'
-export default function LeaveRequest () {
+export default function ReimbursementPart () {
   const [isModal, setModal] = useState(false)
   const [form] = useForm()
   const closeModal = () => {
@@ -17,16 +17,18 @@ export default function LeaveRequest () {
   }
   return (
     <div>
-      <Button className={style.leave_btn} type='primary' onClick={() => setModal(true)}>发起请假</Button>
+      <Button className={style.leave_btn} type='primary' onClick={() => setModal(true)}>报销申请</Button>
       <Table>
-        <Column title="请假时间" dataIndex="time" key="time" />
-        <Column title="请假理由" dataIndex="reason" key="reason" />
-        <Column title="材料" dataIndex="material" key="material" />
+        <Column title="具体事务" dataIndex="affair" key="affair" />
+        <Column title="报销金额" dataIndex="sum" key="sum" />
+        <Column title="发票" dataIndex="receipt" key="receipt" />
+        <Column title="相关证明材料" dataIndex="material" key="material" />
         <Column title="状态" dataIndex="status" key="status" />
+        <Column title="申请时间" dataIndex="time" key="time" />
       </Table>
       <Modal
         open={isModal}
-        title='发起请假'
+        title='报销申请'
         footer={null}
         onCancel={() => closeModal()}
       >
@@ -37,26 +39,37 @@ export default function LeaveRequest () {
           form={form}
         >
           <Form.Item
-            label='请假时长'
-            name='time'
+            label='具体事务'
+            name='affair'
             rules={[
-              { required: true, message: '请假时长不为空' }
+              { required: true, message: '具体事务不为空' },
+              { max: 255, message: '不超过255字' }
             ]}
           >
-            <DatePicker.RangePicker></DatePicker.RangePicker>
+            <Input.TextArea placeholder='请填写报销具体事务'></Input.TextArea>
           </Form.Item>
           <Form.Item
-            label='请假理由'
-            name='reason'
+            label='报销金额'
+            name='sum'
             rules={[
-              { required: true, message: '请假理由不为空' },
-              { max: 255, message: '理由不超过255字' }
+              { required: true, message: '报销金额不为空' }
             ]}
           >
-            <Input.TextArea placeholder='字数不超过255字'></Input.TextArea>
+            <InputNumber min={0} defaultValue={1}/>
           </Form.Item>
           <Form.Item
-            label='请假材料'
+            label='发票（pdf）'
+            name='receipt'
+            rules={[
+              { required: true, message: '必须上传发票' }
+            ]}
+          >
+            <Upload>
+              <Button icon={<UploadOutlined />}>Upload</Button>
+            </Upload>
+          </Form.Item>
+          <Form.Item
+            label='相关证明材料'
             name='material'
           >
             <Upload>
