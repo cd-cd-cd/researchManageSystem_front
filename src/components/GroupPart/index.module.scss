@@ -1,18 +1,41 @@
-.back{
+.back {
   padding: 5px;
 }
 
-.btn_box{
+.btn_box {
   width: 60%;
   margin-left: 130px;
   display: flex;
   justify-content: space-between;
 }
 
-.meet_box{
+.meet_box {
   display: grid;
-  padding: 10px 15px; 
+  padding: 10px 15px;
   grid-template-columns: repeat(2, 1fr);
   grid-template-rows: repeat(2, 1fr);
   grid-row-gap: 10px;
+}
+
+.list_box {
+  padding: 5px 0px;
+
+  .list_line {
+    padding: 1px 0px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .list {
+      color: dimgray;
+      cursor: pointer;
+    }
+
+    .deleteIcon {
+      width: 10px;
+      height: 10px;
+      cursor: pointer;
+    }
+  }
 }
