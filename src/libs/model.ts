@@ -143,6 +143,45 @@ interface IText {
   id: string
   content: string
 }
+
+// 会议状态 -1(结束) 0(进行中) 1(未开始)
+type IMeetingState = -1 | 0 | 1
+
+interface ISponsor {
+  id: string
+  name: string
+  role: IRole
+  trueId: string
+  username: string
+}
+
+interface IRcord {
+  id: string
+  createdTime: Date
+  participant: IParticipant
+}
+
+interface IParticipant {
+  id: string
+  name: string
+  role: IRole
+  trueId: string
+  username: string
+}
+
+interface IMeetingInfo {
+  address: string
+  briefContent: string
+  createdTime: Date
+  endTime: Date
+  id: string
+  materials: string
+  meetState: IMeetingState
+  startTime: Date
+  title: string
+  sponsor: ISponsor
+  records: IRcord[]
+}
 export type {
   IStuList,
   IStu,
@@ -159,6 +198,8 @@ export type {
   IApplyInfo,
   IApplyInfoSingle,
   ILoadInfo,
-  IPart
+  IPart,
+  IMeetingInfo,
+  IMeetingState
 }
 

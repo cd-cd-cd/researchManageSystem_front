@@ -1,5 +1,7 @@
 .back {
   padding: 5px;
+  height: 100%;
+  overflow: auto;
 }
 
 .btn_box {
@@ -38,4 +40,10 @@
       cursor: pointer;
     }
   }
+}
+
+.pagination_bottom{
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
 }

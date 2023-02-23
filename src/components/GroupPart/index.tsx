@@ -1,11 +1,12 @@
-import { Button, DatePicker, Form, Input, message, Modal, Select, Upload } from 'antd'
+import { Button, DatePicker, Form, Input, message, Modal, Pagination, Select, Upload } from 'antd'
 import { UploadOutlined } from '@ant-design/icons'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import deleteIcon from '../../assets/imgs/delete.png'
 import style from './index.module.scss'
 import { RcFile } from 'antd/lib/upload'
 import Meet from './Meet'
-import { getParticipants, postMaterial } from '../../api/studentApi/meet'
+import { getParticipants, postMaterial, createMeet, getMeeting } from '../../api/studentApi/meet'
+import { IMeetingInfo } from '../../libs/model'
 interface IOption {
   value: string
   label: string
@@ -14,7 +15,11 @@ export default function GroupPart () {
   const [isModal, setIsModal] = useState<boolean>(false)
   const [list, setList] = useState<RcFile[]>([])
   const [options, setOptions] = useState<IOption[]>([])
+  const [meetInfos, setMeetInfos] = useState<IMeetingInfo[]>()
   const [form] = Form.useForm()
+  const [current, setCurrent] = useState(1)
+  const [total, setTotal] = useState(4)
+  // 关闭窗口
   const closeModal = () => {
     form.resetFields()
     setList([])
@@ -42,11 +47,11 @@ export default function GroupPart () {
     if (res?.success) {
       const arr = res.data.map(item => {
         if (item.role === 0) {
-          return { value: JSON.stringify([item.id, 0]), label: item.name + ' - 学生' }
+          return { value: item.id, label: item.name + ' - 学生' }
         } else if (item.role === 1) {
-          return { value: JSON.stringify([item.id, 1]), label: item.name + ' - 老师' }
+          return { value: item.id, label: item.name + ' - 老师' }
         }
-        return { value: JSON.stringify([item.id, item.role]), label: item.name }
+        return { value: item.id, label: item.name }
       })
       setOptions(arr)
     }
@@ -64,25 +69,71 @@ export default function GroupPart () {
   }
 
   // 上传材料
-  const postMaterialClick = async () => {
+  const postMaterialClick = async (id: string) => {
     const formData = new FormData()
     list.forEach(item => formData.append('file', item))
-    const res = await postMaterial(formData, list.length)
-    console.log(res)
+    const res = await postMaterial(formData, list.length, id)
+    if (res?.success) {
+      createSuccess()
+    }
   }
 
-  const createMeeting = (values: any) => {
-    console.log(values)
-    postMaterialClick()
+  // 创建成功
+  const createSuccess = () => {
+    getMeetingInfo()
+    message.success('创建成功')
+    closeModal()
   }
+
+  // 创建会议
+  const createMeeting = async (values: any) => {
+    const startTime = values.time[0].toDate()
+    const endTime = values.time[1].toDate()
+    console.log(values)
+    const res = await createMeet(
+      values.title,
+      values.briefContent,
+      startTime,
+      endTime,
+      values.address,
+      values.participant
+    )
+    if (res?.success) {
+      const id = res.data
+      if (list.length !== 0) {
+        postMaterialClick(id)
+      } else {
+        createSuccess()
+      }
+    }
+  }
+
+  // 得到会议信息
+  const getMeetingInfo = async () => {
+    const res = await getMeeting(current, 4)
+    if (res?.success) {
+      setTotal(res.data.total)
+      setMeetInfos(res.data.meetings)
+    }
+  }
+
+  useEffect(() => {
+    getMeetingInfo()
+  }, [current])
   return (
     <div className={style.back}>
       <Button onClick={() => openModal()}>创建会议</Button>
       <div className={style.meet_box}>
-        <Meet></Meet>
-        <Meet></Meet>
-        <Meet></Meet>
+        {
+          meetInfos?.map(meet => <Meet key={meet.id} info={meet}></Meet>)
+        }
       </div>
+      <Pagination
+        defaultCurrent={current}
+        total={total}
+        onChange={(page) => setCurrent(page)}
+        className={style.pagination_bottom}
+      />
       <Modal
         footer={null}
         title='创建会议'
@@ -131,7 +182,7 @@ export default function GroupPart () {
             label='会议地点'
             rules={[
               { required: true, message: '会议地点不为空' },
-              { max: 20, message: '会议地点长度不超过20' }
+              { max: 50, message: '会议地点长度不超过50' }
             ]}
           >
             <Input placeholder='会议地点'></Input>

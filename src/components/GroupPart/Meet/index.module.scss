@@ -1,6 +1,8 @@
 .box {
   padding: 10px;
   width: 450px;
+  overflow: auto;
+  height: 250px;
   box-shadow: 0 0 10px 0 rgb(58 58 58 / 7%)
 }
 
@@ -16,4 +18,24 @@
 
 .main{
   padding: 10px;
+}
+
+.participant_line{
+  display: flex;
+}
+
+.label{
+  width: 70px;
+}
+
+.row{
+  display: flex;
+  width: 100%;
+  flex-wrap: wrap;
+  margin-bottom: 5px;
+}
+
+.a_box{
+  display: flex;
+  flex-direction: column;
 }
