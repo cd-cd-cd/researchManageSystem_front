@@ -2,6 +2,7 @@ import { message } from 'antd'
 import { useCallback, useContext } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { context } from './store'
+import { Moment } from 'moment'
 export default function useReport () {
   const { report, setReport } = useContext(context)
   const returnPoint = (type: 'progress' | 'plan' | 'teamService') => {
@@ -169,8 +170,9 @@ export default function useReport () {
   }, [report, setReport])
 
   // 检查周报
-  const checkReport = (time: string[]) => {
-    if (!time[0] || !time[1]) {
+  const checkReport = (time: Moment[]) => {
+    console.log(time)
+    if (time.length === 0) {
       message.info('周报时间不为空')
       document.getElementById('time')?.scrollIntoView(true)
       return false

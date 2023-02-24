@@ -1,16 +1,17 @@
-import React, { useContext } from 'react'
+import React from 'react'
 import style from './index.module.scss'
 import deleteIcon from '../../../../assets/imgs/delete.png'
 import circleIcon from '../../../../assets/imgs/circle.png'
-import { context } from '../../../../hooks/store'
 import dayjs from 'dayjs'
+import { IPart } from '../../../../libs/model'
+
 interface Props {
   close: () => void
-  time: string[]
+  time: Date[]
+  report: IPart[]
 }
-export default function Mask ({ close, time }: Props) {
-  const { report } = useContext(context)
 
+export default function Mask ({ close, time, report }: Props) {
   const returnTitle = (type: 'progress' | 'plan' | 'teamService', index: number) => {
     switch (type) {
       case 'progress':

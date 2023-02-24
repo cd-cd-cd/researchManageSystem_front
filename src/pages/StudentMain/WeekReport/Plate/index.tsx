@@ -27,7 +27,7 @@ export default function Plate ({ index, reportPart, type, focusId }: Props) {
     }
   }
 
-  const setTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const setTitle = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const title = e.target.value
     if (title.trim().length <= 50) {
       setWarnText('')
@@ -42,15 +42,17 @@ export default function Plate ({ index, reportPart, type, focusId }: Props) {
         {
           (index !== 0 || type === 'teamService') && focusId === reportPart.id ? <img src={deleteIcon} className={style.deleteIcon} onClick={() => deletePoint(reportPart.id)}></img> : ''
         }
-        <span>{returnTitle()}</span>
-        <Input
+        <span className={style.title_style}>{returnTitle()}</span>
+        <Input.TextArea
+          style={{ minHeight: '37px' }}
           bordered={false}
+          autoSize
           placeholder='填写标题'
           onChange={(e) => setTitle(e)}
           value={reportPart.title}
           className={style.inputTitle}
         >
-        </Input>
+        </Input.TextArea>
       </div>
       <div className={style.warn}>{warnText}</div>
       <div className={style.partThree}>
@@ -67,6 +69,7 @@ export default function Plate ({ index, reportPart, type, focusId }: Props) {
                         autoSize
                         bordered={false}
                         placeholder={`内容${++textIndex}`}
+                        value={text.content}
                         className={style.lineInput}
                         onChange={(e) => changeText(reportPart.id, point.id, text.id, e.target.value)}
                       ></Input.TextArea>

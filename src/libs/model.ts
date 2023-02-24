@@ -182,6 +182,39 @@ interface IMeetingInfo {
   sponsor: ISponsor
   records: IRcord[]
 }
+
+interface IHistoryReport {
+  createdTime: Date
+  startTime: Date
+  endTime: Date
+  id: string
+  text: IPart[]
+}
+
+interface ITeacherReport extends IHistoryReport {
+  reportState: IReportState
+  report_submitter: {
+    id: string
+    name: string
+    role: IRole
+    trueId: string
+    username: string
+  }
+}
+
+interface INewInfo {
+  key: string
+  name: string
+  username: string
+  timeRange: string
+  createTime: string
+  status: IReportState
+  startTime: Date
+  endTime: Date
+  text: IPart[]
+}
+// 周报状态 -1 -- 未查看     0 --- 查看了但没回复  1 --- 查看了并回复了
+type IReportState = -1 | 0 | 1
 export type {
   IStuList,
   IStu,
@@ -200,6 +233,10 @@ export type {
   ILoadInfo,
   IPart,
   IMeetingInfo,
-  IMeetingState
+  IMeetingState,
+  IHistoryReport,
+  ITeacherReport,
+  INewInfo,
+  IReportState
 }
 

@@ -1,4 +1,4 @@
-import { Button, DatePicker } from 'antd'
+import { Button, DatePicker, Drawer, message } from 'antd'
 import React, { useContext, useState } from 'react'
 import 'moment/locale/zh-cn'
 import style from './index.module.scss'
@@ -6,18 +6,31 @@ import useReport from '../../../hooks/useReport'
 import addIcon from '../../../assets/imgs/add.png'
 import Plate from './Plate'
 import { context } from '../../../hooks/store'
+import noInfoIcon from '../../../assets/imgs/noInfo.png'
 import Mask from './Mask'
+import { createReport, getReportRecord } from '../../../api/studentApi/report'
+import { Moment } from 'moment'
+import RecordItem from './RecordItem'
+import { IHistoryReport } from '../../../libs/model'
+type RangeValue = [Moment | null, Moment | null] | null
 export default function WeekReport () {
+  // Draw
+  const [open, setOpen] = useState(false)
   const [focusId, setFocusId] = useState<string>()
   const [isMask, setIsMask] = useState<boolean>(false)
-  const [time, setTime] = useState<string[]>([])
+  const [time, setTime] = useState<Moment[]>([])
+  const [value, setValue] = useState<RangeValue>(null)
+  // 保存历史周报
+  const [historyReport, setHistoryReport] = useState<IHistoryReport[]>()
   const { report } = useContext(context)
-  const { addPoint, checkReport, reset } = useReport()
+  const { addPoint, reset, checkReport } = useReport()
+
   const onChange = (
-    _: any,
-    dateString: [string, string]
+    values: any,
+    _: any
   ) => {
-    setTime(dateString)
+    setTime(values)
+    setValue(values)
   }
 
   // 预览
@@ -34,11 +47,25 @@ export default function WeekReport () {
   }
 
   // 上传
-  const uploadReport = () => {
+  const uploadReport = async () => {
     const res = checkReport(time)
     if (res === true) {
-      console.log(report)
+      const newReport = JSON.stringify(report)
+      const temp = await createReport(time[0].toDate(), time[1].toDate(), newReport)
+      if (temp?.success) {
+        message.success(temp.msg)
+        reset()
+        setTime([])
+        setValue([null, null])
+      }
     }
+  }
+
+  // 得到周报记录
+  const getRecords = async () => {
+    setOpen(true)
+    const res = await getReportRecord()
+    setHistoryReport(res?.data)
   }
   return (
     <div className={style.box}>
@@ -46,7 +73,7 @@ export default function WeekReport () {
         <Button className={style.reset_btn} onClick={() => reset()}>重置</Button>
         <div className={style.title}>周报</div>
         <div className={style.date} id='time'>
-          <DatePicker.RangePicker onChange={onChange}/>
+          <DatePicker.RangePicker value={value} onChange={onChange} />
         </div>
         <div className={style.partOne}>
           <div className={style.headOne}>一、本周进展</div>
@@ -112,10 +139,29 @@ export default function WeekReport () {
         <Button onClick={() => uploadReport()}>上传</Button>
       </div>
       <div className={style.right_box}>
-        <Button type='primary' className={style.btn}>历史周报</Button>
+        <Button type='primary' className={style.btn} onClick={() => getRecords()}>历史周报</Button>
       </div>
+      <Drawer
+        title="历史周报"
+        placement="right"
+        onClose={() => setOpen(false)}
+        open={open}
+        width='600px'
+      >
+        {
+          historyReport?.length
+            ? historyReport.map(report => <RecordItem key={report.id} report={report}></RecordItem>)
+            : <img src={noInfoIcon} className={style.noInfoIcon}></img>
+        }
+      </Drawer>
       {
-        isMask ? <Mask close={() => setIsMask(false)} time={time}></Mask> : ''
+        isMask
+          ? <Mask
+            close={() => setIsMask(false)}
+            time={[time[0].toDate(), time[1].toDate()]}
+            report={report}
+          ></Mask>
+          : ''
       }
     </div>
   )
