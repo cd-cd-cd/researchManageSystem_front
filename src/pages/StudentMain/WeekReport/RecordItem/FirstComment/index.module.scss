@@ -1,0 +1,62 @@
+.line_box{
+  margin: 10px 0;
+  border-bottom: 1px solid rgba(58, 58, 58, 0.07);
+}
+
+.info_btn{
+  margin-right: 10px;
+}
+
+.reply_btn{
+  cursor: pointer;
+}
+
+.verticalIcon{
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.input_box{
+  display: flex;
+  align-items: flex-end;
+}
+
+.input_btn{
+  margin-left: 5px;
+}
+
+.time_box{
+  color: dimgray;
+  font-size: 12px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.reply_btn {
+  color: dimgray;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.reply_btn:hover {
+  color: gray;
+}
+
+.lists{
+  padding: 0 15px;
+}
+
+.content{
+  font-size: 12px;
+}
+
+.name{
+  margin-right: 5px;
+}
+
+.fold{
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+}

@@ -196,7 +196,6 @@ export default function TDeviceManager () {
       setApplyList(res.data.applyInfo)
       setApplyNum(res.data.num)
     }
-    console.log(res?.data)
   }
 
   // 刷新
@@ -237,7 +236,6 @@ export default function TDeviceManager () {
     }
   }
 
-  console.log(applyList)
   useEffect(() => {
     getDeviceList()
   }, [current])

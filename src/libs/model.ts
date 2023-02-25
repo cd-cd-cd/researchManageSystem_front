@@ -191,19 +191,22 @@ interface IHistoryReport {
   text: IPart[]
 }
 
+interface IUser {
+  id: string
+  name: string
+  role: IRole
+  trueId: string
+  username: string
+}
+
 interface ITeacherReport extends IHistoryReport {
   reportState: IReportState
-  report_submitter: {
-    id: string
-    name: string
-    role: IRole
-    trueId: string
-    username: string
-  }
+  report_submitter: IUser
 }
 
 interface INewInfo {
   key: string
+  userId: string
   name: string
   username: string
   timeRange: string
@@ -215,6 +218,22 @@ interface INewInfo {
 }
 // 周报状态 -1 -- 未查看     0 --- 查看了但没回复  1 --- 查看了并回复了
 type IReportState = -1 | 0 | 1
+
+interface IFirstComment {
+  commentContent: string
+  createdTime: Date
+  id: string
+  comment_user: IUser
+  comment_reply_user: IUser
+}
+
+interface ISecondComment {
+  id: string
+  secondComment: string
+  createdTime: Date
+  comment_reply_user: IUser
+  comment_user: IUser
+}
 export type {
   IStuList,
   IStu,
@@ -237,6 +256,8 @@ export type {
   IHistoryReport,
   ITeacherReport,
   INewInfo,
-  IReportState
+  IReportState,
+  IFirstComment,
+  ISecondComment
 }
 

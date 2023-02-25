@@ -1,8 +1,8 @@
-import { Table, Tag } from 'antd'
+import { Button, Table, Tag } from 'antd'
 import Column from 'antd/lib/table/Column'
 import dayjs from 'dayjs'
 import React, { useEffect, useState } from 'react'
-import { getReportInfo } from '../../../api/teacherApi/report'
+import { getReportInfo, reviewReport } from '../../../api/teacherApi/report'
 import { INewInfo, IReportState } from '../../../libs/model'
 import Mask from '../../StudentMain/WeekReport/Mask'
 import style from './index.module.scss'
@@ -13,9 +13,10 @@ export default function TWeekReport () {
   const [isMask, setIsMask] = useState<boolean>(false)
   const [total, setTotal] = useState<number>(0)
   const [current, setCurrent] = useState(1)
-  // 得到周报信息
+  const [isReview, setIsReview] = useState(false)
+  // 得到周报信息 // 刷新
   const getReportInfos = async () => {
-    const res = await getReportInfo(current, 9)
+    const res = await getReportInfo(current, 9, isReview)
     if (res?.success) {
       setTotal(res.data.total)
       const newInfos: INewInfo[] = res.data.reports.reduce((pre: INewInfo[], cur) => {
@@ -24,6 +25,7 @@ export default function TWeekReport () {
           name: cur.report_submitter.name,
           startTime: cur.startTime,
           endTime: cur.endTime,
+          userId: cur.report_submitter.trueId,
           username: cur.report_submitter.username,
           timeRange: `${dayjs(cur.startTime).format('YYYY-MM-DD')} --- ${dayjs(cur.endTime).format('YYYY-MM-DD')}`,
           createTime: dayjs(cur.createdTime).format('YYYY-MM-DD'),
@@ -58,12 +60,34 @@ export default function TWeekReport () {
     }
   }
 
+  // 查看周报
+  const viewReportAction = async (id: string, record: INewInfo) => {
+    setReport(record)
+    setIsMask(true)
+    if (record.status === -1) {
+      const res = await reviewReport(id)
+      if (res?.success) {
+        getReportInfos()
+      }
+    }
+  }
+
   useEffect(() => {
     getReportInfos()
-  }, [current])
+  }, [current, isReview])
   return (
     <div>
+      <Button
+        className={style.btn_top}
+        onClick={() => setIsReview(!isReview)}
+        type={isReview ? 'primary' : 'default'}
+      >
+        {
+          isReview ? '全部' : '未查看'
+        }
+      </Button>
       <Table
+        className={style.height}
         dataSource={reportInfos}
         pagination={paginationProps}
       >
@@ -82,18 +106,21 @@ export default function TWeekReport () {
           dataIndex="action"
           key="action"
           render={(_: any, record: INewInfo) => <>
-          <a className={style.review} onClick={() => { setReport(record); setIsMask(true) }}>查看周报</a>
-          <a>评论</a>
+            <a className={style.review} onClick={() => viewReportAction(record.key, record)}>查看周报</a>
           </>}
         />
       </Table>
       {
         isMask && report
           ? <Mask
-            close={() => setIsMask(false)}
-            time={[report.startTime, report.endTime]}
-            report={report.text}
-          ></Mask>
+              isCommentComponent={true}
+              close={() => setIsMask(false)}
+              time={[report.startTime, report.endTime]}
+              reportId={report.key}
+              reportUserId={report.userId}
+              report={report.text}
+              getReportInfos={getReportInfos}
+            ></Mask>
           : ''
       }
     </div>

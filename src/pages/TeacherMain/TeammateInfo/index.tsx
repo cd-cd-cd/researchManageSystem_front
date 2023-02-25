@@ -27,7 +27,6 @@ export default function TeammateInfo () {
 
   const getStuDetail = async () => {
     const id = params.id
-    console.log(id)
     if (id) {
       const res = await getStu(id)
       if (res?.status === 10011) {

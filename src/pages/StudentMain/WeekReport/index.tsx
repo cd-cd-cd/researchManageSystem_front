@@ -46,6 +46,12 @@ export default function WeekReport () {
     }
   }
 
+  const resetAll = () => {
+    reset()
+    setTime([])
+    setValue([null, null])
+  }
+
   // 上传
   const uploadReport = async () => {
     const res = checkReport(time)
@@ -54,9 +60,7 @@ export default function WeekReport () {
       const temp = await createReport(time[0].toDate(), time[1].toDate(), newReport)
       if (temp?.success) {
         message.success(temp.msg)
-        reset()
-        setTime([])
-        setValue([null, null])
+        resetAll()
       }
     }
   }
@@ -70,7 +74,7 @@ export default function WeekReport () {
   return (
     <div className={style.box}>
       <div className={style.main}>
-        <Button className={style.reset_btn} onClick={() => reset()}>重置</Button>
+        <Button className={style.reset_btn} onClick={() => resetAll()}>重置</Button>
         <div className={style.title}>周报</div>
         <div className={style.date} id='time'>
           <DatePicker.RangePicker value={value} onChange={onChange} />
@@ -157,6 +161,7 @@ export default function WeekReport () {
       {
         isMask
           ? <Mask
+            isCommentComponent={false}
             close={() => setIsMask(false)}
             time={[time[0].toDate(), time[1].toDate()]}
             report={report}

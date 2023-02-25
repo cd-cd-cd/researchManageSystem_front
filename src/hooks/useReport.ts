@@ -171,7 +171,6 @@ export default function useReport () {
 
   // 检查周报
   const checkReport = (time: Moment[]) => {
-    console.log(time)
     if (time.length === 0) {
       message.info('周报时间不为空')
       document.getElementById('time')?.scrollIntoView(true)

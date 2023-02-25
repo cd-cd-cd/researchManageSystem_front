@@ -1,3 +1,23 @@
 .review{
   margin-right: 10px;
 }
+
+.height {
+  :global {
+    .ant-table-tbody>tr>td {
+      padding: 15px;
+      text-align: center;
+    }
+
+    .ant-table-thead>tr>th {
+      padding: 10px;
+      text-align: center;
+    }
+  }
+}
+
+.btn_top{
+  margin: 3px;
+  width: 74px;
+  align-items: center;
+}

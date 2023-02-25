@@ -141,7 +141,6 @@ export default function PersonInfo () {
       message.info('请上传图片')
     } else {
       const res = await updateAvatar(imageUrl)
-      console.log(res)
       if (res) {
         message.success('头像设置成功')
         setImageUrl('')

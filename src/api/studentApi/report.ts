@@ -1,4 +1,4 @@
-import { IHistoryReport } from '../../libs/model'
+import { IHistoryReport, ISecondComment } from '../../libs/model'
 import request from '../../utils/request'
 
 // 上传周报
@@ -19,5 +19,29 @@ export const getReportRecord = async () => {
   return await request<IHistoryReport[]>({
     url: '/student/report/record',
     method: 'GET'
+  })
+}
+
+// 回复评论
+export const replyComment = async (firstCommentId: string, replyUserId: string, comment: string) => {
+  return await request({
+    url: '/student/report/replyComment',
+    method: 'POST',
+    data: {
+      firstCommentId,
+      replyUserId,
+      comment
+    }
+  })
+}
+
+// 得到二级评论
+export const getSecondComments = async (firstCommentId: string) => {
+  return await request<ISecondComment[]>({
+    url: '/student/report/secondComment',
+    method: 'GET',
+    params: {
+      firstCommentId
+    }
   })
 }
