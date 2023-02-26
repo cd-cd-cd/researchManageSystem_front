@@ -1,20 +1,66 @@
-import { Button, Form, Input, InputNumber, Modal, Table, Upload } from 'antd'
+import { Button, Form, Input, InputNumber, message, Modal, Table, Upload } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import Column from 'antd/lib/table/Column'
+import deleteIcon from '../../assets/imgs/delete.png'
 import React, { useState } from 'react'
 import { UploadOutlined } from '@ant-design/icons'
 import style from './index.module.scss'
+import { RcFile } from 'antd/lib/upload'
 export default function ReimbursementPart () {
   const [isModal, setModal] = useState(false)
+  const [pdfMaterial, setPdfMaterial] = useState<RcFile>()
+  const [list, setList] = useState<RcFile[]>([])
   const [form] = useForm()
+
   const closeModal = () => {
+    setPdfMaterial(undefined)
+    setList([])
     form.resetFields()
     setModal(false)
   }
 
   const postLeave = (values: any) => {
-    console.log(values)
+    if (!pdfMaterial) {
+      message.info('请上传发发票pdf文件')
+    } else {
+      console.log(values.affair, values.sum, pdfMaterial, list)
+    }
   }
+
+  const beforeUpload = (file: RcFile) => {
+    const isTypeTrue = file.type === 'application/pdf'
+    if (!isTypeTrue) {
+      message.error(`${file.name} 文件只能为pptx、ppt、pdf、docx、doc格式`)
+    } else {
+      setPdfMaterial(file)
+    }
+    return isTypeTrue
+  }
+
+  const beforeUpload2 = (file: RcFile) => {
+    const isTypeTrue = file.type === 'application/pdf' || file.type === 'image/png'
+    const num = list.length
+    if (num === 4) {
+      message.info('最多上传四份文件')
+    } else {
+      if (!isTypeTrue) {
+        message.error(`${file.name} 文件只能为pdf或者png格式`)
+      } else {
+        setList([file, ...list])
+      }
+    }
+    return isTypeTrue && (num !== 4)
+  }
+
+  const deletePdfMaterial = () => {
+    setPdfMaterial(undefined)
+  }
+
+  // 删除文件
+  const deleteFile = (item: RcFile) => {
+    setList(list.filter(file => file.uid !== item.uid))
+  }
+
   return (
     <div>
       <Button className={style.leave_btn} type='primary' onClick={() => setModal(true)}>报销申请</Button>
@@ -55,26 +101,50 @@ export default function ReimbursementPart () {
               { required: true, message: '报销金额不为空' }
             ]}
           >
-            <InputNumber min={0} defaultValue={1}/>
+            <InputNumber min={0} />
           </Form.Item>
           <Form.Item
             label='发票（pdf）'
             name='receipt'
-            rules={[
-              { required: true, message: '必须上传发票' }
-            ]}
           >
-            <Upload>
-              <Button icon={<UploadOutlined />}>Upload</Button>
+            <Upload
+              showUploadList={false}
+              beforeUpload={beforeUpload}
+              accept='.pdf'
+              customRequest={() => { }}
+            >
+              <Button icon={<UploadOutlined />}>上传</Button>
             </Upload>
+            {
+              pdfMaterial
+                ? <div className={style.material_line_box}>
+                  <div className={style.material}>{pdfMaterial.name}</div>
+                  <img onClick={() => deletePdfMaterial()} src={deleteIcon} className={style.deleteIcon}></img>
+                </div>
+                : ''
+            }
           </Form.Item>
           <Form.Item
             label='相关证明材料'
             name='material'
+            extra="仅支持.pdf、png格式文件"
           >
-            <Upload>
-              <Button icon={<UploadOutlined />}>Upload</Button>
+            <Upload
+              showUploadList={false}
+              beforeUpload={beforeUpload2}
+              accept='.pdf, .png'
+              customRequest={() => { }}
+            >
+              <Button icon={<UploadOutlined />}>点击上传</Button>
             </Upload>
+            <div className={style.list_box}>
+              {
+                list?.map((item, index) => <div key={index} className={style.list_line}>
+                  <div className={style.list}>{item.name}</div>
+                  <img src={deleteIcon} onClick={() => deleteFile(item)} className={style.deleteIcon}></img>
+                </div>)
+              }
+            </div>
           </Form.Item>
           <Form.Item>
             <div className={style.btn_box}>

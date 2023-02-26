@@ -9,3 +9,33 @@
   display: flex;
   justify-content: space-between;
 }
+
+.material_line_box{
+  width: 300px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.material{
+  color: dimgray;
+}
+
+.deleteIcon{
+  width: 10px;
+  height: 10px;
+  cursor: pointer;
+}
+
+.list_line{
+  width: 300px;
+  display: flex;
+  color: dimgray;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.list_box{
+  padding: 5px;
+}

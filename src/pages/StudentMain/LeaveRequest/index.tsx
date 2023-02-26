@@ -1,19 +1,43 @@
-import { Button, DatePicker, Form, Input, Modal, Table, Upload } from 'antd'
+import { Button, DatePicker, Form, Input, message, Modal, Table, Upload } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import React, { useState } from 'react'
 import { UploadOutlined } from '@ant-design/icons'
+import deleteIcon from '../../../assets/imgs/delete.png'
 import style from './index.module.scss'
 import Column from 'antd/lib/table/Column'
+import { RcFile } from 'antd/lib/upload'
 export default function LeaveRequest () {
   const [isModal, setModal] = useState(false)
+  const [list, setList] = useState<RcFile[]>([])
   const [form] = useForm()
   const closeModal = () => {
     form.resetFields()
+    setList([])
     setModal(false)
   }
 
   const postLeave = (values: any) => {
     console.log(values)
+  }
+
+  const beforeUpload = (file: RcFile) => {
+    const isTypeTrue = file.type === 'application/pdf' || file.type === 'image/png'
+    const num = list.length
+    if (num === 4) {
+      message.info('最多上传四份文件')
+    } else {
+      if (!isTypeTrue) {
+        message.error(`${file.name} 文件只能为pdf或者png格式`)
+      } else {
+        setList([file, ...list])
+      }
+    }
+    return isTypeTrue && (num !== 4)
+  }
+
+  // 删除文件
+  const deleteFile = (item: RcFile) => {
+    setList(list.filter(file => file.uid !== item.uid))
   }
   return (
     <div>
@@ -58,10 +82,24 @@ export default function LeaveRequest () {
           <Form.Item
             label='请假材料'
             name='material'
+            extra="仅支持.pdf、png格式文件"
           >
-            <Upload>
-              <Button icon={<UploadOutlined />}>Upload</Button>
+            <Upload
+              showUploadList={false}
+              beforeUpload={beforeUpload}
+              accept='.pdf, .png'
+              customRequest={() => { }}
+            >
+              <Button icon={<UploadOutlined />}>点击上传</Button>
             </Upload>
+            <div className={style.list_box}>
+              {
+                list?.map((item, index) => <div key={index} className={style.list_line}>
+                  <div className={style.list}>{item.name}</div>
+                  <img src={deleteIcon} onClick={() => deleteFile(item)} className={style.deleteIcon}></img>
+                </div>)
+              }
+            </div>
           </Form.Item>
           <Form.Item>
             <div className={style.btn_box}>

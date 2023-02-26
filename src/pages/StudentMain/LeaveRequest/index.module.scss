@@ -9,3 +9,21 @@
   display: flex;
   justify-content: space-between;
 }
+
+.deleteIcon{
+  width: 10px;
+  height: 10px;
+  cursor: pointer;
+}
+
+.list_line{
+  width: 300px;
+  display: flex;
+  color: dimgray;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.list_box{
+  padding: 5px;
+}
