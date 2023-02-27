@@ -38,10 +38,7 @@ interface IStu {
   username: string
 }
 
-interface IStuList {
-  pageNum: number
-  pageSize: number
-  total: number
+interface IStuList extends IPagination{
   list: IStu[]
 }
 
@@ -62,10 +59,7 @@ interface IDevice {
   remark: string
 }
 
-interface IEquipmentList {
-  pageNum: number
-  pageSize: number
-  total: number
+interface IEquipmentList extends IPagination{
   lists: IDevice[]
 }
 
@@ -234,6 +228,46 @@ interface ISecondComment {
   comment_reply_user: IUser
   comment_user: IUser
 }
+
+// 分页
+interface IPagination {
+  pageNum: number
+  pageSize: number
+  total: number
+}
+
+// 请假状态 -1 -- 审核中  0 -- 申请通过 1 -- 申请拒绝
+type IRequestState = -1 | 0 | 1
+
+interface IRequest {
+  id: string
+  reason: string
+  startTime: Date
+  endTime: Date
+  requestState: IRequestState
+  materials: string
+  createdTime: Date
+  endStartTime: Date
+  endEndTime: Date
+  isUpdate: boolean
+}
+
+interface IRequestInfo extends IPagination{
+  requests: IRequest[]
+}
+
+interface IRequestList {
+  key: string
+  startTime: Date
+  endTime: Date
+  endStartTime: Date
+  endEndTime: Date
+  reason: string
+  material: string
+  isUpdate: boolean
+  status: IRequestState
+}
+
 export type {
   IStuList,
   IStu,
@@ -258,6 +292,11 @@ export type {
   INewInfo,
   IReportState,
   IFirstComment,
-  ISecondComment
+  ISecondComment,
+  IRequestInfo,
+  IRequestList,
+  IRequestState,
+  IPagination,
+  IUser
 }
 

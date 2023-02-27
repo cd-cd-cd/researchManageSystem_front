@@ -1,23 +1,57 @@
-import { Button, DatePicker, Form, Input, message, Modal, Table, Upload } from 'antd'
+import { Button, DatePicker, Form, Input, message, Modal, Table, Tag, Upload } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { UploadOutlined } from '@ant-design/icons'
 import deleteIcon from '../../../assets/imgs/delete.png'
+import rightArrowIcon from '../../../assets/imgs/rightArrow.png'
 import style from './index.module.scss'
 import Column from 'antd/lib/table/Column'
 import { RcFile } from 'antd/lib/upload'
+import { getRequestInfos, postLeaveMaterial, postLeaveRequest } from '../../../api/studentApi/leaveRequst'
+import { IRequestList, IRequestState } from '../../../libs/model'
+import dayjs from 'dayjs'
+import useFile from '../../../hooks/useFile'
+
 export default function LeaveRequest () {
+  const [loading, setLoading] = useState(true)
   const [isModal, setModal] = useState(false)
   const [list, setList] = useState<RcFile[]>([])
+  const [total, setTotal] = useState<number>(0)
+  const [current, setCurrent] = useState(1)
+  const [infoList, setInfoList] = useState<IRequestList[]>([])
   const [form] = useForm()
+
+  const { decode } = useFile()
   const closeModal = () => {
     form.resetFields()
     setList([])
     setModal(false)
   }
 
-  const postLeave = (values: any) => {
-    console.log(values)
+  // 成功
+  const successAction = (msg: string) => {
+    closeModal()
+    getRequestInfo()
+    message.success({ content: msg, key: 'post' })
+  }
+
+  // 发起请假
+  const postLeave = async (values: any) => {
+    message.loading({ content: '正在上传中', key: 'post' })
+    const res = await postLeaveRequest(values.time[0].toDate(), values.time[0].toDate(), values.reason)
+    if (res?.success) {
+      const num = list.length
+      if (num === 0) {
+        successAction(res.msg)
+      } else {
+        const formData = new FormData()
+        list.forEach(item => formData.append('file', item))
+        const temp = await postLeaveMaterial(formData, num, res.data)
+        if (temp?.success) {
+          successAction(res.msg)
+        }
+      }
+    }
   }
 
   const beforeUpload = (file: RcFile) => {
@@ -35,18 +69,129 @@ export default function LeaveRequest () {
     return isTypeTrue && (num !== 4)
   }
 
+  const paginationProps = {
+    pageSize: 8,
+    current,
+    total,
+    onChange: (pageNum: number) => {
+      setCurrent(pageNum)
+    }
+  }
+
   // 删除文件
   const deleteFile = (item: RcFile) => {
     setList(list.filter(file => file.uid !== item.uid))
   }
+
+  // 处理时间
+  const handleTime = (startTime: Date, endTime: Date) => {
+    if (startTime && endTime) {
+      return `${dayjs(startTime).format('YYYY-MM-DD HH:mm')} --- ${dayjs(endTime).format('YYYY-MM-DD HH:mm')}`
+    } else {
+      return undefined
+    }
+  }
+
+  // 处理材料
+  const handleMaterial = (info: string) => {
+    if (info) {
+      return <div className={style.a_box}>
+        {
+          info.split(';')
+            .map((url, index) =>
+              <a href={url} key={index}
+              >{decode(url, 'http://seach-chendian.oss-cn-hangzhou.aliyuncs.com/leaveRequest/')}
+              </a>
+            )
+        }
+      </div>
+    } else {
+      return ''
+    }
+  }
+
+  // 状态
+  const renderState = (state: IRequestState) => {
+    console.log(state)
+    switch (state) {
+      case -1:
+        return <Tag color='green'>审核中</Tag>
+      case 0:
+        return <Tag color='blue'>同意</Tag>
+      case 1:
+        return <Tag color='red'>拒绝</Tag>
+    }
+  }
+
+  // 得到请假信息
+  const getRequestInfo = async () => {
+    setLoading(true)
+    const res = await getRequestInfos(current, 8)
+    if (res?.success) {
+      setTotal(res.data.total)
+      const temp: IRequestList[] = res.data.requests.reduce((pre: IRequestList[], cur) => {
+        const result: IRequestList = {
+          isUpdate: cur.isUpdate,
+          key: cur.id,
+          startTime: cur.startTime,
+          endTime: cur.endTime,
+          endStartTime: cur.endStartTime,
+          endEndTime: cur.endEndTime,
+          reason: cur.reason,
+          material: cur.materials,
+          status: cur.requestState
+        }
+        pre.push(result)
+        return pre
+      }, [])
+      setInfoList(temp)
+      setLoading(false)
+    }
+  }
+
+  // 处理时间
+  const renderTime = (record: IRequestList) => {
+    if (record.isUpdate) {
+      return <div className={style.time_box}>
+        <span>{handleTime(record.startTime, record.endTime)}</span>
+        <img src={rightArrowIcon} className={style.rightArrowIcon}></img>
+        <span>{handleTime(record.endStartTime, record.endEndTime)}</span>
+      </div>
+    } else {
+      return handleTime(record.startTime, record.endTime)
+    }
+  }
+
+  useEffect(() => {
+    getRequestInfo()
+  }, [current])
   return (
     <div>
       <Button className={style.leave_btn} type='primary' onClick={() => setModal(true)}>发起请假</Button>
-      <Table>
-        <Column title="请假时间" dataIndex="time" key="time" />
+      <Table
+        loading={loading}
+        dataSource={infoList}
+        pagination={paginationProps}
+      >
+        <Column
+          title="请假时间"
+          dataIndex="time"
+          key="time"
+          render={(_: any, record: IRequestList) => renderTime(record)}
+        />
         <Column title="请假理由" dataIndex="reason" key="reason" />
-        <Column title="材料" dataIndex="material" key="material" />
-        <Column title="状态" dataIndex="status" key="status" />
+        <Column
+          title="材料"
+          dataIndex="material"
+          key="material"
+          render={(value: string) => handleMaterial(value)}
+        />
+        <Column
+          title="状态"
+          dataIndex="status"
+          key="status"
+          render={(value: IRequestState) => renderState(value)}
+        />
       </Table>
       <Modal
         open={isModal}

@@ -79,7 +79,7 @@ export default function TWeekReport () {
     <div>
       <Button
         className={style.btn_top}
-        onClick={() => setIsReview(!isReview)}
+        onClick={() => { setIsReview(!isReview); setCurrent(1) }}
         type={isReview ? 'primary' : 'default'}
       >
         {

@@ -1,0 +1,21 @@
+.a_box{
+  display: flex;
+  flex-direction: column;
+}
+
+.action{
+  cursor: pointer;
+}
+
+.time_box{
+  align-items: center;
+  display: flex;
+}
+
+.label{
+  margin-right: 5px;
+}
+
+.reset_btn{
+  margin-left: 10px;
+}

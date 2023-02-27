@@ -24,7 +24,8 @@ module.exports = {
     "@typescript-eslint/strict-boolean-expressions": "off",
     "@typescript-eslint/promise-function-async": "off",
     "@typescript-eslint/no-floating-promises": "off",
-    "@typescript-eslint/no-misused-promises": "off"
+    "@typescript-eslint/no-misused-promises": "off",
+    "@typescript-eslint/prefer-optional-chain": "off"
   },
   "parserOptions": {
     "ecmaVersion": "latest",
