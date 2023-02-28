@@ -14,8 +14,10 @@ export default function TWeekReport () {
   const [total, setTotal] = useState<number>(0)
   const [current, setCurrent] = useState(1)
   const [isReview, setIsReview] = useState(false)
+  const [loading, setLoading] = useState(true)
   // 得到周报信息 // 刷新
   const getReportInfos = async () => {
+    setLoading(true)
     const res = await getReportInfo(current, 9, isReview)
     if (res?.success) {
       setTotal(res.data.total)
@@ -35,6 +37,7 @@ export default function TWeekReport () {
         pre.push(temp)
         return pre
       }, [])
+      setLoading(false)
       setReportInfos(newInfos)
     }
   }
@@ -87,6 +90,7 @@ export default function TWeekReport () {
         }
       </Button>
       <Table
+        loading={loading}
         className={style.height}
         dataSource={reportInfos}
         pagination={paginationProps}

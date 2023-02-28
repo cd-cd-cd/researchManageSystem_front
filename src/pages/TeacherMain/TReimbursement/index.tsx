@@ -1,7 +1,8 @@
 import React from 'react'
+import ReimbursementPart from '../../../components/ReimbursementPart'
 
 export default function TReimbursement () {
   return (
-    <div>TReimbursement </div>
+    <div><ReimbursementPart></ReimbursementPart></div>
   )
 }

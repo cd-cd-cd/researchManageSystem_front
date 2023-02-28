@@ -163,7 +163,7 @@ export default function TLeaveRequest () {
         type={chooseUnchecked ? 'primary' : 'default'}
       >
         {
-          chooseUnchecked ? '全部' : '未审核'
+          chooseUnchecked ? '全部' : ''
         }
       </Button>
       <Table

@@ -1,15 +1,33 @@
-import { Button, Form, Input, InputNumber, message, Modal, Table, Upload } from 'antd'
+import { Button, Form, Input, InputNumber, message, Modal, Table, Tag, Upload } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import Column from 'antd/lib/table/Column'
 import deleteIcon from '../../assets/imgs/delete.png'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { UploadOutlined } from '@ant-design/icons'
 import style from './index.module.scss'
 import { RcFile } from 'antd/lib/upload'
+import { credential, getInfos, postBasic, postPdf } from '../../api/teacherApi/reimbursement'
+import { IReimbersementState } from '../../libs/model'
+import dayjs from 'dayjs'
+import useFile from '../../hooks/useFile'
+interface ITabel {
+  key: string
+  affair: string
+  sum: number
+  receipt: string
+  material: string
+  status: IReimbersementState
+  time: string
+}
 export default function ReimbursementPart () {
   const [isModal, setModal] = useState(false)
   const [pdfMaterial, setPdfMaterial] = useState<RcFile>()
+  const [loading, setLoading] = useState(true)
   const [list, setList] = useState<RcFile[]>([])
+  const [total, setTotal] = useState<number>(0)
+  const [infoList, setInfoList] = useState<ITabel[]>([])
+  const [current, setCurrent] = useState(1)
+  const { decode } = useFile()
   const [form] = useForm()
 
   const closeModal = () => {
@@ -19,10 +37,33 @@ export default function ReimbursementPart () {
     setModal(false)
   }
 
-  const postLeave = (values: any) => {
+  const postLeave = async (values: any) => {
     if (!pdfMaterial) {
       message.info('请上传发发票pdf文件')
     } else {
+      const res = await postBasic(values.affair, values.sum)
+      if (res?.success) {
+        const id = res.data
+        const formData = new FormData()
+        formData.append('file', pdfMaterial)
+        const pdfRes = await postPdf(formData, id)
+        if (pdfRes?.success) {
+          if (list.length === 0) {
+            closeModal()
+            getInfo()
+            message.success(pdfRes.msg)
+          } else {
+            const data = new FormData()
+            list.forEach(item => data.append('file', item))
+            const listRes = await credential(data, list.length, id)
+            if (listRes?.success) {
+              closeModal()
+              getInfo()
+              message.success(listRes.msg)
+            }
+          }
+        }
+      }
       console.log(values.affair, values.sum, pdfMaterial, list)
     }
   }
@@ -61,15 +102,106 @@ export default function ReimbursementPart () {
     setList(list.filter(file => file.uid !== item.uid))
   }
 
+  // 刷新&&得到文件
+  const getInfo = async () => {
+    setLoading(true)
+    const res = await getInfos(current, 8)
+    if (res?.success) {
+      setTotal(res.data.total)
+      const temp: ITabel[] = res.data.applys.reduce((pre: ITabel[], cur) => {
+        pre.push({
+          key: cur.id,
+          affair: cur.affairReason,
+          sum: cur.amount,
+          receipt: cur.invoice,
+          material: cur.credential,
+          status: cur.reimbursementState,
+          time: dayjs(cur.createdTime).format('YYYY-MM-DD')
+        })
+        return pre
+      }, [])
+      setInfoList(temp)
+      setLoading(false)
+    }
+  }
+
+  // 处理材料
+  const handleMaterial = (info: string) => {
+    if (info) {
+      return <div className={style.a_box}>
+        {
+          info.split(';')
+            .map((url, index) =>
+              <a href={url} key={index}
+              >{decode(url, 'http://seach-chendian.oss-cn-hangzhou.aliyuncs.com/reimbursement/')}
+              </a>
+            )
+        }
+      </div>
+    } else {
+      return ''
+    }
+  }
+
+  useEffect(() => {
+    getInfo()
+  }, [current])
+
+  const paginationProps = {
+    pageSize: 8,
+    current,
+    total,
+    onChange: (pageNum: number) => {
+      setCurrent(pageNum)
+    }
+  }
+
+  // 状态
+  const renderState = (state: IReimbersementState) => {
+    switch (state) {
+      case -1:
+        return <Tag color='green'>审核中</Tag>
+      case 0:
+        return <Tag color='blue'>通过</Tag>
+      case 1:
+        return <Tag color='red'>拒绝</Tag>
+    }
+  }
+
   return (
     <div>
       <Button className={style.leave_btn} type='primary' onClick={() => setModal(true)}>报销申请</Button>
-      <Table>
+      <Table
+        loading={loading}
+        dataSource={infoList}
+        pagination={paginationProps}
+      >
         <Column title="具体事务" dataIndex="affair" key="affair" />
         <Column title="报销金额" dataIndex="sum" key="sum" />
-        <Column title="发票" dataIndex="receipt" key="receipt" />
-        <Column title="相关证明材料" dataIndex="material" key="material" />
-        <Column title="状态" dataIndex="status" key="status" />
+        <Column
+          title="发票"
+          dataIndex="receipt"
+          key="receipt"
+          render={
+            (url: string, _: any) => url
+              ? <a href={url}
+              >{decode(url, 'http://seach-chendian.oss-cn-hangzhou.aliyuncs.com/reimbursement/')}
+              </a>
+              : ''
+          }
+        />
+        <Column
+          title="相关证明材料"
+          dataIndex="material"
+          key="material"
+          render={(url: string, _: any) => handleMaterial(url)}
+        />
+        <Column
+          title="状态"
+          dataIndex="status"
+          key="status"
+          render={(status: IReimbersementState, _: any) => renderState(status)}
+        />
         <Column title="申请时间" dataIndex="time" key="time" />
       </Table>
       <Modal

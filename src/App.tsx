@@ -22,6 +22,7 @@ import MInfo from './pages/ManagerMain/MInfo'
 import UserControl from './pages/ManagerMain/UserControl'
 import UserInfo from './pages/ManagerMain/UserInfo'
 import TeammateInfo from './pages/TeacherMain/TeammateInfo'
+import MReimbursement from './pages/ManagerMain/MReimbursement'
 
 function App () {
   const [tabBarList, setTabBarList] = useState<ITabBarCommon[]>([])
@@ -116,6 +117,7 @@ function App () {
             <Route path='MInfo' element={<MInfo />}></Route>
             <Route path='userControl' element={<UserControl />}></Route>
             <Route path='userInfo' element={<UserInfo />}></Route>
+            <Route path='MReimbursement' element={<MReimbursement/>}></Route>
           </Route>
           <Route path='*' element={<Navigate to='/login' />}></Route>
         </Routes>

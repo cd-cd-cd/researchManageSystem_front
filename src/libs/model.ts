@@ -268,6 +268,19 @@ interface IRequestList {
   status: IRequestState
 }
 
+// 报销状态 -1 --- 审核中 0 -- 通过  1 -- 拒绝
+type IReimbersementState = -1 | 0 | 1
+
+interface IApply {
+  affairReason: string
+  amount: number
+  applyUser: IUser
+  createdTime: Date
+  credential: string
+  id: string
+  invoice: string
+  reimbursementState: IReimbersementState
+}
 export type {
   IStuList,
   IStu,
@@ -297,6 +310,8 @@ export type {
   IRequestList,
   IRequestState,
   IPagination,
-  IUser
+  IUser,
+  IReimbersementState,
+  IApply
 }
 
