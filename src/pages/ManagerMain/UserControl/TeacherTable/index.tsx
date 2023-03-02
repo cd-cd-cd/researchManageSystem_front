@@ -1,8 +1,9 @@
-import { Table } from 'antd'
+import { Button, Input, message, Modal, Table } from 'antd'
 import Column from 'antd/lib/table/Column'
 import dayjs from 'dayjs'
 import React, { useEffect, useState } from 'react'
-import { getTeaInfo } from '../../../../api/managerApi/info'
+import { getTeaInfo, initTeacher, searchTeacher } from '../../../../api/managerApi/info'
+import style from './index.module.scss'
 
 interface ITabel {
   key: string
@@ -17,6 +18,9 @@ interface Props {
   isTea: boolean
 }
 export default function TeacherTable ({ isTea }: Props) {
+  const [searchValue, setSearchValue] = useState<string>('')
+  const [isModal, setIsModal] = useState(false)
+  const [info, setInfo] = useState<ITabel>()
   const [loading, setLoading] = useState(true)
   const [total, setTotal] = useState<number>(0)
   const [infoList, setInfoList] = useState<ITabel[]>([])
@@ -51,11 +55,50 @@ export default function TeacherTable ({ isTea }: Props) {
     }
   }
 
+  const initPassword = async () => {
+    if (info?.key && info.username) {
+      const res = await initTeacher(info.key, info.username)
+      if (res?.success) {
+        setIsModal(false)
+        message.success(res.msg)
+      }
+    }
+  }
+
+  const search = async (info: string) => {
+    if (info) {
+      const res = await searchTeacher(info)
+      if (res?.success) {
+        setInfoList(res.data.reduce((pre: ITabel[], cur) => {
+          pre.push({
+            key: cur.id,
+            name: cur.name,
+            username: cur.username,
+            phoneNumber: cur.phoneNumber,
+            resume: cur.resume,
+            email: cur.email,
+            createdTime: dayjs(cur.createdTime).format('YYYY-MM-DD')
+          })
+          return pre
+        }, []))
+      }
+    }
+  }
+
   useEffect(() => {
     getInfo()
   }, [current, isTea])
   return (
     <div>
+      <div className={style.search_box}>
+        <Input.Search
+          value={searchValue}
+          onSearch={(value) => search(value)}
+          placeholder='请输入老师姓名或者学号查询'
+          className={style.searchBtn}
+        ></Input.Search>
+        <Button onClick={() => { getInfo(); setSearchValue('') }}>返回</Button>
+      </div>
       <Table
         loading={loading}
         dataSource={infoList}
@@ -71,9 +114,17 @@ export default function TeacherTable ({ isTea }: Props) {
           title='操作'
           dataIndex="action"
           key="action"
-          render={(_: any, record: ITabel) => <a>初始化密码</a>}
+          render={(_: any, record: ITabel) => <a onClick={() => { setIsModal(true); setInfo(record) }}>初始化密码</a>}
         ></Column>
       </Table>
+      <Modal
+        open={isModal}
+        title="提醒"
+        onOk={() => initPassword()}
+        onCancel={() => setIsModal(false)}
+      >
+        <div>确定要初始化该用户密码吗?</div>
+      </Modal>
     </div>
   )
 }

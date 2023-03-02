@@ -82,3 +82,49 @@ export const createStudent = async (username: string, name: string, teacherId: s
     }
   })
 }
+
+// 初始化学生
+export const initStu = async (id: string, username: string) => {
+  return await request({
+    url: '/manager/stu/init',
+    method: 'PUT',
+    data: {
+      id,
+      username
+    }
+  })
+}
+
+// 初始化老师
+export const initTeacher = async (id: string, username: string) => {
+  return await request({
+    url: '/manager/teacher/init',
+    method: 'PUT',
+    data: {
+      id,
+      username
+    }
+  })
+}
+
+// 查询学生
+export const searchStudent = async (info: string) => {
+  return await request<IStuInfo[]>({
+    url: '/manager/search/student',
+    method: 'GET',
+    params: {
+      info
+    }
+  })
+}
+
+// 查询老师
+export const searchTeacher = async (info: string) => {
+  return await request<IBasicInfo[]>({
+    url: '/manager/search/teacher',
+    method: 'GET',
+    params: {
+      info
+    }
+  })
+}

@@ -87,7 +87,7 @@ export default function UserControl () {
   }
 
   return (
-    <div>
+    <div className={style.back}>
       <div className={style.btn_box}>
         <Select
           defaultValue={1}
@@ -105,7 +105,7 @@ export default function UserControl () {
             }
           ]}
         />
-        <Button onClick={() => openModal()}>创建新用户</Button>
+        <Button className={style.btn_right} onClick={() => openModal()}>创建新用户</Button>
       </div>
       {
         renderTable()

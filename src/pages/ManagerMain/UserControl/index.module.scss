@@ -6,11 +6,22 @@
   margin-top: -10px;
   margin-left: 5px;
 }
+
+.searchBtn{
+  width: 300px;
+  margin-left: 15px;
+}
+
 .btn_box {
   width: 100%;
   margin: 5px;
+  padding-right: 10px;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
+}
+
+.btn_right{
+  margin-left: auto;
 }
 
 .btn_boxs{
@@ -18,4 +29,8 @@
   display: flex;
   justify-content: space-between;
   margin-left: 120px;
+}
+
+.back {
+  position: relative;
 }
