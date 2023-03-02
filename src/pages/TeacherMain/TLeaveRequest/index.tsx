@@ -108,9 +108,7 @@ export default function TLeaveRequest () {
   }
 
   const handleOk = async () => {
-    console.log(time, time![0], time![1])
     if (time && time[0] && time[1]) {
-      console.log('*')
       const res = await consent(id, time[0].toDate(), time[1].toDate())
       if (res?.success) {
         refresh(res.msg)

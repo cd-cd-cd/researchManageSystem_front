@@ -82,7 +82,6 @@ export default function MReimbursement () {
     setLoading(true)
     const res = await getInfos(current, 8, isReview)
     if (res?.success) {
-      console.log('8')
       setTotal(res.data.total)
       const temp: ITabel[] = res.data.requests.reduce((pre: ITabel[], cur) => {
         pre.push({

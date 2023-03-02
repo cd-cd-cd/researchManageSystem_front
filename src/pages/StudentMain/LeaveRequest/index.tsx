@@ -112,7 +112,6 @@ export default function LeaveRequest () {
 
   // 状态
   const renderState = (state: IRequestState) => {
-    console.log(state)
     switch (state) {
       case -1:
         return <Tag color='green'>审核中</Tag>

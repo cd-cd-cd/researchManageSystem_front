@@ -49,7 +49,6 @@ export default function UserControl () {
     } else {
       postTea(values.username, values.name)
     }
-    console.log(values)
   }
 
   // 创建成功

@@ -64,7 +64,6 @@ export default function ReimbursementPart () {
           }
         }
       }
-      console.log(values.affair, values.sum, pdfMaterial, list)
     }
   }
 

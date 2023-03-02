@@ -22,6 +22,5 @@ export const teacherFunc: ITabBarCommon[] = [
 export const managerFunc: ITabBarCommon[] = [
   { label: '个人信息', value: 0, name: 'MInfo' },
   { label: '用户管理', value: 1, name: 'userControl' },
-  { label: '用户信息', value: 2, name: 'userInfo' },
-  { label: '经费报销', value: 3, name: 'MReimbursement' }
+  { label: '经费报销', value: 2, name: 'MReimbursement' }
 ]

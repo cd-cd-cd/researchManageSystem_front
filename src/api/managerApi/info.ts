@@ -128,3 +128,15 @@ export const searchTeacher = async (info: string) => {
     }
   })
 }
+export interface ISelf {
+  username: string
+  name: string
+}
+
+// 自己
+export const getSelf = async () => {
+  return await request<ISelf>({
+    url: '/manager/self',
+    method: 'GET'
+  })
+}
