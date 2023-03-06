@@ -178,8 +178,7 @@ interface IMeetingInfo {
 
 interface IHistoryReport {
   createdTime: Date
-  startTime: Date
-  endTime: Date
+  time: string
   id: string
   text: IPart[]
 }
@@ -205,8 +204,6 @@ interface INewInfo {
   timeRange: string
   createTime: string
   status: IReportState
-  startTime: Date
-  endTime: Date
   text: IPart[]
 }
 // 周报状态 -1 -- 未查看     0 --- 查看了但没回复  1 --- 查看了并回复了

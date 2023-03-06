@@ -1,4 +1,5 @@
 import { Button, DatePicker, Descriptions, Drawer, Form, Input, message, Modal, Popconfirm, Select, Space, Table, Tag } from 'antd'
+import { RangePickerProps } from 'antd/lib/date-picker'
 import { useForm } from 'antd/lib/form/Form'
 import Column from 'antd/lib/table/Column'
 import dayjs from 'dayjs'
@@ -8,7 +9,6 @@ import { addDevice, ApplyInfo, changeState, chooseStu, getList, getLists, recove
 import { IApplyInfoSingle, IDevice, IEquipmentState, IOption } from '../../../libs/model'
 import ApplyMsg from './ApplyMsg'
 import style from './index.module.scss'
-type RangeValue = [Moment | null, Moment | null] | null
 export default function TDeviceManager () {
   // 控制抽屉
   const [open, setOpen] = useState(false)
@@ -21,7 +21,7 @@ export default function TDeviceManager () {
   // 保存指派人
   const [person, setPerson] = useState<string>()
   // 保存指派时间
-  const [time, setTime] = useState<RangeValue>(null)
+  const [time, setTime] = useState<null | Moment>()
   // 添加设备Modal
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   // 修改设备Modal
@@ -206,6 +206,7 @@ export default function TDeviceManager () {
       const { total, lists } = res.data
       setTotal(total)
       setLists(lists.reduce((pre: IDevice[], cur) => {
+        console.log(cur.recipient)
         pre.push({
           key: cur.id,
           id: cur.id,
@@ -218,7 +219,7 @@ export default function TDeviceManager () {
           address: cur.address,
           state: cur.state,
           warehouseEntryTime: dayjs(cur.warehouseEntryTime).format('YYYY-MM-DD'),
-          recipient: cur.recipient ? cur.recipient.name : '',
+          recipient: cur.recipient,
           HostRemarks: cur.HostRemarks,
           remark: cur.remark
         })
@@ -229,11 +230,10 @@ export default function TDeviceManager () {
     getApplyInfo()
   }
 
-  console.log(lists)
-
   const closeDrawer = () => {
     setOpen(false)
     setPerson(undefined)
+    setTime(null)
   }
   // 选择指派人
   const choosePerson = async () => {
@@ -241,14 +241,24 @@ export default function TDeviceManager () {
       message.info('请选择指派设备')
     } else if (!person) {
       message.info('选择指派人')
-    } else if (!time || !time[0] || !time[1]) {
+    } else if (!time) {
       message.info('请选择时间')
     } else {
-      const res = await chooseStu(person, record.id, time[0].toDate(), time[1].toDate())
+      const res = await chooseStu(person, record.id, new Date(), time.toDate())
       message.success(res?.msg)
       getDeviceList()
       closeDrawer()
     }
+  }
+
+  const disabledDate: RangePickerProps['disabledDate'] = current => {
+    // Can not select days after today and today
+    return current && current > moment().endOf('day')
+  }
+
+  const disabledDateChoose: RangePickerProps['disabledDate'] = current => {
+    // Can not select days before today
+    return current && current <= moment().subtract(1, 'days').endOf('day')
   }
 
   useEffect(() => {
@@ -374,7 +384,7 @@ export default function TDeviceManager () {
             label='入库时间'
             rules={[{ required: true, message: '设备入库时间不为空' }]}
           >
-            <DatePicker />
+            <DatePicker disabledDate={disabledDate}/>
           </Form.Item>
           <Form.Item
             name='HostRemarks'
@@ -477,7 +487,7 @@ export default function TDeviceManager () {
             label='入库时间'
             rules={[{ required: true, message: '设备入库时间不为空' }]}
           >
-            <DatePicker />
+            <DatePicker disabledDate={disabledDate}/>
           </Form.Item>
           <Form.Item
             name='HostRemarks'
@@ -526,7 +536,7 @@ export default function TDeviceManager () {
         open={open}
         extra={
           <Space>
-            <Button onClick={() => { setOpen(false); setPerson(''); setTime([null, null]) }}>取消</Button>
+            <Button onClick={() => closeDrawer()}>取消</Button>
             <Button type="primary" onClick={() => choosePerson()}>
               确定
             </Button>
@@ -560,9 +570,16 @@ export default function TDeviceManager () {
         </Descriptions>
         <Descriptions title="使用时间">
           <Descriptions.Item>
-            <DatePicker.RangePicker
+            <div>{`开始时间：${dayjs().format('YYYY-MM-DD')}`}</div>
+            <div className={style.line}>----</div>
+            <div>
+              <span>结束时间：</span>
+              <DatePicker
+              disabledDate={disabledDateChoose}
               value={time}
-              onChange={e => setTime(e)}></DatePicker.RangePicker>
+              onChange={(value) => setTime(value)}
+              ></DatePicker>
+            </div>
           </Descriptions.Item>
         </Descriptions>
       </Drawer>

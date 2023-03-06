@@ -4,7 +4,6 @@ import deleteIcon from '../../../../assets/imgs/delete.png'
 import circleIcon from '../../../../assets/imgs/circle.png'
 import foldIcon from '../../../../assets/imgs/fold.png'
 import unFoldIcon from '../../../../assets/imgs/unfold.png'
-import dayjs from 'dayjs'
 import { IFirstComment, IPart } from '../../../../libs/model'
 import { Button, Input, message } from 'antd'
 import { commentPost, getFirstComments } from '../../../../api/teacherApi/report'
@@ -12,7 +11,7 @@ import FirstComment from '../RecordItem/FirstComment'
 
 interface Props {
   close: () => void
-  time: Date[]
+  time: string | undefined
   report: IPart[]
   isCommentComponent: boolean
   reportId?: string
@@ -77,7 +76,7 @@ export default function Mask ({ close, time, report, isCommentComponent, reportI
       <div className={style.main}>
         <div className={style.title}>周报</div>
         <div className={style.date} id='time'>
-          {`${dayjs(time[0]).format('YYYY-MM-DD')} --- ${dayjs(time[1]).format('YYYY-MM-DD')}`}
+          {time}
         </div>
         <div className={style.partOne}>
           <div className={style.headOne}>一、本周进展</div>

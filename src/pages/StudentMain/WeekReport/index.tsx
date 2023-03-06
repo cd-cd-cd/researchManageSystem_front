@@ -1,4 +1,4 @@
-import { Button, DatePicker, Drawer, message } from 'antd'
+import { Button, DatePicker, DatePickerProps, Drawer, message } from 'antd'
 import React, { useContext, useState } from 'react'
 import 'moment/locale/zh-cn'
 import style from './index.module.scss'
@@ -9,27 +9,25 @@ import { context } from '../../../hooks/store'
 import noInfoIcon from '../../../assets/imgs/noInfo.png'
 import Mask from './Mask'
 import { createReport, getReportRecord } from '../../../api/studentApi/report'
-import { Moment } from 'moment'
 import RecordItem from './RecordItem'
 import { IHistoryReport } from '../../../libs/model'
-type RangeValue = [Moment | null, Moment | null] | null
 export default function WeekReport () {
   // Draw
   const [open, setOpen] = useState(false)
   const [focusId, setFocusId] = useState<string>()
   const [isMask, setIsMask] = useState<boolean>(false)
-  const [time, setTime] = useState<Moment[]>([])
-  const [value, setValue] = useState<RangeValue>(null)
+  const [time, setTime] = useState<string>()
+  const [value, setValue] = useState()
   // 保存历史周报
   const [historyReport, setHistoryReport] = useState<IHistoryReport[]>()
   const { report } = useContext(context)
   const { addPoint, reset, checkReport } = useReport()
 
-  const onChange = (
+  const onChange: DatePickerProps['onChange'] = (
     values: any,
-    _: any
+    dataString: string
   ) => {
-    setTime(values)
+    setTime(dataString)
     setValue(values)
   }
 
@@ -48,16 +46,16 @@ export default function WeekReport () {
 
   const resetAll = () => {
     reset()
-    setTime([])
-    setValue([null, null])
+    setTime(undefined)
+    setValue(undefined)
   }
 
   // 上传
   const uploadReport = async () => {
     const res = checkReport(time)
-    if (res === true) {
+    if (res === true && time) {
       const newReport = JSON.stringify(report)
-      const temp = await createReport(time[0].toDate(), time[1].toDate(), newReport)
+      const temp = await createReport(time, newReport)
       if (temp?.success) {
         message.success(temp.msg)
         resetAll()
@@ -77,7 +75,8 @@ export default function WeekReport () {
         <Button className={style.reset_btn} onClick={() => resetAll()}>重置</Button>
         <div className={style.title}>周报</div>
         <div className={style.date} id='time'>
-          <DatePicker.RangePicker value={value} onChange={onChange} />
+          <DatePicker onChange={onChange} value={value} picker="week" />
+          {/* <DatePicker.RangePicker value={value} onChange={onChange} /> */}
         </div>
         <div className={style.partOne}>
           <div className={style.headOne}>一、本周进展</div>
@@ -163,7 +162,7 @@ export default function WeekReport () {
           ? <Mask
             isCommentComponent={false}
             close={() => setIsMask(false)}
-            time={[time[0].toDate(), time[1].toDate()]}
+            time={time}
             report={report}
           ></Mask>
           : ''

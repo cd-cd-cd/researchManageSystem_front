@@ -58,7 +58,7 @@ export const cancelApply = async (applyId: string) => {
   return await request<string>({
     url: '/student/device/cancelApply',
     method: 'DELETE',
-    data: {
+    params: {
       applyId
     }
   })

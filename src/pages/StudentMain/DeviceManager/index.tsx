@@ -1,4 +1,3 @@
-// import { Badge, Descriptions } from 'antd'
 import { Button, DatePicker, Drawer, Form, Input, message, Modal, Pagination, Select, Tag } from 'antd'
 import { useForm } from 'antd/es/form/Form'
 import dayjs from 'dayjs'
@@ -9,6 +8,8 @@ import NoInfoIcon from '../../../assets/imgs/noInfo.png'
 import DeleteIcon from '../../../assets/imgs/delete.png'
 import style from './index.module.scss'
 import DeviceMsg from './DeviceMsg'
+import { RangePickerProps } from 'antd/lib/date-picker'
+import moment from 'moment'
 
 export default function DeviceManager () {
   const [open, setOpen] = useState(false)
@@ -35,9 +36,7 @@ export default function DeviceManager () {
   // 申请设备
   const applyDevice = async (values: any) => {
     const { serialNumber, reason, time } = values
-    const startTime = time[0].toDate()
-    const endTime = time[1].toDate()
-    const res = await apply(serialNumber, reason, startTime, endTime)
+    const res = await apply(serialNumber, reason, new Date(), time)
     if (res?.status === 20003) {
       closeModal()
       getInfo()
@@ -119,6 +118,11 @@ export default function DeviceManager () {
     }
   }
 
+  const disabledDateChoose: RangePickerProps['disabledDate'] = current => {
+    // Can not select days before today
+    return current && current <= moment().subtract(1, 'days').endOf('day')
+  }
+
   useEffect(() => {
     getInfo()
   }, [current])
@@ -129,6 +133,7 @@ export default function DeviceManager () {
         <Button type='primary' className={style.apply_btn} onClick={() => getIdleDevice()}>设备申请</Button>
         <Button type='primary' className={style.store_btn} onClick={() => setOpen(true)}>在用设备</Button>
       </div>
+      <div className={style.text}>申请记录:</div>
       <div className={style.main}>
         {
           infoList?.map((item) => <div key={item.id}>
@@ -222,13 +227,13 @@ export default function DeviceManager () {
             ></Select>
           </Form.Item>
           <Form.Item
-            label='申请时间'
+            label='归还时间'
             name='time'
             rules={[
-              { required: true, message: '申请时间不为空' }
+              { required: true, message: '申请结束时间不为空' }
             ]}
           >
-            <DatePicker.RangePicker style={{ width: '300px' }} />
+            <DatePicker disabledDate={disabledDateChoose} style={{ width: '300px' }} />
           </Form.Item>
           <Form.Item
             name='reason'

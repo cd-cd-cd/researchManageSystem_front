@@ -25,11 +25,9 @@ export default function TWeekReport () {
         const temp: INewInfo = {
           key: cur.id,
           name: cur.report_submitter.name,
-          startTime: cur.startTime,
-          endTime: cur.endTime,
           userId: cur.report_submitter.trueId,
           username: cur.report_submitter.username,
-          timeRange: `${dayjs(cur.startTime).format('YYYY-MM-DD')} --- ${dayjs(cur.endTime).format('YYYY-MM-DD')}`,
+          timeRange: cur.time,
           createTime: dayjs(cur.createdTime).format('YYYY-MM-DD'),
           status: cur.reportState,
           text: cur.text
@@ -119,7 +117,7 @@ export default function TWeekReport () {
           ? <Mask
               isCommentComponent={true}
               close={() => setIsMask(false)}
-              time={[report.startTime, report.endTime]}
+              time={report.timeRange}
               reportId={report.key}
               reportUserId={report.userId}
               report={report.text}

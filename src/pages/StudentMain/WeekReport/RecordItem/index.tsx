@@ -26,7 +26,7 @@ export default function RecordItem ({ report }: Props) {
   return (
     <div className={style.back}>
       <div>
-        <div>{`${dayjs(report.startTime).format('YYYY-MM-DD')} --- ${dayjs(report.endTime).format('YYYY-MM-DD')} 周报`}</div>
+        <div>{`${report.time} 周报`}</div>
         <div className={style.time}>创建时间：{dayjs(report.createdTime).format('YYYY-MM-DD HH:MM')}</div>
       </div>
       <div>
@@ -40,7 +40,7 @@ export default function RecordItem ({ report }: Props) {
             ? <Mask
               isCommentComponent={false}
               close={() => setIsMask(false)}
-              time={[report.startTime, report.endTime]}
+              time={report.time}
               report={report.text}
             ></Mask>
             : ''

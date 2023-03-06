@@ -50,8 +50,10 @@ export default function ApplyMsg ({ item, getDeviceList }: Props) {
       <div className={style.head}>
         <Tag color='green'>申请中</Tag>
         <div>111111111 - 哈哈</div>
-        <Tag color='#108ee9' className={style.ok} onClick={() => consent()}>同意</Tag>
-        <Tag color='#f50' className={style.refuse} onClick={() => clickRefuse()}>拒绝</Tag>
+        <div className={style.right_tags}>
+          <Tag color='#108ee9' className={style.ok} onClick={() => consent()}>同意</Tag>
+          <Tag color='#f50' className={style.refuse} onClick={() => clickRefuse()}>拒绝</Tag>
+        </div>
       </div>
       <div className={style.applyMain}>
         <span className={style.left}>{`申请设备: ${item.serialNumber} - ${item.equipment_name}`}</span>

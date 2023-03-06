@@ -43,7 +43,7 @@ interface IInfo {
   remark: string
   createdTime: Date
   equipment_manager: IUser
-  recipient: IUser
+  recipient: string
 }
 
 interface IResGetList extends IPagination {
