@@ -14,6 +14,7 @@ interface IInfo {
 interface IGetInfos extends IPagination {
   requests: IInfo[]
 }
+
 export const getInfos = async (pageNum: number, pageSize: number, chooseUnchecked: boolean) => {
   return await request<IGetInfos>({
     url: '/manager/reimbursement/getInfo',

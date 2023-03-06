@@ -107,24 +107,36 @@ export const initTeacher = async (id: string, username: string) => {
   })
 }
 
+interface ISearchStudent extends IPagination {
+  infos: IStuInfo[]
+}
+
 // 查询学生
-export const searchStudent = async (info: string) => {
-  return await request<IStuInfo[]>({
+export const searchStudent = async (info: string, pageNum: number, pageSize: number) => {
+  return await request<ISearchStudent>({
     url: '/manager/search/student',
     method: 'GET',
     params: {
-      info
+      info,
+      pageNum,
+      pageSize
     }
   })
 }
 
+interface ISearchTeacher extends IPagination {
+  infos: IBasicInfo[]
+}
+
 // 查询老师
-export const searchTeacher = async (info: string) => {
-  return await request<IBasicInfo[]>({
+export const searchTeacher = async (info: string, pageNum: number, pageSize: number) => {
+  return await request<ISearchTeacher>({
     url: '/manager/search/teacher',
     method: 'GET',
     params: {
-      info
+      info,
+      pageNum,
+      pageSize
     }
   })
 }

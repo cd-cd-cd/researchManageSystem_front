@@ -1,6 +1,6 @@
 interface ITabBarCommon {
-  label: string,
-  value: number,
+  label: string
+  value: number
   name: string
 }
 
@@ -38,7 +38,7 @@ interface IStu {
   username: string
 }
 
-interface IStuList extends IPagination{
+interface IStuList extends IPagination {
   list: IStu[]
 }
 
@@ -59,18 +59,18 @@ interface IDevice {
   remark: string
 }
 
-interface IEquipmentList extends IPagination{
+interface IEquipmentList extends IPagination {
   lists: IDevice[]
 }
 
 interface IResStu {
-  id: string,
-  name: string,
+  id: string
+  name: string
   username: string
 }
 
 interface IOption {
-  value: string,
+  value: string
   label: string
 }
 
@@ -118,7 +118,6 @@ interface ILoadInfo {
   startTime: Date
   version: string
 }
-
 
 interface IPart {
   type: 'progress' | 'plan' | 'teamService'
@@ -252,7 +251,7 @@ interface IRequest {
   isUpdate: boolean
 }
 
-interface IRequestInfo extends IPagination{
+interface IRequestInfo extends IPagination {
   requests: IRequest[]
 }
 
@@ -314,4 +313,3 @@ export type {
   IReimbersementState,
   IApply
 }
-

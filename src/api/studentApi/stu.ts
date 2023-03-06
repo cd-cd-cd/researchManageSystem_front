@@ -24,3 +24,12 @@ export const stuChangePassword = async (oldPassword: string, newPassword: string
     }
   })
 }
+
+export const updateAvatarStu = async (avatar: FormData) => {
+  return await request<string>({
+    url: '/student/avatar',
+    method: 'PUT',
+    headers: { 'Content-Type': 'multipart/form-data' },
+    data: avatar
+  })
+}

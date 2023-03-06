@@ -9,7 +9,7 @@ import { changePassword, updateAvatar, updateEmail, updatePhone, updateResume } 
 import useVarify from '../../../hooks/useVarify'
 import { IInfo } from '../../../libs/model'
 import basicAvatar from '../../../assets/imgs/avatar.svg'
-import { stuChangePassword, updateInfo } from '../../../api/studentApi/stu'
+import { stuChangePassword, updateAvatarStu, updateInfo } from '../../../api/studentApi/stu'
 
 interface IItem {
   label: 'phoneNumber' | 'email' | 'resume' | ''
@@ -22,6 +22,7 @@ const layout = {
 }
 
 export default function PersonInfo () {
+  const [avatar, setAvatar] = useState<Blob | undefined>()
   const [item, setItem] = useState<IItem>()
   const [warn, setWarn] = useState<string>()
   const { checkPhone, checkEmail, checkResume } = useVarify()
@@ -137,12 +138,21 @@ export default function PersonInfo () {
 
   // 修改头像
   const clickChangeAvatar = async () => {
-    if (!imageUrl) {
+    if (!avatar) {
       message.info('请上传图片')
     } else {
-      const res = await updateAvatar(imageUrl)
-      if (res) {
+      const temp = new FormData()
+      temp.append('file', avatar)
+      const role = +localStorage.getItem('role')!
+      let res
+      if (role === 1) {
+        res = await updateAvatar(temp)
+      } else if (role === 0) {
+        res = await updateAvatarStu(temp)
+      }
+      if (res?.success) {
         message.success('头像设置成功')
+        setAvatar(undefined)
         setImageUrl('')
         getInfo()
         setAvatarVisible(false)
@@ -162,6 +172,9 @@ export default function PersonInfo () {
     if (!isLt2M) {
       message.error('图片要小于2MB!')
     }
+    if (isPNG && isLt2M) {
+      setAvatar(file)
+    }
     return isPNG && isLt2M
   }
 
@@ -174,7 +187,7 @@ export default function PersonInfo () {
   const uploadButton = (
     <div>
       {loading ? <LoadingOutlined /> : <PlusOutlined />}
-      <div style={{ marginTop: 8 }}>Upload</div>
+      <div style={{ marginTop: 8 }}>上传</div>
     </div>
   )
 
@@ -356,7 +369,7 @@ export default function PersonInfo () {
         onOk={clickChangeAvatar}
         cancelText='取消'
         okText='确定'
-        onCancel={() => { setAvatarVisible(false); setImageUrl('') }}
+        onCancel={() => { setAvatarVisible(false); setImageUrl(''); setAvatar(undefined) }}
         destroyOnClose
       ><div className={style.bigBox}>
           <div className={style.init_box}>

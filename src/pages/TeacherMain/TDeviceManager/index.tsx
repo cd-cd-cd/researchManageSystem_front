@@ -2,13 +2,13 @@ import { Button, DatePicker, Descriptions, Drawer, Form, Input, message, Modal, 
 import { useForm } from 'antd/lib/form/Form'
 import Column from 'antd/lib/table/Column'
 import dayjs from 'dayjs'
-import moment from 'moment'
+import moment, { Moment } from 'moment'
 import React, { useEffect, useState } from 'react'
 import { addDevice, ApplyInfo, changeState, chooseStu, getList, getLists, recoveryDevice, updateDeviceInfo } from '../../../api/teacherApi/device'
 import { IApplyInfoSingle, IDevice, IEquipmentState, IOption } from '../../../libs/model'
 import ApplyMsg from './ApplyMsg'
 import style from './index.module.scss'
-
+type RangeValue = [Moment | null, Moment | null] | null
 export default function TDeviceManager () {
   // 控制抽屉
   const [open, setOpen] = useState(false)
@@ -21,7 +21,7 @@ export default function TDeviceManager () {
   // 保存指派人
   const [person, setPerson] = useState<string>()
   // 保存指派时间
-  const [time, setTime] = useState<Date[]>([])
+  const [time, setTime] = useState<RangeValue>(null)
   // 添加设备Modal
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   // 修改设备Modal
@@ -202,19 +202,34 @@ export default function TDeviceManager () {
   const getDeviceList = async () => {
     setLoading(true)
     const res = await getList(current, 4)
-    if (res?.status === 10112) {
+    if (res?.success) {
       const { total, lists } = res.data
       setTotal(total)
-      const newList = lists.map(item => {
-        item.key = item.id
-        item.warehouseEntryTime = dayjs(item.warehouseEntryTime).format('YYYY-MM-DD')
-        return item
-      })
-      setLists(newList)
+      setLists(lists.reduce((pre: IDevice[], cur) => {
+        pre.push({
+          key: cur.id,
+          id: cur.id,
+          createdTime: dayjs(cur.createdTime).format('YYYY-MM-DD'),
+          serialNumber: cur.serialNumber,
+          name: cur.name,
+          version: cur.version,
+          originalValue: cur.originalValue,
+          performanceIndex: cur.performanceIndex,
+          address: cur.address,
+          state: cur.state,
+          warehouseEntryTime: dayjs(cur.warehouseEntryTime).format('YYYY-MM-DD'),
+          recipient: cur.recipient ? cur.recipient.name : '',
+          HostRemarks: cur.HostRemarks,
+          remark: cur.remark
+        })
+        return pre
+      }, []))
       setLoading(false)
     }
     getApplyInfo()
   }
+
+  console.log(lists)
 
   const closeDrawer = () => {
     setOpen(false)
@@ -226,10 +241,10 @@ export default function TDeviceManager () {
       message.info('请选择指派设备')
     } else if (!person) {
       message.info('选择指派人')
-    } else if (time?.length !== 2) {
+    } else if (!time || !time[0] || !time[1]) {
       message.info('请选择时间')
     } else {
-      const res = await chooseStu(person, record.id, time[0], time[1])
+      const res = await chooseStu(person, record.id, time[0].toDate(), time[1].toDate())
       message.success(res?.msg)
       getDeviceList()
       closeDrawer()
@@ -281,7 +296,7 @@ export default function TDeviceManager () {
           title="操作"
           key="action"
           render={(_: any, record: IDevice) => (
-            <a onClick={() => openModify(record)}>修改</a>
+              <a onClick={() => openModify(record)}>修改</a>
           )}
         />
       </Table>
@@ -511,7 +526,7 @@ export default function TDeviceManager () {
         open={open}
         extra={
           <Space>
-            <Button onClick={() => setOpen(false)}>取消</Button>
+            <Button onClick={() => { setOpen(false); setPerson(''); setTime([null, null]) }}>取消</Button>
             <Button type="primary" onClick={() => choosePerson()}>
               确定
             </Button>
@@ -546,13 +561,8 @@ export default function TDeviceManager () {
         <Descriptions title="使用时间">
           <Descriptions.Item>
             <DatePicker.RangePicker
-              onChange={e => {
-                if (e) {
-                  if (e[0] && e[1]) {
-                    setTime([e[0].toDate(), e[1].toDate()])
-                  }
-                }
-              }}></DatePicker.RangePicker>
+              value={time}
+              onChange={e => setTime(e)}></DatePicker.RangePicker>
           </Descriptions.Item>
         </Descriptions>
       </Drawer>

@@ -31,13 +31,12 @@ export const updateResume = async (resume: string) => {
   })
 }
 
-export const updateAvatar = async (avatar: string) => {
+export const updateAvatar = async (avatar: FormData) => {
   return await request<string>({
     url: '/teacher/updateAvatar',
     method: 'POST',
-    data: {
-      avatar
-    }
+    headers: { 'Content-Type': 'multipart/form-data' },
+    data: avatar
   })
 }
 

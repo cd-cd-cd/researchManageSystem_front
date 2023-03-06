@@ -19,6 +19,7 @@ interface Props {
 }
 export default function TeacherTable ({ isTea }: Props) {
   const [searchValue, setSearchValue] = useState<string>('')
+  const [isSearch, setIsSearch] = useState(false)
   const [isModal, setIsModal] = useState(false)
   const [info, setInfo] = useState<ITabel>()
   const [loading, setLoading] = useState(true)
@@ -67,9 +68,11 @@ export default function TeacherTable ({ isTea }: Props) {
 
   const search = async (info: string) => {
     if (info) {
-      const res = await searchTeacher(info)
+      const res = await searchTeacher(info, current, 8)
       if (res?.success) {
-        setInfoList(res.data.reduce((pre: ITabel[], cur) => {
+        setTotal(res.data.total)
+        setCurrent(1)
+        setInfoList(res.data.infos.reduce((pre: ITabel[], cur) => {
           pre.push({
             key: cur.id,
             name: cur.name,
@@ -85,19 +88,33 @@ export default function TeacherTable ({ isTea }: Props) {
     }
   }
 
+  const clickSearch = (value: string) => {
+    setIsSearch(true)
+    if (!value) {
+      message.info('请输入内容')
+    } else {
+      search(value)
+    }
+  }
+
   useEffect(() => {
-    getInfo()
+    if (isSearch) {
+      search(searchValue)
+    } else {
+      getInfo()
+    }
   }, [current, isTea])
   return (
     <div>
       <div className={style.search_box}>
         <Input.Search
           value={searchValue}
-          onSearch={(value) => search(value)}
+          onChange={(e) => setSearchValue(e.target.value)}
+          onSearch={(value) => clickSearch(value)}
           placeholder='请输入老师姓名或者学号查询'
           className={style.searchBtn}
         ></Input.Search>
-        <Button onClick={() => { getInfo(); setSearchValue('') }}>返回</Button>
+        <Button onClick={() => { getInfo(); setSearchValue(''); setIsSearch(false) }}>返回</Button>
       </div>
       <Table
         loading={loading}

@@ -1,4 +1,4 @@
-import { IApplyInfoSingle, IEquipmentList, IEquipmentState, IResStu } from '../../libs/model'
+import { IApplyInfoSingle, IEquipmentState, IPagination, IResStu, IUser } from '../../libs/model'
 import request from '../../utils/request'
 // 添加设备
 export const addDevice = async (
@@ -29,9 +29,30 @@ export const addDevice = async (
   })
 }
 
+interface IInfo {
+  id: string
+  serialNumber: string
+  name: string
+  version: string
+  originalValue: string
+  performanceIndex: string
+  address: string
+  state: IEquipmentState
+  warehouseEntryTime: string
+  HostRemarks: string
+  remark: string
+  createdTime: Date
+  equipment_manager: IUser
+  recipient: IUser
+}
+
+interface IResGetList extends IPagination {
+  lists: IInfo[]
+}
+
 // 获得设备列表
 export const getList = async (pageNum: number, pageSize: number) => {
-  return await request<IEquipmentList>({
+  return await request<IResGetList>({
     url: '/teacher/device/getDeviceList',
     method: 'GET',
     params: {

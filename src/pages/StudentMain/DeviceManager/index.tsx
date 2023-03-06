@@ -125,7 +125,7 @@ export default function DeviceManager () {
 
   return (
     <div className={style.back}>
-      <div className={style.btn_box}>
+      <div className={style.btn_box2}>
         <Button type='primary' className={style.apply_btn} onClick={() => getIdleDevice()}>设备申请</Button>
         <Button type='primary' className={style.store_btn} onClick={() => setOpen(true)}>在用设备</Button>
       </div>
