@@ -11,6 +11,7 @@ import Mask from './Mask'
 import { createReport, getReportRecord } from '../../../api/studentApi/report'
 import RecordItem from './RecordItem'
 import { IHistoryReport } from '../../../libs/model'
+import moment from 'moment'
 export default function WeekReport () {
   // Draw
   const [open, setOpen] = useState(false)
@@ -53,9 +54,11 @@ export default function WeekReport () {
   // 上传
   const uploadReport = async () => {
     const res = checkReport(time)
-    if (res === true && time) {
+    if (res === true && time && value) {
       const newReport = JSON.stringify(report)
-      const temp = await createReport(time, newReport)
+      const startDate = moment(value).day(1).toDate() // 周一日期
+      const endDate = moment(value).day(7).toDate() // 周日日期
+      const temp = await createReport(time, newReport, startDate, endDate)
       if (temp?.success) {
         message.success(temp.msg)
         resetAll()

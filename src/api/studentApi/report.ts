@@ -2,13 +2,15 @@ import { IHistoryReport, ISecondComment } from '../../libs/model'
 import request from '../../utils/request'
 
 // 上传周报
-export const createReport = async (time: string, text: string) => {
+export const createReport = async (time: string, text: string, startTime: Date, endTime: Date) => {
   return await request<string>({
     url: '/student/report/create',
     method: 'POST',
     data: {
       time,
-      text
+      text,
+      startTime,
+      endTime
     }
   })
 }

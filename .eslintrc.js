@@ -25,7 +25,8 @@ module.exports = {
     "@typescript-eslint/promise-function-async": "off",
     "@typescript-eslint/no-floating-promises": "off",
     "@typescript-eslint/no-misused-promises": "off",
-    "@typescript-eslint/prefer-optional-chain": "off"
+    "@typescript-eslint/prefer-optional-chain": "off",
+    "@typescript-eslint/no-unused-vars": "off"
   },
   "parserOptions": {
     "ecmaVersion": "latest",

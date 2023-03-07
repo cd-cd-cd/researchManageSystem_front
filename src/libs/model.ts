@@ -277,6 +277,12 @@ interface IApply {
   invoice: string
   reimbursementState: IReimbersementState
 }
+
+// 老师模块
+type ITeacherModule = 'device' | 'meeting' | 'reimbursement'
+
+// 学生模块
+type IStudentModule = 'meeting' | 'report' | 'reimbursement' | 'request'
 export type {
   IStuList,
   IStu,
@@ -308,5 +314,7 @@ export type {
   IPagination,
   IUser,
   IReimbersementState,
-  IApply
+  IApply,
+  ITeacherModule,
+  IStudentModule
 }
