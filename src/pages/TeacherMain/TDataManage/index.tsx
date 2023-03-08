@@ -1,4 +1,4 @@
-import { Button, DatePicker, Radio, Select } from 'antd'
+import { Button, DatePicker, Radio, Select, Spin } from 'antd'
 import React, { useEffect, useState } from 'react'
 import { excelFunc, getStu } from '../../../api/teacherApi/dataManage'
 import { Moment } from 'moment'
@@ -17,6 +17,7 @@ interface IInfo {
 }
 export default function TDataManage () {
   const { checkItem, createExcelName } = useDataManage()
+  const [loading, setLoading] = useState(false)
   const [info, setInfo] = useState<IInfo>({
     role: 1,
     module: 'meeting',
@@ -45,6 +46,7 @@ export default function TDataManage () {
       const endTime = (info.time)![1]!.toDate()
       startTime.setHours(0, 0, 0)
       endTime.setHours(24, 0, 0)
+      setLoading(true)
       const res = await excelFunc(
         info.role,
         info.module,
@@ -64,6 +66,7 @@ export default function TDataManage () {
         downloadElement.click()
         document.body.removeChild(downloadElement)
         window.URL.revokeObjectURL(href)
+        setLoading(false)
       }
     }
   }
@@ -74,6 +77,13 @@ export default function TDataManage () {
   return (
     <div>
       <div className={style.box}>
+        {
+          loading
+            ? <div className={style.mask}>
+              <Spin spinning={loading} />
+            </div>
+            : ''
+        }
         <div className={style.item}>
           <span className={style.label}>角色：</span>
           <Radio.Group onChange={e => { setInfo({ ...info, role: e.target.value, time: [null, null], studentId: '' }); setStudentName('') }} value={info.role}>
