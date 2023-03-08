@@ -1,47 +1,32 @@
 import { Button, DatePicker, Radio, Select, Spin } from 'antd'
 import React, { useEffect, useState } from 'react'
-import { excelFunc, getStu } from '../../../api/teacherApi/dataManage'
-import { Moment } from 'moment'
-import useDataManage from '../../../hooks/useDataManage'
-import { StuModuleOption, TeaModuleOption } from '../../../libs/data'
-import { IOption, IRole, IStudentModule, ITeacherModule } from '../../../libs/model'
 import style from './index.module.scss'
-
+import { Moment } from 'moment'
+import { IOption, IRole, IStudentModule, ITeacherModule } from '../../../libs/model'
+import { StuModuleOption, TeaModuleOption } from '../../../libs/data'
+import useDataManage from '../../../hooks/useDataManage'
+import { excelFunc, getList } from '../../../api/managerApi/dataManage'
 type RangeValue = [Moment | null, Moment | null] | null
 
 interface IInfo {
   role: IRole
   module: ITeacherModule | IStudentModule
   time: RangeValue
-  studentId: string
+  id: string
 }
-export default function TDataManage () {
-  const { checkItem, createExcelName } = useDataManage()
-  const [loading, setLoading] = useState(false)
+export default function MDataManage () {
+  const { McheckItem, createExcelName } = useDataManage()
   const [info, setInfo] = useState<IInfo>({
     role: 1,
     module: 'meeting',
     time: [null, null],
-    studentId: ''
+    id: ''
   })
+  const [loading, setLoading] = useState(false)
   const [studentName, setStudentName] = useState('')
-
   const [stuList, setStuList] = useState<IOption[]>()
-  const getStuList = async () => {
-    const res = await getStu()
-    if (res?.success) {
-      setStuList(res.data.reduce((pre: IOption[], cur) => {
-        pre.push({
-          value: cur.id,
-          label: `${cur.name} - ${cur.username}`
-        })
-        return pre
-      }, []))
-    }
-  }
-
   const exportExcel = async () => {
-    if (checkItem(info.role, info.module, info.time, info.studentId)) {
+    if (McheckItem(info.role, info.module, info.time, info.id)) {
       const startTime = (info.time)![0]!.toDate()
       const endTime = (info.time)![1]!.toDate()
       startTime.setHours(0, 0, 0)
@@ -52,7 +37,7 @@ export default function TDataManage () {
         info.module,
         startTime,
         endTime,
-        info.studentId)
+        info.id)
       if (res) {
         const enc = new TextDecoder('utf-8')
         const uint8Msg = new Uint8Array(res as unknown as ArrayBufferLike)
@@ -71,9 +56,23 @@ export default function TDataManage () {
     }
   }
 
+  const getUserData = async () => {
+    const res = await getList(info.role)
+    if (res?.success) {
+      setStuList(res.data.reduce((pre: IOption[], cur) => {
+        pre.push({
+          value: cur.id,
+          label: `${cur.name} - ${cur.username}`
+        })
+        return pre
+      }, []))
+    }
+  }
+
   useEffect(() => {
-    getStuList()
-  }, [])
+    getUserData()
+  }, [info.role])
+
   return (
     <div>
       <div className={style.box}>
@@ -86,24 +85,19 @@ export default function TDataManage () {
         }
         <div className={style.item}>
           <span className={style.label}>角色：</span>
-          <Radio.Group onChange={e => { setInfo({ ...info, role: e.target.value, time: [null, null], studentId: '' }); setStudentName('') }} value={info.role}>
-            <Radio value={1}>老师(自己)</Radio>
+          <Radio.Group onChange={e => { setInfo({ ...info, role: e.target.value, time: [null, null], id: '' }); setStudentName('') }} value={info.role}>
+            <Radio value={1}>老师</Radio>
             <Radio value={0}>学生</Radio>
           </Radio.Group>
+        </div><div className={style.item}>
+          <span className={style.label}>用户：</span>
+          <Select
+            value={info.id}
+            onChange={(e, option) => { setInfo({ ...info, id: e }); setStudentName((option as IOption).label) }}
+            options={stuList}
+            style={{ width: 180 }}
+          />
         </div>
-        {
-          info.role === 0
-            ? <div className={style.item}>
-              <span className={style.label}>用户：</span>
-              <Select
-                value={info.studentId}
-                onChange={(e, option) => { setInfo({ ...info, studentId: e }); setStudentName((option as IOption).label) }}
-                options={stuList}
-                style={{ width: 180 }}
-              />
-            </div>
-            : null
-        }
         <div className={style.item}>
           <span className={style.label}>模块：</span>
           <Select

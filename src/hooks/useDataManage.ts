@@ -26,6 +26,29 @@ export default function useDataManage () {
     return true
   }
 
+  // 检查（超级管理员
+  const McheckItem = (
+    role: IRole,
+    module: ITeacherModule | IStudentModule,
+    time: [Moment | null, Moment | null] | null,
+    id: string
+  ) => {
+    if (role !== 0 && role !== 1) {
+      message.info('请选择角色')
+      return false
+    } else if (!module) {
+      message.info('请选择模块')
+      return false
+    } else if (!time || !time[0] || !time[1]) {
+      message.info('请选择时间')
+      return false
+    } else if (!id) {
+      message.info('请选择用户')
+      return false
+    }
+    return true
+  }
+
   const renderModule = (module: ITeacherModule | IStudentModule) => {
     switch (module) {
       case 'device':
@@ -61,6 +84,7 @@ export default function useDataManage () {
   }
   return {
     checkItem,
-    createExcelName
+    createExcelName,
+    McheckItem
   }
 }
