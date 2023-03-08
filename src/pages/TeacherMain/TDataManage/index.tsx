@@ -23,6 +23,7 @@ export default function TDataManage () {
     time: [null, null],
     studentId: ''
   })
+  const [studentName, setStudentName] = useState('')
 
   const [stuList, setStuList] = useState<IOption[]>()
   const getStuList = async () => {
@@ -31,7 +32,7 @@ export default function TDataManage () {
       setStuList(res.data.reduce((pre: IOption[], cur) => {
         pre.push({
           value: cur.id,
-          label: `${cur.name} --- ${cur.username}`
+          label: cur.name
         })
         return pre
       }, []))
@@ -58,7 +59,7 @@ export default function TDataManage () {
         const downloadElement = document.createElement('a')
         const href = window.URL.createObjectURL(blob)
         downloadElement.href = href
-        downloadElement.download = createExcelName(info.role, info.module, [startTime, endTime], info.studentId)
+        downloadElement.download = createExcelName(info.role, info.module, [startTime, endTime], studentName)
         document.body.appendChild(downloadElement)
         downloadElement.click()
         document.body.removeChild(downloadElement)
@@ -75,7 +76,7 @@ export default function TDataManage () {
       <div className={style.box}>
         <div className={style.item}>
           <span className={style.label}>角色：</span>
-          <Radio.Group onChange={e => setInfo({ ...info, role: e.target.value, time: [null, null], studentId: '' })} value={info.role}>
+          <Radio.Group onChange={e => { setInfo({ ...info, role: e.target.value, time: [null, null], studentId: '' }); setStudentName('') }} value={info.role}>
             <Radio value={1}>老师(自己)</Radio>
             <Radio value={0}>学生</Radio>
           </Radio.Group>
@@ -86,7 +87,7 @@ export default function TDataManage () {
               <span className={style.label}>用户：</span>
               <Select
                 value={info.studentId}
-                onChange={(e) => setInfo({ ...info, studentId: e })}
+                onChange={(e, option) => { setInfo({ ...info, studentId: e }); setStudentName((option as IOption).label) }}
                 options={stuList}
                 style={{ width: 180 }}
               />

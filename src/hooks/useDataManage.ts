@@ -46,7 +46,7 @@ export default function useDataManage () {
     role: IRole,
     module: ITeacherModule | IStudentModule,
     time: [Date, Date],
-    studentId: string
+    studentName: string
   ) => {
     let roleText
     if (role === 0) {
@@ -55,7 +55,7 @@ export default function useDataManage () {
       roleText = '老师'
     }
     const moduleText = renderModule(module)
-    const studentText = studentId
+    const studentText = studentName
     const timeText = `${dayjs(time[0]).format('YYYY-MM-DD')}——${dayjs(time[1]).format('YYYY-MM-DD')}`
     return `${studentText + roleText}-${moduleText}-${timeText}`
   }
