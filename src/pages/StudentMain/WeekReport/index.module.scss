@@ -13,6 +13,19 @@
   margin-bottom: 30px;
 }
 
+.pdfMask{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba($color: #fff, $alpha: 0.6);
+  z-index: 999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .title {
   color: rgba(8, 14, 23, 0.9);
   font-size: 28px;
@@ -36,7 +49,7 @@
 .btn_box{
   display: flex;
   flex-direction: column;
-  height: 100px;
+  height: 130px;
   justify-content: space-around;
   position: sticky;
   margin-top: 100px;

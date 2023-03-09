@@ -15,6 +15,19 @@ export const createReport = async (time: string, text: string, startTime: Date, 
   })
 }
 
+// 上传周报pdf
+export const uploadPdf = async (id: string, material: FormData) => {
+  return await request({
+    url: '/student/report/pdf',
+    method: 'POST',
+    headers: { 'Content-Type': 'multipart/form-data' },
+    data: material,
+    params: {
+      id
+    }
+  })
+}
+
 // 得到周报历史
 export const getReportRecord = async () => {
   return await request<IHistoryReport[]>({

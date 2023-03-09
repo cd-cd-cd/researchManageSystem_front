@@ -181,6 +181,7 @@ interface IHistoryReport {
   time: string
   id: string
   text: IPart[]
+  pdf: string
 }
 
 interface IUser {
@@ -205,6 +206,7 @@ interface INewInfo {
   createTime: string
   status: IReportState
   text: IPart[]
+  pdf: string
 }
 // 周报状态 -1 -- 未查看     0 --- 查看了但没回复  1 --- 查看了并回复了
 type IReportState = -1 | 0 | 1

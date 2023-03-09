@@ -73,7 +73,7 @@ export default function Mask ({ close, time, report, isCommentComponent, reportI
   }, [])
   return (
     <div className={style.mask_back}>
-      <div className={style.main}>
+      <div className={style.main} id='zhoubao'>
         <div className={style.title}>周报</div>
         <div className={style.date} id='time'>
           {time}

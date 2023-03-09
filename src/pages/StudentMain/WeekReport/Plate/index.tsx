@@ -40,7 +40,7 @@ export default function Plate ({ index, reportPart, type, focusId }: Props) {
     <>
       <div className={style.headTwo}>
         {
-          (index !== 0 || type === 'teamService') && focusId === reportPart.id ? <img src={deleteIcon} className={style.deleteIcon} onClick={() => deletePoint(reportPart.id)}></img> : ''
+          (index !== 0 || type === 'teamService') && focusId === reportPart.id ? <img src={deleteIcon} className={style.deleteIcon + ' ' + 'add'} onClick={() => deletePoint(reportPart.id)}></img> : ''
         }
         <span className={style.title_style}>{returnTitle()}</span>
         <Input.TextArea
@@ -75,13 +75,13 @@ export default function Plate ({ index, reportPart, type, focusId }: Props) {
                       ></Input.TextArea>
                       {
                         textIndex !== 1
-                          ? <img onClick={() => deleteText(reportPart.id, point.id, text.id)} className={style.icon_text} src={deleteIcon}></img>
+                          ? <img onClick={() => deleteText(reportPart.id, point.id, text.id)} className={style.icon_text + ' ' + 'add'} src={deleteIcon}></img>
                           : ''
                       }
                     </div>
                   )
                 }
-                <img className={style.iconAdd} onClick={() => addText(reportPart.id, point.id)} src={addIcon}></img>
+                <img className={style.iconAdd + ' ' + 'add'} onClick={() => addText(reportPart.id, point.id)} src={addIcon}></img>
               </div>
             </div>
           )

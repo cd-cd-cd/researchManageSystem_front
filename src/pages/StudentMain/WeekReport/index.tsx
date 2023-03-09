@@ -1,4 +1,4 @@
-import { Button, DatePicker, DatePickerProps, Drawer, message } from 'antd'
+import { Button, DatePicker, DatePickerProps, Drawer, message, Spin } from 'antd'
 import React, { useContext, useState } from 'react'
 import 'moment/locale/zh-cn'
 import style from './index.module.scss'
@@ -12,6 +12,7 @@ import { createReport, getReportRecord } from '../../../api/studentApi/report'
 import RecordItem from './RecordItem'
 import { IHistoryReport } from '../../../libs/model'
 import moment from 'moment'
+import usePdf from '../../../hooks/usePdf'
 export default function WeekReport () {
   // Draw
   const [open, setOpen] = useState(false)
@@ -23,6 +24,9 @@ export default function WeekReport () {
   const [historyReport, setHistoryReport] = useState<IHistoryReport[]>()
   const { report } = useContext(context)
   const { addPoint, reset, checkReport } = useReport()
+  // 输出pdf
+  // pdf loading
+  const { printPDF, uploadFile } = usePdf()
 
   const onChange: DatePickerProps['onChange'] = (
     values: any,
@@ -60,9 +64,18 @@ export default function WeekReport () {
       const endDate = moment(value).day(7).toDate() // 周日日期
       const temp = await createReport(time, newReport, startDate, endDate)
       if (temp?.success) {
-        message.success(temp.msg)
         resetAll()
+        uploadFile('report', 'reset', '.add', temp.data, time + '周报')
       }
+    }
+  }
+
+  // 导出pdf
+  const exportPdf = () => {
+    const res = checkReport(time)
+    if (res === true && time && value) {
+      message.loading({ content: '正在导出......', key: 'pdf' })
+      printPDF('report', 'reset', '.add', time + '周报')
     }
   }
 
@@ -74,12 +87,11 @@ export default function WeekReport () {
   }
   return (
     <div className={style.box}>
-      <div className={style.main}>
-        <Button className={style.reset_btn} onClick={() => resetAll()}>重置</Button>
+      <div className={style.main} id='report'>
+        <Button className={style.reset_btn} id='reset' onClick={() => resetAll()}>重置</Button>
         <div className={style.title}>周报</div>
         <div className={style.date} id='time'>
           <DatePicker onChange={onChange} value={value} picker="week" />
-          {/* <DatePicker.RangePicker value={value} onChange={onChange} /> */}
         </div>
         <div className={style.partOne}>
           <div className={style.headOne}>一、本周进展</div>
@@ -96,7 +108,7 @@ export default function WeekReport () {
                 </div>
               )
             }
-            <img src={addIcon} className={style.addIcon} onClick={() => addPoint('progress')}></img>
+            <img src={addIcon} className={style.addIcon + ' ' + 'add'} onClick={() => addPoint('progress')}></img>
           </div>
         </div>
         <div className={style.partOne}>
@@ -115,7 +127,7 @@ export default function WeekReport () {
               )
             }
           </div>
-          <img src={addIcon} className={style.addIcon} onClick={() => addPoint('plan')}></img>
+          <img src={addIcon} className={style.addIcon + ' ' + 'add'} onClick={() => addPoint('plan')}></img>
         </div>
         {
           report.filter(item => item.type === 'teamService').length
@@ -135,14 +147,15 @@ export default function WeekReport () {
                   )
                 }
               </div>
-              <img src={addIcon} className={style.addIcon} onClick={() => addPoint('teamService')}></img>
+              <img src={addIcon} className={style.addIcon + ' ' + 'add'} onClick={() => addPoint('teamService')}></img>
             </div>
-            : <div className={style.headOne} style={{ color: 'gray', cursor: 'pointer' }} onClick={() => addPoint('teamService')}>增加团队服务</div>
+            : <div className={style.headOne + ' ' + 'add'} style={{ color: 'gray', cursor: 'pointer' }} onClick={() => addPoint('teamService')}>增加团队服务</div>
         }
       </div>
       <div className={style.btn_box}>
         <Button type='primary' onClick={() => showMask()}>预览</Button>
         <Button onClick={() => uploadReport()}>上传</Button>
+        <Button onClick={() => exportPdf()} style={{ position: 'relative' }}>导出pdf</Button>
       </div>
       <div className={style.right_box}>
         <Button type='primary' className={style.btn} onClick={() => getRecords()}>历史周报</Button>

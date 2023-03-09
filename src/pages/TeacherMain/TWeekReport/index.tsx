@@ -3,11 +3,13 @@ import Column from 'antd/lib/table/Column'
 import dayjs from 'dayjs'
 import React, { useEffect, useState } from 'react'
 import { getReportInfo, reviewReport } from '../../../api/teacherApi/report'
+import useFile from '../../../hooks/useFile'
 import { INewInfo, IReportState } from '../../../libs/model'
 import Mask from '../../StudentMain/WeekReport/Mask'
 import style from './index.module.scss'
 
 export default function TWeekReport () {
+  const { decode } = useFile()
   const [reportInfos, setReportInfos] = useState<INewInfo[]>()
   const [report, setReport] = useState<INewInfo>()
   const [isMask, setIsMask] = useState<boolean>(false)
@@ -30,7 +32,8 @@ export default function TWeekReport () {
           timeRange: cur.time,
           createTime: dayjs(cur.createdTime).format('YYYY-MM-DD'),
           status: cur.reportState,
-          text: cur.text
+          text: cur.text,
+          pdf: cur.pdf
         }
         pre.push(temp)
         return pre
@@ -111,18 +114,26 @@ export default function TWeekReport () {
             <a className={style.review} onClick={() => viewReportAction(record.key, record)}>查看周报</a>
           </>}
         />
+        <Column
+          title="导出pdf"
+          dataIndex="pdf"
+          key="pdf"
+          render={(value: string) => <a href={value}>
+            {value ? decode(value, 'http://seach-chendian.oss-cn-hangzhou.aliyuncs.com/report/') : ''}
+          </a>}
+        ></Column>
       </Table>
       {
         isMask && report
           ? <Mask
-              isCommentComponent={true}
-              close={() => setIsMask(false)}
-              time={report.timeRange}
-              reportId={report.key}
-              reportUserId={report.userId}
-              report={report.text}
-              getReportInfos={getReportInfos}
-            ></Mask>
+            isCommentComponent={true}
+            close={() => setIsMask(false)}
+            time={report.timeRange}
+            reportId={report.key}
+            reportUserId={report.userId}
+            report={report.text}
+            getReportInfos={getReportInfos}
+          ></Mask>
           : ''
       }
     </div>
