@@ -89,6 +89,7 @@ export default function GroupPart () {
   const createMeeting = async (values: any) => {
     const startTime = values.time[0].toDate()
     const endTime = values.time[1].toDate()
+    const date = new Date()
     const res = await createMeet(
       values.title,
       values.briefContent,

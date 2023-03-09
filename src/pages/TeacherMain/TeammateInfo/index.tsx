@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import style from './index.module.scss'
 import leftIcon from '../../../assets/imgs/arrow-double-left.svg'
 import { useNavigate, useParams } from 'react-router-dom'
-import { Button, message, Modal } from 'antd'
+import { Button, message, Modal, Image } from 'antd'
 import { deleteStu, getStu } from '../../../api/teacherApi/teacher'
 import { IStu } from '../../../libs/model'
 import dayjs from 'dayjs'
@@ -49,7 +49,10 @@ export default function TeammateInfo () {
         </div>
         <div className={style.person_bpx}>
           <div className={style.avatar}>
-            <img src={user?.avatar ? user.avatar : ''} className={style.avatar_style}></img>
+            <Image
+            src={user?.avatar ? user.avatar : ''}
+            width={150}
+            ></Image>
           </div>
           <div className={style.info}>
             <span>姓名:</span><span>{user?.name}</span>
