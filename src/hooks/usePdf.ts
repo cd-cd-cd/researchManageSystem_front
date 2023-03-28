@@ -115,7 +115,6 @@ export default function usePdf () {
         const formDate = new FormData()
         const blob = pdf.output('blob')
         const file = new File([blob], pdfName + '.pdf', { type: blob.type })
-        console.log(file)
         formDate.append('file', file)
         const res = await uploadPdf(reportId, formDate)
         if (res?.success) {

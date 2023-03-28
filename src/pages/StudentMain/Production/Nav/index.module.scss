@@ -1,0 +1,24 @@
+@mixin baseBlock {
+  width: 30px;
+  padding: 5px 0 5px 8px;
+  letter-spacing: 20px;
+  color: white;
+  margin: 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  caret-color: transparent;
+}
+
+.blockItem {
+  @include baseBlock();
+  background-color: rgb(112, 189, 253);
+}
+
+.blockItem:hover {
+  background-color: #1890ff;
+}
+
+.blockItemClick {
+  @include baseBlock();
+  background-color: #1890ff;
+}
