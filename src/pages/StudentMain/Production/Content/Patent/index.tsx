@@ -1,8 +1,9 @@
-import { Button, DatePicker, Form, Input } from 'antd'
+import { Button, DatePicker, Form, Input, Select } from 'antd'
 import { RangePickerProps } from 'antd/lib/date-picker'
 import dayjs from 'dayjs'
 import style from './index.module.scss'
 import React from 'react'
+import { principalClassificationNumberOption } from '../../../../../libs/data'
 
 export default function Patent () {
   const [form] = Form.useForm()
@@ -28,6 +29,7 @@ export default function Patent () {
           label='专利名称'
           name='name'
           rules={[
+            { max: 25, message: '专利名称不超过25位' },
             { required: true, message: '专利名称不为空' }
           ]}
         >
@@ -35,8 +37,9 @@ export default function Patent () {
         </Form.Item>
         <Form.Item
           label='申请（专利）号'
-          name='applicationNumber            '
+          name='applicationNumber'
           rules={[
+            { pattern: /^\d{12}$/, message: '申请专利号格式有误' },
             { required: true, message: '申请号不为空' }
           ]}
         >
@@ -57,6 +60,7 @@ export default function Patent () {
           label='公开（公告）号'
           name='publicationNumber'
           rules={[
+            { len: 10, message: '公开号格式有误' },
             { required: true, message: '公开号不为空' }
           ]}
         >
@@ -80,7 +84,9 @@ export default function Patent () {
             { required: true, message: '主分类号不为空' }
           ]}
         >
-          <Input placeholder='主分类号'></Input>
+          <Select
+            options={principalClassificationNumberOption}
+            placeholder='主分类号'></Select>
         </Form.Item>
         <Form.Item
           label='申请（专利权）人'
@@ -104,21 +110,22 @@ export default function Patent () {
           label='摘要'
           name='digest'
           rules={[
+            { max: 300, message: '摘要不超过30字' },
             { required: true, message: '摘要不为空' }
           ]}
         >
           <Input.TextArea placeholder='摘要'></Input.TextArea>
         </Form.Item>
         <Form.Item>
-            <div className={style.btn_box}>
-              <Button type="primary" htmlType="submit">
-                添加
-              </Button>
-              <Button htmlType="button" onClick={() => form.resetFields()}>
-                取消
-              </Button>
-            </div>
-          </Form.Item>
+          <div className={style.btn_box}>
+            <Button type="primary" htmlType="submit">
+              添加
+            </Button>
+            <Button htmlType="button" onClick={() => form.resetFields()}>
+              取消
+            </Button>
+          </div>
+        </Form.Item>
       </Form>
     </div>
   )

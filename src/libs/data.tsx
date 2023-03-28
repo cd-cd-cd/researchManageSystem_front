@@ -78,3 +78,14 @@ export const awardLevelOption: IOption[] = [
   { value: '06', label: '国际级' },
   { value: '07', label: '其他' }
 ]
+
+export const principalClassificationNumberOption: IOption[] = [
+  { value: 'A', label: 'A - 人类生活必需' },
+  { value: 'B', label: 'B - 作业；运输' },
+  { value: 'C', label: 'C - 化学；冶金' },
+  { value: 'D', label: 'D - 纺织；造纸' },
+  { value: 'E', label: 'E - 固定建筑物' },
+  { value: 'F', label: 'F - 机械工程;照明;加热;武器;爆破' },
+  { value: 'G', label: 'G - 物理' },
+  { value: 'H', label: 'H - 电学' }
+]
