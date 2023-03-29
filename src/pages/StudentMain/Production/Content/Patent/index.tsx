@@ -1,15 +1,37 @@
-import { Button, DatePicker, Form, Input, Select } from 'antd'
+import { Button, DatePicker, Form, Input, message, Select } from 'antd'
 import { RangePickerProps } from 'antd/lib/date-picker'
 import dayjs from 'dayjs'
 import style from './index.module.scss'
-import React from 'react'
+import React, { useState } from 'react'
 import { principalClassificationNumberOption } from '../../../../../libs/data'
+import ProductionMask from '../../ProductionMask'
+import { createPatent } from '../../../../../api/studentApi/production'
 
 export default function Patent () {
   const [form] = Form.useForm()
+  const [loading, setLoading] = useState(false)
   // 创建专利
-  const createPatent = (values: any) => {
-    console.log(values)
+  const postPatent = async (values: any) => {
+    setLoading(true)
+    const res = await createPatent(
+      values.name,
+      values.applicationNumber,
+      (values.applicationDate).toDate(),
+      values.publicationNumber,
+      (values.openDay).toDate(),
+      values.principalClassificationNumber,
+      values.patentRight,
+      values.inventor,
+      values.digest
+    )
+    if (res?.success) {
+      setLoading(false)
+      message.success(res.msg)
+      form.resetFields()
+      console.log(res.data)
+    } else {
+      message.info(res?.msg)
+    }
   }
 
   const disabledDate: RangePickerProps['disabledDate'] = (current) => {
@@ -17,10 +39,11 @@ export default function Patent () {
     return current && current > dayjs().endOf('day')
   }
   return (
-    <div>
+    <div className={style.back}>
+      {loading ? <ProductionMask loading={loading}></ProductionMask> : ''}
       <Form
         className={style.form}
-        onFinish={createPatent}
+        onFinish={postPatent}
         form={form}
         labelCol={{ span: 8 }}
         wrapperCol={{ span: 16 }}
@@ -39,7 +62,7 @@ export default function Patent () {
           label='申请（专利）号'
           name='applicationNumber'
           rules={[
-            { pattern: /^\d{12}$/, message: '申请专利号格式有误' },
+            { pattern: /^\d{13}$/, message: '申请专利号格式有误' },
             { required: true, message: '申请号不为空' }
           ]}
         >
@@ -60,7 +83,7 @@ export default function Patent () {
           label='公开（公告）号'
           name='publicationNumber'
           rules={[
-            { len: 10, message: '公开号格式有误' },
+            { len: 12, message: '公开号格式有误' },
             { required: true, message: '公开号不为空' }
           ]}
         >
@@ -92,6 +115,7 @@ export default function Patent () {
           label='申请（专利权）人'
           name='patentRight'
           rules={[
+            { max: 100, message: '位数不超过100位' },
             { required: true, message: '申请人不为空' }
           ]}
         >
@@ -101,6 +125,7 @@ export default function Patent () {
           label='发明（设计）人'
           name='inventor'
           rules={[
+            { max: 100, message: '位数不超过100位' },
             { required: true, message: '发明人不为空' }
           ]}
         >
@@ -110,11 +135,11 @@ export default function Patent () {
           label='摘要'
           name='digest'
           rules={[
-            { max: 300, message: '摘要不超过30字' },
+            { max: 300, message: '摘要不超过300字' },
             { required: true, message: '摘要不为空' }
           ]}
         >
-          <Input.TextArea placeholder='摘要'></Input.TextArea>
+          <Input.TextArea placeholder='摘要' autoSize></Input.TextArea>
         </Form.Item>
         <Form.Item>
           <div className={style.btn_box}>

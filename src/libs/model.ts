@@ -280,11 +280,33 @@ interface IApply {
   reimbursementState: IReimbersementState
 }
 
+interface IPatent {
+  id: string
+  name: string
+  applicationNumber: string
+  applicationDate: Date
+  publicationNumber: string
+  openDay: Date
+  principalClassificationNumber: string
+  patentRight: string
+  inventor: string
+  digest: string
+  patentState: IPatentState
+  patentExist: IPatentExist
+  createdTime: Date
+}
+
 // 老师模块
 type ITeacherModule = 'device' | 'meeting' | 'reimbursement'
 
 // 学生模块
 type IStudentModule = 'meeting' | 'report' | 'reimbursement' | 'request'
+
+// 专利状态 -1未审批 0审批通过 1审批打回
+type IPatentState = -1 | 0 | 1
+
+// 专利申请 0不存在 1存在
+type IPatentExist = 0 | 1
 export type {
   IStuList,
   IStu,
@@ -318,5 +340,8 @@ export type {
   IReimbersementState,
   IApply,
   ITeacherModule,
-  IStudentModule
+  IStudentModule,
+  IPatentState,
+  IPatentExist,
+  IPatent
 }
