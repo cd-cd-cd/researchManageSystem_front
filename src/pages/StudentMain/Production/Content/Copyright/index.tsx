@@ -1,15 +1,34 @@
-import { Button, DatePicker, Form, Input, Select } from 'antd'
+import { Button, DatePicker, Form, Input, message, Select } from 'antd'
 import { RangePickerProps } from 'antd/lib/date-picker'
 import dayjs from 'dayjs'
-import React from 'react'
+import React, { useState } from 'react'
+import { postCopyRight } from '../../../../../api/studentApi/production'
 import { copyRightType } from '../../../../../libs/data'
+import ProductionMask from '../../ProductionMask'
 import style from './index.module.scss'
 
 export default function Copyright () {
+  const [loading, setLoading] = useState(false)
   const [form] = Form.useForm()
   // 创建专利
-  const createCopyRight = (values: any) => {
-    console.log(values)
+  const createCopyRight = async (values: any) => {
+    setLoading(true)
+    const res = await postCopyRight(
+      values.registerNumber,
+      values.name,
+      values.category,
+      values.copyrightOwner,
+      values.creationCompletionDate.toDate(),
+      values.firstPublicationDate.toDate(),
+      values.recordDate.toDate()
+    )
+    if (res?.success) {
+      setLoading(false)
+      message.success(res.msg)
+      form.resetFields()
+    } else {
+      message.info(res?.msg)
+    }
   }
 
   const disabledDate: RangePickerProps['disabledDate'] = (current) => {
@@ -17,7 +36,8 @@ export default function Copyright () {
     return current && current > dayjs().endOf('day')
   }
   return (
-    <div>
+    <div className={style.back}>
+      {loading ? <ProductionMask loading={loading}></ProductionMask> : ''}
       <Form
         className={style.form}
         onFinish={createCopyRight}
@@ -29,6 +49,7 @@ export default function Copyright () {
           label='登记号'
           name='registerNumber'
           rules={[
+            { len: 20, message: '登记号格式不正确' },
             { required: true, message: '登记号不为空' }
           ]}
         >
@@ -38,6 +59,7 @@ export default function Copyright () {
           label='作品名称'
           name='name'
           rules={[
+            { max: 15, message: '作品名称不超过15字' },
             { required: true, message: '作品名称不为空' }
           ]}
         >
@@ -51,6 +73,7 @@ export default function Copyright () {
           ]}
         >
           <Select
+            placeholder='作品类别'
             options={copyRightType}
           />
         </Form.Item>
@@ -58,6 +81,7 @@ export default function Copyright () {
           label='著作权人'
           name='copyrightOwner'
           rules={[
+            { max: 20, message: '著作权人长度不超过15字' },
             { required: true, message: '著作权人不为空' }
           ]}
         >
@@ -77,9 +101,6 @@ export default function Copyright () {
         <Form.Item
           label='首次发表日期'
           name='firstPublicationDate'
-          rules={[
-            { required: true, message: '首次发表日期不为空' }
-          ]}
         >
           <DatePicker
             disabledDate={disabledDate}

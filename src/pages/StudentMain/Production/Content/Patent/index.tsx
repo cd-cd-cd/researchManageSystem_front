@@ -28,7 +28,6 @@ export default function Patent () {
       setLoading(false)
       message.success(res.msg)
       form.resetFields()
-      console.log(res.data)
     } else {
       message.info(res?.msg)
     }

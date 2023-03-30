@@ -1,15 +1,32 @@
-import { Button, DatePicker, Form, Input, Select } from 'antd'
+import { Button, DatePicker, Form, Input, message, Select } from 'antd'
 import { RangePickerProps } from 'antd/lib/date-picker'
 import dayjs from 'dayjs'
-import React from 'react'
+import React, { useState } from 'react'
+import { createWin } from '../../../../../api/studentApi/production'
 import { awardGradeOption, awardLevelOption } from '../../../../../libs/data'
+import ProductionMask from '../../ProductionMask'
 import style from './index.module.scss'
 
 export default function Winning () {
+  const [loading, setLoading] = useState(false)
   const [form] = Form.useForm()
   // 创建获奖
-  const createWinning = (values: any) => {
-    console.log(values)
+  const createWinning = async (values: any) => {
+    setLoading(true)
+    const res = await createWin(
+      values.name,
+      values.awardGrade,
+      values.awardLevel,
+      values.awardTime.toDate(),
+      values.organizingCommittee
+    )
+    if (res?.success) {
+      setLoading(false)
+      message.success(res.msg)
+      form.resetFields()
+    } else {
+      message.info(res?.msg)
+    }
   }
 
   const disabledDate: RangePickerProps['disabledDate'] = (current) => {
@@ -18,7 +35,8 @@ export default function Winning () {
   }
 
   return (
-    <div>
+    <div className={style.back}>
+      {loading ? <ProductionMask loading={loading}></ProductionMask> : ''}
       <Form
         className={style.form}
         onFinish={createWinning}
@@ -30,6 +48,7 @@ export default function Winning () {
           label='获奖名称'
           name='name'
           rules={[
+            { max: 30, message: '获奖名称不超过30字 ' },
             { required: true, message: '获奖名称不为空' }
           ]}
         >
@@ -43,7 +62,7 @@ export default function Winning () {
           ]}
         >
           <Select
-          options={awardGradeOption}
+            options={awardGradeOption}
           ></Select>
         </Form.Item>
         <Form.Item
@@ -54,7 +73,7 @@ export default function Winning () {
           ]}
         >
           <Select
-          options={awardLevelOption}
+            options={awardLevelOption}
           ></Select>
         </Form.Item>
         <Form.Item
@@ -72,6 +91,7 @@ export default function Winning () {
           label='大赛组委会'
           name='organizingCommittee'
           rules={[
+            { max: 30, message: '长度不超过30字' },
             { required: true, message: '大赛组委会不为空' }
           ]}
         >

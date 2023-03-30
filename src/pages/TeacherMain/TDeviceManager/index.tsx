@@ -206,7 +206,6 @@ export default function TDeviceManager () {
       const { total, lists } = res.data
       setTotal(total)
       setLists(lists.reduce((pre: IDevice[], cur) => {
-        console.log(cur.recipient)
         pre.push({
           key: cur.id,
           id: cur.id,

@@ -23,10 +23,6 @@ export default function PatentTable ({ patentData, getPatentInfo }: Props) {
     }
   }
 
-  const handleCancel = () => {
-    setIsModalOpen(false)
-  }
-
   const showModal = (record: IPatent) => {
     setInfoItem(record)
     setIsModalOpen(true)
@@ -48,38 +44,39 @@ export default function PatentTable ({ patentData, getPatentInfo }: Props) {
   }
 
   return (
-    <><Table
-      dataSource={patentData}
-    >
-      <Column title="专利名称" dataIndex="name" key="name" />
-      <Column
-        title='详情'
-        render={(_: any, record: IPatent) => <a onClick={() => showModal(record)}>点击查看</a>}
-      ></Column>
-      <Column
-        title='状态'
-        dataIndex="patentState"
-        key="patentState"
-        render={(value: IPatentState) => renderPatentState(value)}
-      ></Column>
-      <Column
-        title='提交时间'
-        dataIndex='createdTime'
-        key='createdTime'
-        render={(value: Date) => dayjs(value).format('YYYY-MM-DD')}
-      ></Column>
-      <Column
-        title='操作'
-        render={(_: any, record: IPatent) =>
-          <Button
-            danger
-            size='small'
-            disabled={record.patentState === 0}
-            onClick={() => cancel(record.id)}
-          >取消申请</Button>}
-      ></Column>
-    </Table>
-      <Modal width={900} footer={null} title='专利信息' open={isModalOpen} onCancel={handleCancel}>
+    <>
+      <Table
+        dataSource={patentData}
+      >
+        <Column title="专利名称" dataIndex="name" key="name" />
+        <Column
+          title='详情'
+          render={(_: any, record: IPatent) => <a onClick={() => showModal(record)}>点击查看</a>}
+        ></Column>
+        <Column
+          title='状态'
+          dataIndex="patentState"
+          key="patentState"
+          render={(value: IPatentState) => renderPatentState(value)}
+        ></Column>
+        <Column
+          title='提交时间'
+          dataIndex='createdTime'
+          key='createdTime'
+          render={(value: Date) => dayjs(value).format('YYYY-MM-DD')}
+        ></Column>
+        <Column
+          title='操作'
+          render={(_: any, record: IPatent) =>
+            <Button
+              danger
+              size='small'
+              disabled={record.patentState === 0}
+              onClick={() => cancel(record.id)}
+            >取消申请</Button>}
+        ></Column>
+      </Table>
+      <Modal width={900} footer={null} title='专利信息' open={isModalOpen} onCancel={() => setIsModalOpen(false)}>
         <Descriptions title={infoItem?.name}>
           <Descriptions.Item label='申请（专利）号'>{infoItem?.applicationNumber}</Descriptions.Item>
           <Descriptions.Item label="申请日" span={2}>{dayjs(infoItem?.applicationDate).format('YYYY-MM-DD')}</Descriptions.Item>

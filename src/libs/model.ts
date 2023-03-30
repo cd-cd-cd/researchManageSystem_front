@@ -296,6 +296,45 @@ interface IPatent {
   createdTime: Date
 }
 
+interface IThesis {
+  id: string
+  title: string
+  firstAuthor: string
+  publishDate: Date
+  publicationName: string
+  signature: string
+  discipline_one: string
+  thesisState: IThesisState
+  thesisExist: IThesisExist
+  createdTime: Date
+}
+
+interface ICopyRight {
+  id: string
+  registerNumber: string
+  name: string
+  category: string
+  copyrightOwner: string
+  creationCompletionDate: Date
+  firstPublicationDate: Date
+  recordDate: Date
+  copyRightState: ICopyRightState
+  copyRightExist: ICopyRightExist
+  createdTime: Date
+}
+
+interface IWin {
+  id: string
+  name: string
+  awardGrade: string
+  awardLevel: string
+  awardTime: Date
+  organizingCommittee: string
+  winState: IWinState
+  winExist: IWinExist
+  createdTime: Date
+}
+
 // 老师模块
 type ITeacherModule = 'device' | 'meeting' | 'reimbursement'
 
@@ -307,6 +346,21 @@ type IPatentState = -1 | 0 | 1
 
 // 专利申请 0不存在 1存在
 type IPatentExist = 0 | 1
+
+// 论文状态 -1未审批 0审批通过 1审批打回
+type IThesisState = -1 | 0 | 1
+
+// 论文申请 0不存在 1存在
+type IThesisExist = 0 | 1
+
+// 著作权
+type ICopyRightState = -1 | 0 | 1
+type ICopyRightExist = 0 | 1
+
+// 获奖
+type IWinState = -1 | 0 | 1
+type IWinExist = 0 | 1
+
 export type {
   IStuList,
   IStu,
@@ -343,5 +397,14 @@ export type {
   IStudentModule,
   IPatentState,
   IPatentExist,
-  IPatent
+  IPatent,
+  IThesisState,
+  IThesisExist,
+  IThesis,
+  ICopyRight,
+  ICopyRightState,
+  ICopyRightExist,
+  IWinState,
+  IWinExist,
+  IWin
 }

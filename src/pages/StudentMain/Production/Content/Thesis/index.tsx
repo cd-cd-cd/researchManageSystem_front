@@ -1,15 +1,33 @@
-import { Button, Form, Input, Select } from 'antd'
+import { Button, Form, Input, message, Select } from 'antd'
 import DatePicker, { RangePickerProps } from 'antd/lib/date-picker'
 import style from './index.module.scss'
-import React from 'react'
+import React, { useState } from 'react'
 import dayjs from 'dayjs'
 import { disciplineOneOption, publicationNameOption } from '../../../../../libs/data'
+import ProductionMask from '../../ProductionMask'
+import { createThesis } from '../../../../../api/studentApi/production'
 
 export default function Thesis () {
+  const [loading, setLoading] = useState(false)
   const [form] = Form.useForm()
   // 创建专利
-  const createThesis = (values: any) => {
-    console.log(values)
+  const postThesis = async (values: any) => {
+    setLoading(true)
+    const res = await createThesis(
+      values.title,
+      values.firstAuthor,
+      values.publishDate.toDate(),
+      values.publicationName,
+      values.signature,
+      values.discipline_one
+    )
+    if (res?.success) {
+      setLoading(false)
+      message.success(res.msg)
+      form.resetFields()
+    } else {
+      message.info(res?.msg)
+    }
   }
 
   const disabledDate: RangePickerProps['disabledDate'] = (current) => {
@@ -17,10 +35,11 @@ export default function Thesis () {
     return current && current > dayjs().endOf('day')
   }
   return (
-    <div>
+    <div className={style.back}>
+      {loading ? <ProductionMask loading={loading}></ProductionMask> : ''}
       <Form
         className={style.form}
-        onFinish={createThesis}
+        onFinish={postThesis}
         form={form}
         labelCol={{ span: 8 }}
         wrapperCol={{ span: 16 }}

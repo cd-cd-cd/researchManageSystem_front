@@ -1,11 +1,14 @@
 import { Button, Drawer } from 'antd'
 import React, { useState } from 'react'
-import { getPatent } from '../../../api/studentApi/production'
+import { getCopyRight, getPatent, getThesis, getWin } from '../../../api/studentApi/production'
 import { NavItem } from '../../../libs/data'
-import { IPatent } from '../../../libs/model'
+import { ICopyRight, IPatent, IThesis, IWin } from '../../../libs/model'
 import Copyright from './Content/Copyright'
 import Patent from './Content/Patent'
+import CopyRightTable from './Content/Tables/CopyRightTable'
 import PatentTable from './Content/Tables/PatentTable'
+import ThesisTable from './Content/Tables/ThesisTable'
+import WinTable from './Content/Tables/WinTable'
 import Thesis from './Content/Thesis'
 import Winning from './Content/Winning'
 import style from './index.module.scss'
@@ -14,6 +17,9 @@ import Nav from './Nav'
 export default function Production () {
   const [clickNav, setClickNav] = useState(NavItem[0])
   const [patentData, setPatentData] = useState<IPatent[]>()
+  const [thesisData, setThesisData] = useState<IThesis[]>()
+  const [copyRightData, setCopyRightData] = useState<ICopyRight[]>()
+  const [winData, setWinData] = useState<IWin[]>()
   const [open, setOpen] = useState(false)
 
   const ContentMain = () => {
@@ -54,11 +60,41 @@ export default function Production () {
     }
   }
 
+  // 得到论文历史记录
+  const getThesisInfo = async () => {
+    const res = await getThesis()
+    if (res?.success) {
+      setThesisData(res.data)
+    }
+  }
+
+  // 得到著作权历史
+  const getCopyRightInfo = async () => {
+    const res = await getCopyRight()
+    if (res?.success) {
+      setCopyRightData(res.data)
+    }
+  }
+
+  // 得到获奖历史
+  const getWinInfo = async () => {
+    const res = await getWin()
+    if (res?.success) {
+      setWinData(res.data)
+    }
+  }
+
   // 展开抽屉
   const showDrawer = () => {
     setOpen(true)
     if (clickNav.value === 'patent') {
       getPatentInfo()
+    } else if (clickNav.value === 'thesis') {
+      getThesisInfo()
+    } else if (clickNav.value === 'copyright') {
+      getCopyRightInfo()
+    } else if (clickNav.value === 'winning') {
+      getWinInfo()
     }
   }
 
@@ -67,6 +103,12 @@ export default function Production () {
     switch (clickNav.value) {
       case 'patent':
         return <PatentTable getPatentInfo={getPatentInfo} patentData={patentData}></PatentTable>
+      case 'thesis':
+        return <ThesisTable getThesisInfo={getThesisInfo} thesisData={thesisData}></ThesisTable>
+      case 'copyright':
+        return <CopyRightTable getCopyRightInfo={getCopyRightInfo} copyRightData={copyRightData}></CopyRightTable>
+      case 'winning':
+        return <WinTable getWinInfo={getWinInfo} winData={winData}></WinTable>
     }
   }
   return (
