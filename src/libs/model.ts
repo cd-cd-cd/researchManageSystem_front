@@ -291,8 +291,8 @@ interface IPatent {
   patentRight: string
   inventor: string
   digest: string
-  patentState: IPatentState
-  patentExist: IPatentExist
+  patentState: IProductionState
+  patentExist: IProductionExist
   createdTime: Date
 }
 
@@ -304,8 +304,8 @@ interface IThesis {
   publicationName: string
   signature: string
   discipline_one: string
-  thesisState: IThesisState
-  thesisExist: IThesisExist
+  thesisState: IProductionState
+  thesisExist: IProductionExist
   createdTime: Date
 }
 
@@ -318,8 +318,8 @@ interface ICopyRight {
   creationCompletionDate: Date
   firstPublicationDate: Date
   recordDate: Date
-  copyRightState: ICopyRightState
-  copyRightExist: ICopyRightExist
+  copyRightState: IProductionState
+  copyRightExist: IProductionExist
   createdTime: Date
 }
 
@@ -330,8 +330,8 @@ interface IWin {
   awardLevel: string
   awardTime: Date
   organizingCommittee: string
-  winState: IWinState
-  winExist: IWinExist
+  winState: IProductionState
+  winExist: IProductionExist
   createdTime: Date
 }
 
@@ -341,25 +341,29 @@ type ITeacherModule = 'device' | 'meeting' | 'reimbursement'
 // 学生模块
 type IStudentModule = 'meeting' | 'report' | 'reimbursement' | 'request'
 
-// 专利状态 -1未审批 0审批通过 1审批打回
-type IPatentState = -1 | 0 | 1
+// production 状态/
+// 存在状态 -1未审批 0审批通过 1审批打回
+// 0不存在 1存在
+type IProductionState = -1 | 0 | 1
+type IProductionExist = 0 | 1
 
-// 专利申请 0不存在 1存在
-type IPatentExist = 0 | 1
+interface ITPatent extends IPatent {
+  applyPatentUser: IUser
+}
 
-// 论文状态 -1未审批 0审批通过 1审批打回
-type IThesisState = -1 | 0 | 1
+interface ITThesis extends IThesis {
+  applyThesisUser: IUser
+}
 
-// 论文申请 0不存在 1存在
-type IThesisExist = 0 | 1
+interface ITCopyright extends ICopyRight {
+  applyCopyRightUser: IUser
+}
 
-// 著作权
-type ICopyRightState = -1 | 0 | 1
-type ICopyRightExist = 0 | 1
-
-// 获奖
-type IWinState = -1 | 0 | 1
-type IWinExist = 0 | 1
+interface ITWin extends IWin {
+  applyWinUser: IUser
+}
+type IProduction = 'patent' | 'thesis' | 'copyright' | 'winning'
+type ITProductionInfo = ITPatent[] | ITThesis[] | ITCopyright[] | ITWin[]
 
 export type {
   IStuList,
@@ -395,16 +399,16 @@ export type {
   IApply,
   ITeacherModule,
   IStudentModule,
-  IPatentState,
-  IPatentExist,
   IPatent,
-  IThesisState,
-  IThesisExist,
   IThesis,
   ICopyRight,
-  ICopyRightState,
-  ICopyRightExist,
-  IWinState,
-  IWinExist,
-  IWin
+  IProductionState,
+  IProductionExist,
+  IWin,
+  ITPatent,
+  ITThesis,
+  ITCopyright,
+  ITWin,
+  ITProductionInfo,
+  IProduction
 }

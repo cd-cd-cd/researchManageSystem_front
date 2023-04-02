@@ -1,20 +1,23 @@
-import { Button, Descriptions, message, Modal, Table } from 'antd'
+import { Button, Descriptions, Modal, Table, message } from 'antd'
 import Column from 'antd/lib/table/Column'
 import dayjs from 'dayjs'
 import React, { useState } from 'react'
-import { cancelPatent } from '../../../../../../api/studentApi/production'
-import { principalClassificationNumberOption } from '../../../../../../libs/data'
-import { IPatent, IProductionState } from '../../../../../../libs/model'
-import RenderState from '../../../../../../components/RenderState'
+import { principalClassificationNumberOption } from '../../../../../libs/data'
+import { IProductionState, ITPatent } from '../../../../../libs/model'
+import TRenderState from '../../../../../components/TRenderState'
+import style from '../index.module.scss'
+import useProduction from '../../../../../hooks/useProduction'
 interface Props {
-  patentData: IPatent[] | undefined
-  getPatentInfo: () => {}
+  source: ITPatent[] | undefined
+  loading: boolean
+  getTableInfo: () => {}
 }
-export default function PatentTable ({ patentData, getPatentInfo }: Props) {
+export default function TPatentTable ({ source, loading, getTableInfo }: Props) {
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [infoItem, setInfoItem] = useState<IPatent>()
+  const [infoItem, setInfoItem] = useState<ITPatent>()
+  const { passClick, returnClick } = useProduction()
 
-  const showModal = (record: IPatent) => {
+  const showModal = (record: ITPatent) => {
     setInfoItem(record)
     setIsModalOpen(true)
   }
@@ -25,30 +28,27 @@ export default function PatentTable ({ patentData, getPatentInfo }: Props) {
       return principalClassificationNumberOption[index].label
     }
   }
-
-  const cancel = async (id: string) => {
-    const res = await cancelPatent(id)
-    if (res?.success) {
-      message.success('取消成功!')
-      getPatentInfo()
-    }
-  }
-
   return (
     <>
       <Table
-        dataSource={patentData}
+        dataSource={source}
+        pagination={false}
+        loading={loading}
       >
         <Column title="专利名称" dataIndex="name" key="name" />
         <Column
+          title='提交人'
+          render={(_: any, record: ITPatent) => <div>{record.applyPatentUser ? record.applyPatentUser.name : ''}</div>}
+        ></Column>
+        <Column
           title='详情'
-          render={(_: any, record: IPatent) => <a onClick={() => showModal(record)}>点击查看</a>}
+          render={(_: any, record: ITPatent) => <a onClick={() => showModal(record)}>点击查看</a>}
         ></Column>
         <Column
           title='状态'
           dataIndex="patentState"
           key="patentState"
-          render={(value: IProductionState) => <RenderState state={value}></RenderState>}
+          render={(value: IProductionState) => <TRenderState state={value}></TRenderState>}
         ></Column>
         <Column
           title='提交时间'
@@ -57,14 +57,15 @@ export default function PatentTable ({ patentData, getPatentInfo }: Props) {
           render={(value: Date) => dayjs(value).format('YYYY-MM-DD')}
         ></Column>
         <Column
+          width={140}
           title='操作'
-          render={(_: any, record: IPatent) =>
-            <Button
-              danger
-              size='small'
-              disabled={record.patentState === 0}
-              onClick={() => cancel(record.id)}
-            >取消申请</Button>}
+          render={(_: any, record: ITPatent) =>
+            record.patentState === -1
+              ? <div className={style.btns}>
+                <Button size='small' onClick={() => passClick('patent', record.id, getTableInfo)}>通过</Button>
+                <Button size='small' onClick={() => returnClick('patent', record.id, getTableInfo)}>驳回</Button>
+              </div>
+              : ''}
         ></Column>
       </Table>
       <Modal width={900} footer={null} title='专利信息' open={isModalOpen} onCancel={() => setIsModalOpen(false)}>

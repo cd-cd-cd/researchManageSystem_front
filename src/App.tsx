@@ -26,6 +26,7 @@ import TDataManage from './pages/TeacherMain/TDataManage'
 import MDataManage from './pages/ManagerMain/MDataManage'
 import Production from './pages/StudentMain/Production'
 import Project from './pages/StudentMain/Project'
+import TProduction from './pages/TeacherMain/TProduction'
 
 function App () {
   const [tabBarList, setTabBarList] = useState<ITabBarCommon[]>([])
@@ -117,6 +118,7 @@ function App () {
             <Route path='TWeekReport' element={<TWeekReport />}></Route>
             <Route path='TReimbursement' element={<TReimbursement />}></Route>
             <Route path='TLeaveRequest' element={<TLeaveRequest />}></Route>
+            <Route path='TProduction' element={<TProduction/>}></Route>
             <Route path='TDataManage' element={<TDataManage/>}></Route>
           </Route>
           <Route path='manager' element={<Home />}>

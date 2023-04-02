@@ -1,6 +1,6 @@
 import { Button, Form, Input, message, Select } from 'antd'
 import DatePicker, { RangePickerProps } from 'antd/lib/date-picker'
-import style from './index.module.scss'
+import style from '../index.module.scss'
 import React, { useState } from 'react'
 import dayjs from 'dayjs'
 import { disciplineOneOption, publicationNameOption } from '../../../../../libs/data'

@@ -1,10 +1,11 @@
-import { Button, Descriptions, message, Modal, Table, Tag } from 'antd'
+import { Button, Descriptions, message, Modal, Table } from 'antd'
 import Column from 'antd/lib/table/Column'
 import dayjs from 'dayjs'
 import React, { useState } from 'react'
 import { cancelCopyRight } from '../../../../../../api/studentApi/production'
 import { copyRightType } from '../../../../../../libs/data'
-import { ICopyRight, IThesisState } from '../../../../../../libs/model'
+import { ICopyRight, IProductionState } from '../../../../../../libs/model'
+import RenderState from '../../../../../../components/RenderState'
 
 interface Props {
   getCopyRightInfo: () => void
@@ -17,17 +18,6 @@ export default function CopyRight ({ getCopyRightInfo, copyRightData }: Props) {
   const showModal = (record: ICopyRight) => {
     setInfoItem(record)
     setIsModalOpen(true)
-  }
-
-  const renderState = (state: IThesisState) => {
-    switch (state) {
-      case -1:
-        return <Tag color='green'>审核中</Tag>
-      case 1:
-        return <Tag color='red'>被驳回</Tag>
-      case 0:
-        return <Tag color='blue'>通过</Tag>
-    }
   }
 
   const cancel = async (id: string) => {
@@ -57,9 +47,9 @@ export default function CopyRight ({ getCopyRightInfo, copyRightData }: Props) {
       ></Column>
       <Column
         title='状态'
-        dataIndex="patentState"
-        key="patentState"
-        render={(value: IThesisState) => renderState(value)}
+        dataIndex="copyRightState"
+        key="copyRightState"
+        render={(value: IProductionState) => <RenderState state={value}></RenderState>}
       ></Column>
       <Column
         title='提交时间'

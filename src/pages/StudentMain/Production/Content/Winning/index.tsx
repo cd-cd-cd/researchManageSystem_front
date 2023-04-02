@@ -5,7 +5,7 @@ import React, { useState } from 'react'
 import { createWin } from '../../../../../api/studentApi/production'
 import { awardGradeOption, awardLevelOption } from '../../../../../libs/data'
 import ProductionMask from '../../ProductionMask'
-import style from './index.module.scss'
+import style from '../index.module.scss'
 
 export default function Winning () {
   const [loading, setLoading] = useState(false)

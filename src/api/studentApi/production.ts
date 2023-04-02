@@ -1,4 +1,4 @@
-import { ICopyRight, IPatent, IPatentExist, IPatentState, IThesis, IWin } from '../../libs/model'
+import { ICopyRight, IPatent, IThesis, IWin } from '../../libs/model'
 import request from '../../utils/request'
 
 // 创建专利

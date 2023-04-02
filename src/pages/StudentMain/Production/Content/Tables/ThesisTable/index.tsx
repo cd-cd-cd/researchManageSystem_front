@@ -1,10 +1,11 @@
-import { Button, Descriptions, message, Modal, Table, Tag } from 'antd'
+import { Button, Descriptions, message, Modal, Table } from 'antd'
 import Column from 'antd/lib/table/Column'
 import dayjs from 'dayjs'
 import React, { useState } from 'react'
 import { cancelThesis } from '../../../../../../api/studentApi/production'
 import { disciplineOneOption, publicationNameOption } from '../../../../../../libs/data'
-import { IThesis, IThesisState } from '../../../../../../libs/model'
+import { IThesis, IProductionState } from '../../../../../../libs/model'
+import RenderState from '../../../../../../components/RenderState'
 
 interface Props {
   getThesisInfo: () => void
@@ -17,17 +18,6 @@ export default function ThesisTable ({ getThesisInfo, thesisData }: Props) {
   const showModal = (record: IThesis) => {
     setInfoItem(record)
     setIsModalOpen(true)
-  }
-
-  const renderPatentState = (state: IThesisState) => {
-    switch (state) {
-      case -1:
-        return <Tag color='green'>审核中</Tag>
-      case 1:
-        return <Tag color='red'>被驳回</Tag>
-      case 0:
-        return <Tag color='blue'>通过</Tag>
-    }
   }
 
   const renderPublicationName = () => {
@@ -66,7 +56,7 @@ export default function ThesisTable ({ getThesisInfo, thesisData }: Props) {
         title='状态'
         dataIndex="thesisState"
         key="thesisState"
-        render={(value: IThesisState) => renderPatentState(value)}
+        render={(value: IProductionState) => <RenderState state={value}></RenderState>}
       ></Column>
       <Column
         title='提交时间'

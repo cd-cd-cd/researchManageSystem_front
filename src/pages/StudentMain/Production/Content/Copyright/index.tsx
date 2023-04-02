@@ -5,7 +5,7 @@ import React, { useState } from 'react'
 import { postCopyRight } from '../../../../../api/studentApi/production'
 import { copyRightType } from '../../../../../libs/data'
 import ProductionMask from '../../ProductionMask'
-import style from './index.module.scss'
+import style from '../index.module.scss'
 
 export default function Copyright () {
   const [loading, setLoading] = useState(false)
