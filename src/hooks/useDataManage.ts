@@ -61,6 +61,10 @@ export default function useDataManage () {
         return '周报管理'
       case 'request':
         return '请假管理'
+      case 'production':
+        return '成果管理'
+      case 'project':
+        return '项目管理'
     }
   }
 

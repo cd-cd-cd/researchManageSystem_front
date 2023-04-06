@@ -57,6 +57,7 @@ export default function TDataManage () {
         const enc = new TextDecoder('utf-8')
         const uint8Msg = new Uint8Array(res as unknown as ArrayBufferLike)
         const realRes = JSON.parse(enc.decode(uint8Msg))
+        console.log(realRes)
         const blob = new Blob([new Uint8Array(realRes.data.data)], { type: 'application/vnd.ms-excel' })
         const downloadElement = document.createElement('a')
         const href = window.URL.createObjectURL(blob)

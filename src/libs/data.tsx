@@ -20,7 +20,8 @@ export const teacherFunc: ITabBarCommon[] = [
   { label: '经费报销', value: 5, name: 'TReimbursement' },
   { label: '请假管理', value: 6, name: 'TLeaveRequest' },
   { label: '成果管理', value: 7, name: 'TProduction' },
-  { label: '数据管理', value: 8, name: 'TDataManage' }
+  { label: '项目管理', value: 8, name: 'TProject' },
+  { label: '数据管理', value: 9, name: 'TDataManage' }
 ]
 
 export const managerFunc: ITabBarCommon[] = [
@@ -34,7 +35,9 @@ export const StuModuleOption: IOption[] = [
   { value: 'meeting', label: '组会模块' },
   { value: 'report', label: '周报模块' },
   { value: 'reimbursement', label: '报销模块' },
-  { value: 'request', label: '请假模块' }
+  { value: 'request', label: '请假模块' },
+  { value: 'production', label: '成果管理' },
+  { value: 'project', label: '项目管理' }
 ]
 
 export const TeaModuleOption: IOption[] = [

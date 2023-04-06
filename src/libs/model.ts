@@ -339,7 +339,12 @@ interface IWin {
 type ITeacherModule = 'device' | 'meeting' | 'reimbursement'
 
 // 学生模块
-type IStudentModule = 'meeting' | 'report' | 'reimbursement' | 'request'
+type IStudentModule = 'meeting'
+| 'report'
+| 'reimbursement'
+| 'request'
+| 'production'
+| 'project'
 
 // production 状态/
 // 存在状态 -1未审批 0审批通过 1审批打回
@@ -364,6 +369,19 @@ interface ITWin extends IWin {
 }
 type IProduction = 'patent' | 'thesis' | 'copyright' | 'winning'
 type ITProductionInfo = ITPatent[] | ITThesis[] | ITCopyright[] | ITWin[]
+
+// -1未审批 0审批通过可进入跟踪 1审批未通过 2已结项
+type IProjectState = -1 | 0 | 1 | 2
+type IProjectExist = 0 | 1
+
+interface IProgress {
+  id: string
+  researchProgress: string
+  nextPlan: string
+  fundPlan: string
+  clarification: string
+  createdTime: Date
+}
 
 export type {
   IStuList,
@@ -410,5 +428,8 @@ export type {
   ITCopyright,
   ITWin,
   ITProductionInfo,
-  IProduction
+  IProduction,
+  IProjectState,
+  IProjectExist,
+  IProgress
 }
