@@ -25,6 +25,8 @@ export default function useTabBar () {
       const newList = tabBarList.filter(item => item.value !== tabBar)
       if (indexClick === (tabBarList.length - 1) && index === indexClick) {
         setTabBarId(newList[newList.length - 1].value)
+      } else if (index === indexClick) {
+        setTabBarId(newList[index].value)
       }
       setTabBarList(newList)
     }
