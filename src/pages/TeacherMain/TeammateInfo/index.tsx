@@ -2,28 +2,15 @@ import React, { useEffect, useState } from 'react'
 import style from './index.module.scss'
 import leftIcon from '../../../assets/imgs/arrow-double-left.svg'
 import { useNavigate, useParams } from 'react-router-dom'
-import { Button, message, Modal, Image } from 'antd'
-import { deleteStu, getStu } from '../../../api/teacherApi/teacher'
+import { message, Image } from 'antd'
+import { getStu } from '../../../api/teacherApi/teacher'
 import { IStu } from '../../../libs/model'
 import dayjs from 'dayjs'
 
 export default function TeammateInfo () {
-  const [isModalOpen, setIsModalOpen] = useState(false)
   const params = useParams()
   const [user, setUser] = useState<IStu>()
   const navigator = useNavigate()
-
-  // 删除学生
-  const deleteStudent = async () => {
-    if (user?.id) {
-      const res = await deleteStu(user?.id)
-      message.success(res?.msg)
-    }
-  }
-  const handleOk = () => {
-    deleteStudent()
-    setIsModalOpen(false)
-  }
 
   const getStuDetail = async () => {
     const id = params.id
@@ -45,7 +32,6 @@ export default function TeammateInfo () {
       <div className={style.info_box}>
         <div className={style.title}>
           <span>个人信息</span>
-          <Button type='primary' danger onClick={() => setIsModalOpen(true)}>删除成员</Button>
         </div>
         <div className={style.person_bpx}>
           <div className={style.avatar}>
@@ -79,14 +65,6 @@ export default function TeammateInfo () {
         </div>
         <div className={style.time_text}>创建时间：{dayjs(user?.createdTime).format('YYYY-MM-DD HH:mm:ss')}</div>
         </div>
-      <Modal title="确定删除成员"
-        open={isModalOpen}
-        onOk={handleOk}
-        okText='确定'
-        cancelText='取消'
-        onCancel={() => setIsModalOpen(false)}>
-        您确定要删除{user?.name}同学吗
-      </Modal>
     </div>
   )
 }
